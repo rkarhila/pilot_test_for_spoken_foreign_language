@@ -1,0 +1,18 @@
+doctype html
+html
+  head
+    title= title
+    link(rel='stylesheet', href='/stylesheets/style.css')
+  body
+    block content
+
+    script(src='https://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js')
+    script(src='/javascripts/global.js')
+    script(type='text/javascript').
+        var username =!{JSON.stringify( user )}
+
+    script(src='/javascripts/recorder.js')
+    script(src='/javascripts/uploadfile.js')
+    script(src='/javascripts/audio-analyser.js')
+    script(src='/javascripts/tests-local.js')
+    script(src='/javascripts/messages.js')
