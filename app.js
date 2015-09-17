@@ -11,10 +11,10 @@ var db = monk('localhost:27017/nodetest2');
 
 var multer  = require('multer');
 
-
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var test = require('./routes/test');
+var uploads = require('./routes/uploads');
 
 var app = express();
 
@@ -42,6 +42,7 @@ app.use(function(req,res,next){
     next();
 });
 
+
 /*Configure the multer.*/
 
 app.use(multer({ dest: './uploads/',
@@ -63,6 +64,7 @@ app.use('/', routes);
 app.use('/test', test);
 app.use('/users', users);
 
+app.use('/upload', uploads);
 
 
 

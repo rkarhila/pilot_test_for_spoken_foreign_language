@@ -3,7 +3,6 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-
     // Respond with the basic test template:
     res.render('tests', { title: 'Testing!', user: req.user });
 

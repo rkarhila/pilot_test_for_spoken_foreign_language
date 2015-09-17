@@ -38,11 +38,12 @@ var recIndex = 0;
 - "Monitor input" switch
 */
 
+/*
 function saveAudio() {
     audioRecorder.exportWAV( doneEncoding );
     // could get mono instead by saying
     // audioRecorder.exportMonoWAV( doneEncoding );
-}
+}*/
 
 function gotBuffers( buffers ) {
     var canvas = document.getElementById( "wavedisplay" );
@@ -54,18 +55,19 @@ function gotBuffers( buffers ) {
     audioRecorder.exportWAV( doneEncoding );
 }
 
-function doneEncoding( blob ) {
+
+//function doneEncoding( blob ) {
     /* Modified: Set up upload instead of download! */
     
     /* 2015-08-19  Commented out for now: No uploads!!! */
     /*Recorder.setupUpload( blob, speaker + "-" + tasknames[currenttask] + '-' + ((recIndex<10)?"0":"") + recIndex + ".wav" );	*/
-    Recorder.setupUpload( blob, username + "-foo-" + ((recIndex<10)?"0":"") + recIndex + ".wav" );	
+//    Recorder.setupUpload( blob, username + "-foo-" + ((recIndex<10)?"0":"") + recIndex + ".wav" );	
 
 
-    //Recorder.setupUpload( blob, "myRecording" + ((recIndex<10)?"0":"") + recIndex + ".wav" );
-    recIndex++;
-}
-
+//    //Recorder.setupUpload( blob, "myRecording" + ((recIndex<10)?"0":"") + recIndex + ".wav" );
+//    recIndex++;
+//}
+/*
 function toggleRecording( e ) {
     if (e.classList.contains("recording")) {
         // stop recording
@@ -96,7 +98,7 @@ function convertToMono( input ) {
     splitter.connect( merger, 0, 1 );
     return merger;
 }
-
+*/
 function cancelAnalyserUpdates() {
     window.cancelAnimationFrame( rafID );
     rafID = null;
@@ -252,7 +254,7 @@ function gotStream(stream) {
     updateAnalysers();
 
 
-    var uservideo = document.getElementById('uservideo');
+    var uservideo = document.getElementById('camera-preview');
     uservideo.src = window.URL.createObjectURL(stream);
 
     // Note: onloadedmetadata doesn't fire in Chrome when using it with getUserMedia.
@@ -261,6 +263,7 @@ function gotStream(stream) {
 	// Ready to go. Do some stuff.
     };
 }
+
 
 function initAudioAndVideo() {
         if (!navigator.getUserMedia)
@@ -286,7 +289,8 @@ function initAudioAndVideo() {
 		    "maxWidth": 320,
 		    "maxHeight": 200
 		}
-	    },	    
+	    },
+	    
         }, gotStream, function(e) {
             alert('Error getting audio');
             console.log(e);
@@ -294,4 +298,5 @@ function initAudioAndVideo() {
 }
 
 window.addEventListener('load', initAudioAndVideo );
+
 

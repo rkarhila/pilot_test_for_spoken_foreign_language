@@ -15,6 +15,7 @@
     "serve-favicon": "~2.2.0",
         "mongodb": "~2.0.33",
         "monk": "~1.0.1",
-     "multer": "~0.1.6"
+     "multer": "~0.1.6",
+     "recordrtc": "~5.1.6"
   }
 }

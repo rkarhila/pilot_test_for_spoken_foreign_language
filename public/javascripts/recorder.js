@@ -99,6 +99,17 @@
 	    worker.postMessage({ command: 'getBuffers' })
 	}
 
+	this.exportWEBM = function(cb, type){
+	    getRecordedData(postVideoToServer);
+	    currCallback = cb || config.callback;
+	    type = type || config.type || 'video/webm';
+	    if (!currCallback) throw new Error('Callback not set');
+	    worker.postMessage({
+		command: 'exportWEBM',
+		type: type
+	    });
+	}
+
 	this.exportWAV = function(cb, type){
 	    currCallback = cb || config.callback;
 	    type = type || config.type || 'audio/wav';
@@ -125,7 +136,10 @@
 	}
 
 	source.connect(this.node);
-	this.node.connect(this.context.destination);   // if the script node is not connected to an output the "onaudioprocess" event is not triggered in chrome.
+
+	// if the script node is not connected to an output the 
+	// "onaudioprocess" event is not triggered in chrome.
+	this.node.connect(this.context.destination);  
     };
 
     Recorder.setupDownload = function(blob, filename){
@@ -151,41 +165,13 @@
 
 	document.getElementById('recordedObject').src=url;
 
-
-
-	/*var news = document.getElementById("news");
-	news.innerHTML="Uploading audio";*/
-	
 	UploadFile(blob, filename);
 	
-	/*var fileToUpload =document.getElementById("fileToUpload");
-	fileToUpload.setAttribute("files", url); */
-
-
-	/*
-	var formData= new FormData(document.getElementById("uploadForm"));
-	formData.append("fileToUpload", blob);
-
-	var request = new XMLHttpRequest();
-	request.open("POST", "upload.php");
-	request.send(formData);*/
-
-	
-	/*news.innerHTML="Audio file uploaded";*/
-	
-	/*link.href = url;
-	link.download = filename || 'output.wav';*/
-
-	//var nextButton = document.getElementById
 	$id("nextButton").disabled = false;
 	$id("listenButton").disabled = false;
 
 	var recButton = document.getElementById("record");
 	recButton.innerHTML = messages['Rerecord']; //'Re-record<br>audio';
-
-	
-
-
 
     }
 
