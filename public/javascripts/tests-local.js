@@ -85,6 +85,7 @@ var audio = document.querySelector('audio');
 var isFirefox = !!navigator.mozGetUserMedia;
 
 var recordAudio, recordVideo;
+
 startRecording.onclick = function() {
     startRecording.disabled = true;
     navigator.getUserMedia({
@@ -139,13 +140,15 @@ stopRecording.onclick = function() {
         recordAudio.getDataURL(function(audioDataURL) {
             if (!isFirefox) {
                 recordVideo.getDataURL(function(videoDataURL) {
-                    //postFiles(audioDataURL, videoDataURL);
-		    UploadFile(videoDataURL , "foo");
-		    UploadFile( audioDataURL, "f00");
-                });
+                    postFiles(audioDataURL, videoDataURL);
+		    //UploadFile(cameraPreview.src, "foo");
+		    //UploadFile(audioDataURL, "foo1");
+		    //UploadFile(videoDataURL, "foo2");
+		    
+		});
             } else {
-		//postFiles(audioDataURL);
-		UploadFile(audioDataURL, "fii");
+		postFiles(audioDataURL);
+		//postFiles(recordRTC.getBlob());
 	    }
         });
     }
@@ -173,28 +176,63 @@ function postFiles(audioDataURL, videoDataURL) {
 
     files.isFirefox = isFirefox;
 
+    console.log("typeof files.video.contents: "+typeof(files.video.contents))
+    console.log("File length: " + (files.video.contents).length);
+
+    /*
     cameraPreview.src = '';
     cameraPreview.poster = '/ajax-loader.gif';
+    */
 
-    xhr('/upload', JSON.stringify(files), function(_fileName) {
+    
+    if (!isFirefox) {	
+	UploadFile( jsoned_files = JSON.stringify(files), "videofile");
+    } 
+    else {
+	UploadFile( jsoned_files = JSON.stringify(files), "audio_and_videofile");
+    }
+
+    
+    
+    var jsoned_files = JSON.stringify(files);
+
+/*
+    xhr('/upload', jsoned_files, function(_fileName) {
         var href = location.href.substr(0, location.href.lastIndexOf('/') + 1);
-        cameraPreview.src = href + 'uploads/' + _fileName;
-        cameraPreview.play();
+        //cameraPreview.src = '/upload';// + _fileName;
+        //cameraPreview.play();
 
         var h2 = document.createElement('h2');
         h2.innerHTML = '<a href="' + cameraPreview.src + '">' + cameraPreview.src + '</a>';
         document.body.appendChild(h2);
     });
+*/
+
 }
 
 function xhr(url, data, callback) {
+    /*
+    $.ajax({
+	type: "POST",
+	url: url,
+	data: data,
+	contentType : "application/json; charset=utf-8",
+	dataType: "json"
+    }).allways(function(response, status, xhr){
+	console.log("JSON-AJAX: "+response);
+	console.log("JSON-AJAX: "+status);
+	console.log("JSON-AJAX: "+xhr);
+    });
+    */
+
     var request = new XMLHttpRequest();
     request.onreadystatechange = function() {
         if (request.readyState == 4 && request.status == 200) {
             callback(request.responseText);
         }
     };
-    request.open('POST', url);
+    request.open('POST', url, true);
+    request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
     request.send(data);
 }
 

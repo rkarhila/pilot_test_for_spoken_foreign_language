@@ -8,6 +8,7 @@ var bodyParser = require('body-parser');
 var mongo = require('mongodb');
 var monk = require('monk');
 var db = monk('localhost:27017/nodetest2');
+//var Busboy = require('connect-busboy'); //middleware for form/file upload
 
 var multer  = require('multer');
 
@@ -18,6 +19,7 @@ var uploads = require('./routes/uploads');
 
 var app = express();
 
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -25,8 +27,12 @@ app.set('view engine', 'jade');
 // uncomment after placing your favicon in /public
 //app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json({ limit: '200mb' }));
+app.use(bodyParser.urlencoded({ extended: true }));
+
+
+
+
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 

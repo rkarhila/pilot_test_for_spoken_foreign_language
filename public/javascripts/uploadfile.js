@@ -18,6 +18,8 @@ function UploadFile(file, filename) {
     console.log("Going into Uploadfile with filename "+filename);
     var xhr = new XMLHttpRequest();
 
+    //console.log("file size: "+file.size);
+
     // File size check disabled for now!
     //if (file.size <= $id("MAX_FILE_SIZE").value) {
 	if (xhr.upload) {
@@ -67,6 +69,7 @@ function UploadFile(file, filename) {
 	    xhr.open("POST", $id("upload").action, true);
 	    xhr.setRequestHeader("X-FILENAME", filename);
 	    xhr.setRequestHeader("HTTP-X-FILENAME", filename);
+	    xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 	    xhr.send(file);
 	    console.log("Send command made for "+filename);	    
 	}
