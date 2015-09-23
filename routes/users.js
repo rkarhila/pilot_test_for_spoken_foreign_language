@@ -68,6 +68,8 @@ router.post('/adduser', function(req, res) {
 	req.body.tasks=usertasks;
 	req.body.trials=usertrials;
 
+	req.body.password="codeme!";
+
 	var collection = db.get('userlist');
 
 	collection.insert(req.body, function(err, result){

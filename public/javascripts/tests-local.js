@@ -11,6 +11,19 @@ var globalmediastream;
 var videomaxwidth = 200;
 var videomaxheight = 150;
 
+
+var messagelist = {
+    fi_fi: {
+	uploading : "Lähetetään "
+    },
+    en_uk: {
+	uploading : "Uploading "
+    }
+}
+
+
+
+
 // DOM Ready =============================================================
 $(document).ready(function() {
 
@@ -29,6 +42,11 @@ function $id(id) {
     return document.getElementById(id);
 }
 
+var test;
+var testListData;
+var stimulusdata;
+var responsetime;
+var controls;
 
 function showTrial( data ) {
     
@@ -37,20 +55,71 @@ function showTrial( data ) {
     
     // Stick our test data array into a testlist variable in the global object
     testListData = data;
+
+    $('#instructions').html(data.instructions + '<a href="#main" class="allClear">Tämä selvä!</a>');
+
+    $('#taskarea').html( data.stimulus_layout);
+
+    responsetime = data.trial.response_time;
+    controls=data.controls;
+
+    if (controls == "full" || controls == "full_forced_listen") {
+	/* Full controls use case:
+
+	   Record-button  --->  Timer
+                               / stop button ---->  Listen-button   ------> Ok or redo?
+	*/
+	$('#controlarea').html('<input id="startRecording" type="button" onclick="startRecord()" value="Aloita nauhoitus">');
+	$('#controlarea').append('<input id="stopRecording" type="button"  value="Lopeta nauhoitus" hidden>');
+	$('#controlarea').append('<input id="listenButton" type="button"  value="Kuuntele" name="listen" hidden>');
+	$('#controlarea').append('<input id="nextButton" type="button"  value="Seuraava" name="next" hidden>');
+	$('#controlarea').append('<input id="againButton" type="button"  value="Uudestaan" name="next" hidden>');
+
+	$('#nextButton').on('click', populateTest );
+	$('#againButton').bind('click', repopulateTest );
+	
+	$('#stimulus').html(data.trial.stimulus);
+
+    }
+    else if (controls == "start_only") {
+	stimulusdata = data.trial.stimulus;
+	$('#controlarea').html('<input id="startRecording" type="button" onclick="showPromptAndStartRecord()" value="Start">');	
+ 	$('#controlarea').append('<input id="stopRecording" type="button"  value="Lopeta nauhoitus" hidden>');
+ 	$('#controlarea').append('<input id="nextButton" type="button"  value="Seuraava" name="next" hidden>');
+
+	$('#nextButton').on('click', populateTest );	
+    }
+
+    $('#controlarea').append('<div id="timer"></div>');
+
+
+
+//    bindControls();
+
+
+    if (data.showinstructions == "1") {
+	// From http://stackoverflow.com/questions/13735912/anchor-jumping-by-using-javascript
+	var url = location.href;               //Save down the URL without hash.
+	location.href = "#instructions";       //Go to the target element.
+	history.replaceState(null,null,url);   //Don't like hashes. Changing it back.
+    }
+
     $('#testTask_id').text(data.task_id);
     $('#testInstructions').text(data.instructions);
     $('#testStimulus_layout').text(data.stimulus_layout);
     
     $('#testTrial_id').text(data.trial.trial_id);
     $('#testStimulus').text(data.trial.stimulus);
+
+    $('#testRespTime').text(responsetime);
     
     $('#testNext').text(data.next);
     
-    maxrectime=(data.trial.response_time);
 
     console.log(data);
     
     nextUrl=data.next;
+    thisUrl=data.thisone;
 
 }
 
@@ -61,6 +130,12 @@ function populateTest( ) {
     // jQuery AJAX call for JSON
     $.getJSON( nextUrl, function( data ) {showTrial( data ) });
 }
+
+
+function repopulateTest( ) {
+    showTrial( testListData );
+}
+
 
 
 
@@ -76,83 +151,168 @@ function populateTest( ) {
 
 
 
-var startRecording = document.getElementById('start-recording');
-var stopRecording = document.getElementById('stop-recording');
-var cameraPreview = document.getElementById('camera-preview');
+//var startRecording;
+var stopRecording;
+var cameraPreview;
 
-var audio = document.querySelector('audio');
 
-var isFirefox = !!navigator.mozGetUserMedia;
-
+var audio;
+var isFirefox;
 var recordAudio, recordVideo;
 
-startRecording.onclick = function() {
-    startRecording.disabled = true;
+/*
+function bindControls () {
+
+    cameraPreview = document.getElementById('camera-preview');
+    listenButton = document.getElementById('listenbutton');
+
+// value="Kuuntele" name="listen" disabled');
+
+    audio = document.querySelector('audio');
+
+    isFirefox = !!navigator.mozGetUserMedia;
+
+    $('#startRecording').bind('onclick', startRecording());
+}
+*/
+
+
+
+
+function playRecording () {
+    console.log('Playing sample');
+    document.getElementById('recordedObject').play();
+    document.getElementById('recordedObject').onended = activateNext();
+}
+
+function activateNext() {
+    $('#nextButton').attr("hidden", false);
+    $('#againButton').attr("hidden", false);
+}
+
+function showPromptAndStartRecord() {
+    $('#stimulus').html(stimulusdata);
+    startRecord();
+}
+
+function startRecord() {
+
+    $(function() {
+	$('#timer').pietimer({
+            timerSeconds: responsetime,
+            color: '#234',
+            fill: false,
+            showPercentage: false,
+	    showRemainingSecs: true,
+            callback: function() {
+		stopRecording();		
+            }
+	});
+    });
+    
+    $('#startRecording').attr("hidden", true);
+    //$('#listenButton').attr("disabled", true);
+
+    audio = document.querySelector('audio');
+    cameraPreview = document.getElementById('camera-preview');
+
+    isFirefox = !!navigator.mozGetUserMedia;
+
+    //$('startRecording').bind('onclick', startRecording());
+    
+
+    $('startRecording').disabled = true;
     navigator.getUserMedia({
         audio: true,
         video: {
-            "mandatory": {
+	    "mandatory": {
 		"maxWidth": videomaxwidth,
                 "maxHeight": videomaxheight
-            }
+	    }
         }
     }, function(stream) {
         cameraPreview.src = window.URL.createObjectURL(stream);
         cameraPreview.play();
-
+	
         recordAudio = RecordRTC(stream, {
-            bufferSize: 16384
+	    bufferSize: 16384
         });
-
+	
         if (!isFirefox) {
-            recordVideo = RecordRTC(stream, {
+	    recordVideo = RecordRTC(stream, {
                 type: 'video'
-            });
+	    });
         }
-
+	
         recordAudio.startRecording();
-
+	
         if (!isFirefox) {
-            recordVideo.startRecording();
+	    recordVideo.startRecording();
         }
 
-        stopRecording.disabled = false;
+	console.log('Trying to activate stop button');
+        $('#stopRecording').attr("hidden", false);
+	$('#stopRecording').bind('click', stopRecording);
+	console.log('Done trying to activate stop button');
+
+
+
     }, function(error) {
         alert(JSON.stringify(error));
     });
-};
+
+    function stopRecording() {
+	$('#timer').pietimer('reset');
+
+	console.log('stopRecording invoked!');
+	$('#startRecording').attr("disabled", false);
+	$('#stopRecording').attr("disabled", true);
 
 
-stopRecording.onclick = function() {
-    startRecording.disabled = false;
-    stopRecording.disabled = true;
+	recordAudio.stopRecording(function() {
+            if (isFirefox) onStopRecording();
+	});
 
-    recordAudio.stopRecording(function() {
-        if (isFirefox) onStopRecording();
-    });
+	if (!isFirefox) {
+            recordVideo.stopRecording();
+            onStopRecording();
+	}
 
-    if (!isFirefox) {
-        recordVideo.stopRecording();
-        onStopRecording();
+
+
+
+	function onStopRecording() {
+            recordAudio.getDataURL(function(audioDataURL) {
+
+		document.getElementById('recordedObject').src=audioDataURL;		
+
+
+		if (!isFirefox) {
+                    recordVideo.getDataURL(function(videoDataURL) {
+			postFiles(audioDataURL, videoDataURL);
+			//UploadFile(cameraPreview.src, "foo");
+			//UploadFile(audioDataURL, "foo1");
+			//UploadFile(videoDataURL, "foo2");
+			
+		    });
+		} else {
+		    postFiles(audioDataURL);
+		    //postFiles(recordRTC.getBlob());
+		}
+
+		$('#stopRecording').attr("hidden", true);
+		if (controls === "full" || controls === "full_forced_listening" ) {
+		    $('#listenButton').bind('click', playRecording);
+		    $('#listenButton').attr("hidden", false);
+		}
+		else if (controls === "start_only") {		    
+		    //$('#nextButton').attr("hidden", false);
+		    populateTest();
+		}
+            });
+	}
     }
-
-    function onStopRecording() {
-        recordAudio.getDataURL(function(audioDataURL) {
-            if (!isFirefox) {
-                recordVideo.getDataURL(function(videoDataURL) {
-                    postFiles(audioDataURL, videoDataURL);
-		    //UploadFile(cameraPreview.src, "foo");
-		    //UploadFile(audioDataURL, "foo1");
-		    //UploadFile(videoDataURL, "foo2");
-		    
-		});
-            } else {
-		postFiles(audioDataURL);
-		//postFiles(recordRTC.getBlob());
-	    }
-        });
-    }
-};
+}
 
 var fileName;
 
@@ -179,34 +339,12 @@ function postFiles(audioDataURL, videoDataURL) {
     console.log("typeof files.video.contents: "+typeof(files.video.contents))
     console.log("File length: " + (files.video.contents).length);
 
-    /*
-    cameraPreview.src = '';
-    cameraPreview.poster = '/ajax-loader.gif';
-    */
-
-    
     if (!isFirefox) {	
 	UploadFile( jsoned_files = JSON.stringify(files), "videofile");
     } 
     else {
 	UploadFile( jsoned_files = JSON.stringify(files), "audio_and_videofile");
     }
-
-    
-    
-    var jsoned_files = JSON.stringify(files);
-
-/*
-    xhr('/upload', jsoned_files, function(_fileName) {
-        var href = location.href.substr(0, location.href.lastIndexOf('/') + 1);
-        //cameraPreview.src = '/upload';// + _fileName;
-        //cameraPreview.play();
-
-        var h2 = document.createElement('h2');
-        h2.innerHTML = '<a href="' + cameraPreview.src + '">' + cameraPreview.src + '</a>';
-        document.body.appendChild(h2);
-    });
-*/
 
 }
 

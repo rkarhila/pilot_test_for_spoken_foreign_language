@@ -1,62 +1,76 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to our test
+  #cover 
 
-  
-  // Wrapper
-  #wrapper
+  #instructions
 
 
-      
-      // VIDEO AND CONTROLS
-      #userControls
-           #recording(class="blink_me")
-           //video#uservideo(autoplay muted)
-           video#camera-preview(autoplay muted)
-           audio#recordedObject
-           canvas#analyser
-           canvas#wavedisplay
-           #controlfreak
-               input#listenButton(type="button" onClick='toggle_play();' oncanplay='canaudioplay=1' value="Kuuntele" name="listen" disabled)
-               input#record(type="button" onclick="overrideToggleRecording(this)" value="Aloita äänitys")
-               input#nextButton(type="button" onclick='nextTask()' value="Seuraava tehtävä" disabled)
-               input#start-recording(type="button"  value="Start")
-               input#stop-recording(type="button"  value="Stop")
-           #progress
-           form#upload(action="/upload" method="post" enctype="multipart/form-data")
-               input#MAX_FILE_SIZE(type="hidden" name="MAX_FILE_SIZE" value="63856800")
-               input#filename(type="hidden" name="filename" value="krozz-fi0")
-      // /VIDEO AND CONTROLS
+  #main
+      h1= title
+      p Welcome to our test
+
+
+      // Wrapper
+      #wrapper
 
 
 
+          // VIDEO AND CONTROLS
+          #userControls
+               #recording(class="blink_me")
+               //video#uservideo(autoplay muted)
+               video#camera-preview(autoplay muted)
+               audio#recordedObject
+               canvas#analyser
+               canvas#wavedisplay
+               #progress
+               form#upload(action="/upload" method="post" enctype="multipart/form-data")
+                   input#MAX_FILE_SIZE(type="hidden" name="MAX_FILE_SIZE" value="63856800")
+                   input#filename(type="hidden" name="filename" value="krozz-fi0")
+          // /VIDEO AND CONTROLS
 
-      // USER INFO
-      #testInfo
-          h2 Test Info
-          p
-              strong Task:
-              |  <span id='testTask_id'></span>
-              br
-              strong Instructions:
-              |  <span id='testInstructions'></span>
-              br
-              strong Stimulus layout:
-              |  <span id='testStimulus_layout'></span>
-              br
-              strong Trial:
-              |  <span id='testTrial_id'></span>
-              br
-              strong Stimulus:
-              |  <span id='testStimulus'></span>
-              br
-              strong Next:
-              |  <span id='testNext'></span>
-              br
-              button#btnNext Next trial
 
-      // /USER INFO
+        
+          #testarea
+
+              #taskarea 
+
+              #controlarea
+                   //input#listenButton(type="button" onClick='toggle_play();' oncanplay='canaudioplay=1' value="Kuuntele" name="listen" disabled)
+                   //input#record(type="button" onclick="overrideToggleRecording(this)" value="Aloita äänitys")
+                   //input#nextButton(type="button" onclick='nextTask()' value="Seuraava tehtävä" disabled)
+                   //input#start-recording(type="button"  value="Start")
+                   //input#stop-recording(type="button"  value="Stop")
+
+
+          // USER INFO
+          #debug
+              h2 Test Info (For debugging)
+              p
+                  strong Task:
+                  |  <span id='testTask_id'></span>
+                  br
+                  strong Instructions:
+                  |  <span id='testInstructions'></span>
+                  br
+                  strong Stimulus layout:
+                  |  <span id='testStimulus_layout'></span>
+                  br
+                  strong Trial:
+                  |  <span id='testTrial_id'></span>
+                  br
+                  strong Stimulus:
+                  |  <span id='testStimulus'></span>
+                  br
+                  strong Response_time:
+                  |  <span id='testRespTime'></span>
+                  br
+                  strong Next:
+                  |  <span id='testNext'></span>
+                  br
+                  button#btnNext Next trial
+
+          // /USER INFO
 
 

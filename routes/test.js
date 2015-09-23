@@ -4,7 +4,12 @@ var router = express.Router();
 /* GET home page. */
 router.get('/', function(req, res, next) {
     // Respond with the basic test template:
-    res.render('tests', { title: 'Testing!', user: req.user });
+    res.render('tests', { title: 'Testing!', 
+			  user: req.user.username , 
+			  ui_language: req.ui_language,
+			  error_message: req.flash('error'), 
+			  success_message: req.flash('error') 
+			});
 
 });
 
@@ -13,26 +18,31 @@ router.get('/user/:user/task/:task/trial/:trial', function(req, res, next) {
 
     // Send task and trial information for the user:
 
+    console.log("Serving test for req.params.user "+ req.params.user.value );
+
     var db = req.db;    
     var collection = db.get('userlist');
 
-    collection.findOne({ "username" : req.params.user },{},function(e,test){
+    var showinstructions = (req.params.trial < 1);
+
+    collection.findOne({ "username" : req.user.username },{},function(e,test){
 
 	// extract the task arrays for this particular user:
 	var usertask=test['tasks'][req.params.task];
 	var usertrial=test['trials'][req.params.task][req.params.trial];
 
+	console.log("Finding task " + usertask + " trial " +usertrial + " for user " + req.user.username );
 
 	// Check what is the next task/trial for this user:
 	var next;
 
 	// If there is another trial for this task, choose that one:
 	if (typeof (test['trials'][req.params.task][parseInt(req.params.trial)+1]) !== 'undefined') {
-	    next="/test/user/"+req.params.user+"/task/"+req.params.task+"/trial/"+(parseInt(req.params.trial) +1);
+	    next="/test/user/"+req.user.username+"/task/"+req.params.task+"/trial/"+(parseInt(req.params.trial) +1);
 	}
 	// If not, then go to trial 0 of the next task:
 	else {
-	    next="/test/user/"+req.params.user+"/task/"+ ( 1 + parseInt(req.params.task) )+"/trial/0";
+	    next="/test/user/"+req.user.username+"/task/"+ ( parseInt(req.params.task) + 1 )+"/trial/0";
 	}
 
 
@@ -49,7 +59,9 @@ router.get('/user/:user/task/:task/trial/:trial', function(req, res, next) {
 		
 		task.trial=trial;
 		task.next= next;
-		
+
+		task.showinstructions = showinstructions;
+
 		// Return the description in JSON form; Is this a good idea? Hopefully.
 		// We do aim to have a single web page that will be refreshed with javascript.
 		res.json(task);

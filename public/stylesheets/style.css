@@ -13,7 +13,9 @@ a {
 
 #wrapper {
 	padding-left:312px;
+	padding-right:80px;
 	position:relative;
+
 }
 
 #userList {
@@ -120,4 +122,173 @@ fieldset {
 	background: #c00 none 0 0 no-repeat;
         color: yellow;
 /*	background: #cc3333 none 0 0 no-repeat;*/
+}
+
+
+#debug {
+    padding:15px;
+    border:1px solid #CCC;
+    background:rgba(80,120,255,0.05);  
+    position:absolute;
+    right: 15px;
+    width: 400px;
+}
+
+
+
+#testarea {
+	margin:0 0 30px 0;
+}
+
+/* From http://www.corelangs.com/css/box/fulloverlay.html */
+
+#main {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    background: #fcff00 none repeat scroll 0% 0%;
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+}
+
+#cover{ 
+   position:fixed; 
+   top:0; 
+   left:0; 
+   background:rgba(0,0,0,0.6); 
+   /*z-index:5; */
+   width:100%; 
+   height:100%; 
+   /*display:none; */
+}
+#instructions { 
+   /*height:90%; */
+   width:540px; 
+   margin:0 auto; 
+   position:relative; 
+   /*z-index:10; */
+   /*display:none; */
+   background: #ffffff; 
+   border:5px solid #cccccc; 
+   border-radius:10px;
+   padding: 15px; 
+} 
+#infobutton {
+   height: 4em;
+   width: 4em;
+   border: 2px solid #ffffff; 
+   border-radius: 6em;
+   font-size: 1em;
+   padding: 0.2em;
+   color: #ffffff;
+   font-weight: bold;
+   font-family: Verdana,sans-serif;
+}
+
+
+.allClear { 
+  display:block; 
+  font-size:20px; 
+  text-decoration:none; 
+  text-align:center; 
+  font-weight:bold;
+   border:2px solid #cccccc; 
+   border-radius:7px;   
+}
+
+
+/* z-indexing: */
+
+
+#cover{ 
+    z-index:5; 
+}
+#instructions { 
+    z-index:10; 
+}
+#main:target {
+    z-index:15
+}
+#instructions:target, 
+    z-index:11;
+}
+
+
+
+
+/* Timer from 
+
+http://www.jqueryscript.net/loading/Graphical-Circular-Timer-with-jQuery-CSS3-pietimer.html
+
+*/
+
+
+#timer {
+    margin: 20px;
+    width: 80px;
+}
+
+.pietimer {
+    position:relative;
+    font-size: 200px;
+    width:1em;
+    height:1em;
+    float: left;
+}
+.pietimer > .percent {
+    position: absolute;
+    top: 1.05em;
+    left: 0;
+    width: 3.33em;
+    font-size: 0.3em;
+    text-align:center;
+    display: none;
+}
+.pietimer > .remainingsec {
+    position: absolute;
+    top: 1.05em;
+    left: 0;
+    width: 3.33em;
+    font-size: 0.3em;
+    text-align:center;
+    display: none;
+}
+
+.pietimer > .slice {
+    position:absolute;
+    width:1em;
+    height:1em;
+    clip:rect(0px,1em,1em,0.5em);
+}
+.pietimer > .slice.gt50 {
+    clip:rect(auto, auto, auto, auto);
+}
+.pietimer > .slice > .pie {
+    border: 0.1em solid #c0c0c0;
+    position:absolute;
+    width:0.8em; /* 1 - (2 * border width) */
+    height:0.8em; /* 1 - (2 * border width) */
+    clip:rect(0em,0.5em,1em,0em);
+    -moz-border-radius:0.5em;
+    -webkit-border-radius:0.5em;
+    border-radius:0.5em;
+}
+.pietimer > .slice > .pie.fill {
+    -moz-transform:rotate(180deg) !important;
+    -webkit-transform:rotate(180deg) !important;
+    -o-transform:rotate(180deg) !important;
+    transform:rotate(180deg) !important;
+}
+.pietimer.fill > .percent {
+    display: none;
+}
+.pietimer.fill > .remainingsec {
+    display: none;
+}
+.pietimer.fill > .slice > .pie {
+    border: transparent;
+    background-color: #c0c0c0;
+    width:1em;
+    height:1em;
 }

@@ -4,11 +4,12 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+
 // Database
 var mongo = require('mongodb');
 var monk = require('monk');
 var db = monk('localhost:27017/nodetest2');
-//var Busboy = require('connect-busboy'); //middleware for form/file upload
+
 
 var multer  = require('multer');
 
@@ -16,8 +17,26 @@ var routes = require('./routes/index');
 var users = require('./routes/users');
 var test = require('./routes/test');
 var uploads = require('./routes/uploads');
+//var signin = require('./routes/signin');
 
+
+
+// User management imports:
+var passport = require('passport');
+var flash = require('connect-flash');
+//var login = require('./routes/login');
+
+
+// A little help from:
+// https://orchestrate.io/blog/2014/06/26/build-user-authentication-with-node-js-express-passport-and-orchestrate/
+var config = require('./config.js'); //config file contains all tokens and other private info
+var funct = require('./functions.js'); //funct file contains our helper functions for our Passport and database work
+
+var session = require('express-session');
 var app = express();
+
+
+
 
 
 // view engine setup
@@ -31,10 +50,48 @@ app.use(bodyParser.json({ limit: '200mb' }));
 app.use(bodyParser.urlencoded({ extended: true }));
 
 
+// Session control: User information in cookies etc?
+
+app.use(session({ secret: 'keyboard cat', 
+                  saveUninitialized: true,
+                  resave: true,
+		  cookie: { maxAge: 3600000 }})); // Cookie lifetime: 1 hour
+
+var sess;
+
+
 
 
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+
+/*
+// Session-persisted message middleware
+app.use(function(req, res, next){
+  var err = req.session.error,
+      msg = req.session.notice,
+      success = req.session.success;
+
+  delete req.session.error;
+  delete req.session.success;
+  delete req.session.notice;
+
+  if (err) res.locals.error = err;
+  if (msg) res.locals.notice = msg;
+  if (success) res.locals.success = success;
+
+  next();
+});
+*/
+
+
+/* 
+ *     DATABASE CONNECTION
+ *
+ */ 
+
+
 
 // Make our db accessible to our router
 app.use(function(req,res,next){
@@ -42,11 +99,105 @@ app.use(function(req,res,next){
     next();
 });
 
-// User control, waiting to happen:
+
+/* 
+ *     FLASH MESSAGES
+ *
+ */ 
+
+
+
+// Flash messages:
+app.use(flash());
+
+//  Flash messages:
+//app.use(function(req,res,next){
+//    req.flash= flash;
+//    next();
+//});
+
+
+//Testing:
+app.get('/flash', function(req, res){
+  // Set a flash message by passing the key, followed by the value, to req.flash().
+  req.flash('info', 'Flash is back!')
+  res.redirect('/');
+});
+
+
+
+/* 
+ *     AUTHENTICATION
+ *
+ */ 
+
+console.log("Now comes authentication:");
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+var passport = require('passport');
+var LocalStrategy = require('passport-local').Strategy;
+
+
+User = db.get('userlist');
+
+passport.use(new LocalStrategy(
+  function(username, password, done) {
+      console.log("LocalStrategy working...");
+      User.findOne({ username: username }, function(err, user) {
+	  if (err) { 
+	      console.log("Auth failed: username : "+username+ " password: "+password);
+	      return done(err); }
+	  if (!user) {
+              return done(null, false, { message: 'Incorrect username.' });
+	  }
+	  if (user.password !== password) {
+              return done(null, false, { message: 'Incorrect password.' });
+      }
+      return done(null, user);
+    });
+  }
+));
+
+
+passport.serializeUser(function(user, done) {
+    console.log('Serializing: ', user);
+    done(null, user);
+});
+
+passport.deserializeUser(function(obj, done) {
+    //console.log('Deserializing: ', id);    
+    console.log('Deserializing');
+    done(null, obj);
+});
+
+
+
+
+console.log("That was authentication.");
+
+
+/* 
+ *     LANGUAGE
+ *
+ */ 
+
+
+// Specify language of the UI:
 app.use(function(req,res,next){
-    req.user = 'gg';
+    req.ui_language= 'fi_fi';
     next();
 });
+
+
+
+
+
+/* 
+ *     UPLOADS WITH MULTIPART FORMS
+ *
+ */ 
 
 
 /*Configure the multer.*/
@@ -66,12 +217,75 @@ onFileUploadComplete: function (file) {
 
 
 
+
+
+/* 
+ *     ROUTING
+ *
+ */ 
+
+
+app.get('/login', function(req, res, next) {
+    res.render('login', { title: 'Express',
+			  user: req.user , 
+			  ui_language: req.ui_language, 
+			  error_message: req.flash('error'), 
+			  success_message: req.flash('error') 
+			});
+});
+
+app.post('/login', 
+	 passport.authenticate('local', 
+			       { failureRedirect: '/login', 
+				 failureFlash: true }),
+	 function(req, res) {
+	     sess=req.session;
+	     sess.username=req.body.username.value;
+             res.redirect('/test');
+	 });
+
+
+
+
 app.use('/', routes);
-app.use('/test', test);
+// app.use('/login', login);
+//app.use('/signin', auth);
 app.use('/users', users);
 
+
+app.use(function(req,res,next){
+    if(req.isAuthenticated()) {
+	console.log('user logged in', req.user);
+    }
+    else {
+	console.log('user not logged in');
+	res.redirect('/login');
+    }
+
+    sess = req.session;
+    if (typeof(sess.username) !== 'undefined')
+    {
+	req.params.user = sess.username;
+    }
+    next();
+    
+});
+
+
+
+
+
+//app.use(ensureAuthenticated);
+
+app.use('/test', test);
 app.use('/upload', uploads);
 
+
+
+/* 
+ *    ERROR HANDLING
+ *
+ */ 
 
 
 // catch 404 and forward to error handler

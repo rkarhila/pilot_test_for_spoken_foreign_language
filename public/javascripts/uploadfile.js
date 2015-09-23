@@ -31,7 +31,7 @@ function UploadFile(file, filename) {
 	    var date = new Date();
 	    var n = date.toDateString();
 	    var time = date.toLocaleTimeString();
-	    progress.appendChild(document.createTextNode("Uploading " + filename));
+	    progress.appendChild(document.createTextNode( messagelist[lang].uploading + filename));
 	    //progress.insertBefore(document.createTextNode(time +" upload " + file.name), progress.firstChild)
 	    //m.insertBefore(document.createTextNode( time +" upload " + file.name + "\n"), m.firstChild);
 
