@@ -36,6 +36,19 @@ $(document).ready(function() {
 // Functions =============================================================
 
 
+
+
+$(document).keypress(function(e){
+    console.log("Key presssed: "+e.which);
+    if (e.which == 110){
+	populateTest();
+    }
+});
+
+
+
+
+
 // A little helper used by the old scripts:
 // getElementById
 function $id(id) {
@@ -77,6 +90,12 @@ function showTrial( data ) {
     $('#testNext').text(data.next);
         
 
+    if (data.showinstructions == "1") {
+	// From http://stackoverflow.com/questions/13735912/anchor-jumping-by-using-javascript
+	var url = location.href;               //Save down the URL without hash.
+	location.href = "#instructions";       //Go to the target element.
+	history.replaceState(null,null,url);   //Don't like hashes. Changing it back.
+    }
 
 
     if (controls == "full" || controls == "full_forced_listen") {
@@ -115,6 +134,8 @@ function showTrial( data ) {
 	
 	$('#stimulus').html(data.trial.stimulus);
 
+	$('#controlarea').append('<div id="timer"></div>');
+
     }
     else if (controls == "start_only") {
 
@@ -131,6 +152,8 @@ function showTrial( data ) {
  	$('#controlarea').append('<input id="nextButton" type="button"  value="Seuraava" name="next" hidden>');
 
 	$('#nextButton').on('click', populateTest );	
+
+	$('#controlarea').append('<div id="timer"></div>');
     }
     else if (controls == "forced_play") {
 	
@@ -147,21 +170,18 @@ function showTrial( data ) {
 
 
 	if (data.showinstructions == "1") {
-	    $('#controlarea').html('<input id="startTheShow" type="button" onclick="startVideoCircus()" value="Aloita videokeskustelu">');	
+	    $('#controlarea').html('<input id="startRecording" type="button" onclick="startVideoCircus()" value="Aloita videokeskustelu">');	
  	    $('#controlarea').append('<input id="stopRecording" type="button"  value="Lopeta nauhoitus" hidden>');
+	    $('#controlarea').append('<div id="timer"></div>');
 	}
 	else {
+	    $('#controlarea').html('<input id="startRecording" type="button" onclick="startVideoCircus()" value="Aloita videokeskustelu" hidden>');	
+ 	    $('#controlarea').append('<input id="stopRecording" type="button"  value="Lopeta nauhoitus" hidden>');
+
+	    $('#controlarea').append('<div id="timer"></div>');
 	    continueVideoCircus();
 	}
 	
-    }
-    $('#controlarea').append('<div id="timer"></div>');
-
-    if (data.showinstructions == "1") {
-	// From http://stackoverflow.com/questions/13735912/anchor-jumping-by-using-javascript
-	var url = location.href;               //Save down the URL without hash.
-	location.href = "#instructions";       //Go to the target element.
-	history.replaceState(null,null,url);   //Don't like hashes. Changing it back.
     }
 
 }
@@ -236,6 +256,7 @@ function activateNext() {
 
 
 function startVideoCircus() {
+    $('#startRecording').attr("hidden", true);
     $('#stimulus').html(testListData.trial.stimulus);
 
     // MEDIA

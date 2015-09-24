@@ -228,7 +228,13 @@ fieldset {
 
       }
 
+      #stimulusmedia video {
+	  height: auto; 
+	  width: auto; 
+	  max-width: 500px; 
+	  max-height: 500px;
 
+      }
 
 /* Timer from 
 
