@@ -24,7 +24,19 @@ router.get('/user/:user/task/:task/trial/:trial', function(req, res, next) {
     var collection = db.get('userlist');
 
     var showinstructions = (req.params.trial < 1);
-
+/*
+    if  (req.user.username != req.params.user.value) {
+	res.json({
+	    "stimulus_layout" : "<h2>Et ole kirjautunut enää järjestelmään!<H2><p>Mene kirjautumissivulle ja kokeile uudestaan</p>",
+	    "controls" : "None",
+	    "showinstructions" : 0,
+	    "trial": {
+		"response_time" : 100,
+		"stimulus" : "",
+	    }
+	});
+    }
+  */  
     collection.findOne({ "username" : req.user.username },{},function(e,test){
 
 	// extract the task arrays for this particular user:

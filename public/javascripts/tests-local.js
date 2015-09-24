@@ -63,11 +63,46 @@ function showTrial( data ) {
     responsetime = data.trial.response_time;
     controls=data.controls;
 
+    // Important control logic:
+    nextUrl=data.next;
+
+
+    /* Debug data */
+    $('#testTask_id').text(data.task_id);
+    $('#testInstructions').text(data.instructions);
+    $('#testStimulus_layout').text(data.stimulus_layout);    
+    $('#testTrial_id').text(data.trial.trial_id);
+    $('#testStimulus').text(data.trial.stimulus);
+    $('#testRespTime').text(responsetime);    
+    $('#testNext').text(data.next);
+        
+
+
+
     if (controls == "full" || controls == "full_forced_listen") {
 	/* Full controls use case:
 
-	   Record-button  --->  Timer
-                               / stop button ---->  Listen-button   ------> Ok or redo?
+	   1. show [ Record ]-button  --->  2. show prompt  
+                                               start Timer          ---->  3. show 
+                                               show [ stop ] button ---->  3. [ Listen ], [ next ]  and [ redo ] buttons
+                                                                                             |              |
+                                                                                             V              V
+                                                                                         next task      go to 1
+
+
+	   Full controls with forced listen use case:
+
+	   1. show [ Record ]-button  --->  2. show prompt  
+                                               start Timer          ---->  3. show 
+                                               show [ stop ] button ---->  3. [ Listen ] -button
+                                                                                 |
+                                                                                 |
+                                                                                 V
+                                                                                 4.  show  [ next ]  and [ redo ] buttons
+                                                                                             |              |
+                                                                                             V              V
+                                                                                         next task      go to 1
+
 	*/
 	$('#controlarea').html('<input id="startRecording" type="button" onclick="startRecord()" value="Aloita nauhoitus">');
 	$('#controlarea').append('<input id="stopRecording" type="button"  value="Lopeta nauhoitus" hidden>');
@@ -82,20 +117,45 @@ function showTrial( data ) {
 
     }
     else if (controls == "start_only") {
-	stimulusdata = data.trial.stimulus;
+
+	/* Start only use case:
+
+	   1. show [ Record ]-button  ---> 2. show prompt,
+	                                      start Timer,         ---->  3. Automatically
+                                              show [ stop ] button ---->     go to next task
+
+	*/	
+
 	$('#controlarea').html('<input id="startRecording" type="button" onclick="showPromptAndStartRecord()" value="Start">');	
  	$('#controlarea').append('<input id="stopRecording" type="button"  value="Lopeta nauhoitus" hidden>');
  	$('#controlarea').append('<input id="nextButton" type="button"  value="Seuraava" name="next" hidden>');
 
 	$('#nextButton').on('click', populateTest );	
     }
+    else if (controls == "forced_play") {
+	
+	/* Forced play use case:
 
+	   0. Close instuctions  ----->   1. play video 
+                                               |
+                                               |
+                                               V
+	                                  2.  start Timer,         ---->  3. Automatically
+                                              show [ stop ] button ---->     go to next task
+
+	*/
+
+
+	if (data.showinstructions == "1") {
+	    $('#controlarea').html('<input id="startTheShow" type="button" onclick="startVideoCircus()" value="Aloita videokeskustelu">');	
+ 	    $('#controlarea').append('<input id="stopRecording" type="button"  value="Lopeta nauhoitus" hidden>');
+	}
+	else {
+	    continueVideoCircus();
+	}
+	
+    }
     $('#controlarea').append('<div id="timer"></div>');
-
-
-
-//    bindControls();
-
 
     if (data.showinstructions == "1") {
 	// From http://stackoverflow.com/questions/13735912/anchor-jumping-by-using-javascript
@@ -103,19 +163,6 @@ function showTrial( data ) {
 	location.href = "#instructions";       //Go to the target element.
 	history.replaceState(null,null,url);   //Don't like hashes. Changing it back.
     }
-
-    $('#testTask_id').text(data.task_id);
-    $('#testInstructions').text(data.instructions);
-    $('#testStimulus_layout').text(data.stimulus_layout);
-    
-    $('#testTrial_id').text(data.trial.trial_id);
-    $('#testStimulus').text(data.trial.stimulus);
-
-    $('#testRespTime').text(responsetime);
-    
-    $('#testNext').text(data.next);
-        
-    nextUrl=data.next;
 
 }
 
@@ -186,8 +233,43 @@ function activateNext() {
     $('#againButton').attr("hidden", false);
 }
 
+
+
+function startVideoCircus() {
+    $('#stimulus').html(testListData.trial.stimulus);
+
+    // MEDIA
+    if (testListData.trial.hypermedia !== 'None') {
+	if (testListData.trial.mediatype == "video") {
+	    console.log("It should be an image!");
+	    $('#stimulusmedia').html("<video src=\""+testListData.trial.hypermedia+"\" autoplay onended='startRecord()'>");
+	}
+	else {
+	    alert("Video not specified!");
+	}
+    }
+
+}
+
+function continueVideoCircus() {
+    $('#stimulus').html(testListData.trial.stimulus);
+
+    // MEDIA
+    if (testListData.trial.hypermedia !== 'None') {
+	if (testListData.trial.mediatype == "video") {
+	    console.log("It should be an image!");
+	    $('#stimulusmedia').html("<video src=\""+testListData.trial.hypermedia+"\" autoplay onended='startRecord()'>");
+	}
+	else {
+	    alert("Video not specified!");
+	}
+    }
+}
+
+
+
 function showPromptAndStartRecord() {
-    $('#stimulus').html(stimulusdata);
+    $('#stimulus').html(testListData.trial.stimulus);
 
     // MEDIA
     if (testListData.trial.hypermedia !== 'None') {
@@ -313,7 +395,7 @@ function startRecord() {
 		    $('#listenButton').bind('click', playRecording);
 		    $('#listenButton').attr("hidden", false);
 		}
-		else if (controls === "start_only") {		    
+		else if (controls === "start_only" || controls === "forced_play") {		    
 		    //$('#nextButton').attr("hidden", false);
 		    populateTest();
 		}
