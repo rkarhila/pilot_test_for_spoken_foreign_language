@@ -114,12 +114,8 @@ function showTrial( data ) {
     $('#testRespTime').text(responsetime);
     
     $('#testNext').text(data.next);
-    
-
-    console.log(data);
-    
+        
     nextUrl=data.next;
-    thisUrl=data.thisone;
 
 }
 
@@ -192,6 +188,18 @@ function activateNext() {
 
 function showPromptAndStartRecord() {
     $('#stimulus').html(stimulusdata);
+
+    // MEDIA
+    if (testListData.trial.hypermedia !== 'None') {
+	console.log("some media 2? "+ testListData.trial.mediatype);
+	if (testListData.trial.mediatype == "image") {
+	    console.log("It should be an image!");
+	    $('#stimulusmedia').html("<img src=\""+testListData.trial.hypermedia+"\">");
+	}
+    }
+
+
+
     startRecord();
 }
 

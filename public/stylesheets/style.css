@@ -215,6 +215,19 @@ fieldset {
 }
 
 
+/* Image scaling */
+
+#stimulusmedia {
+}
+
+      #stimulusmedia img {
+	  height: auto; 
+	  width: auto; 
+	  max-width: 500px; 
+	  max-height: 500px;
+
+      }
+
 
 
 /* Timer from 
@@ -292,3 +305,5 @@ http://www.jqueryscript.net/loading/Graphical-Circular-Timer-with-jQuery-CSS3-pi
     width:1em;
     height:1em;
 }
+
+

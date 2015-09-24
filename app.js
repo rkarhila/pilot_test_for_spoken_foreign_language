@@ -29,8 +29,8 @@ var flash = require('connect-flash');
 
 // A little help from:
 // https://orchestrate.io/blog/2014/06/26/build-user-authentication-with-node-js-express-passport-and-orchestrate/
-var config = require('./config.js'); //config file contains all tokens and other private info
-var funct = require('./functions.js'); //funct file contains our helper functions for our Passport and database work
+//var config = require('./config.js'); //config file contains all tokens and other private info
+//var funct = require('./functions.js'); //funct file contains our helper functions for our Passport and database work
 
 var session = require('express-session');
 var app = express();
