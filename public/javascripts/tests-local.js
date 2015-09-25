@@ -251,6 +251,8 @@ function playRecording () {
     document.getElementById('recordedObject').play();
     if (controls == "full_forced_listening" ) {
 	document.getElementById('recordedObject').addEventListener('ended', activateNext());
+	$('#stimulus').html(testListData.trial.stimulus_2);
+	$('#listenButton').attr("hidden", true);
     }
     document.getElementById('recordedObject').play();
 }
@@ -404,7 +406,6 @@ function startRecord() {
 
 		document.getElementById('recordedObject').src=audioDataURL;		
 
-
 		if (!isFirefox) {
                     recordVideo.getDataURL(function(videoDataURL) {
 			postFiles(audioDataURL, videoDataURL);
@@ -419,11 +420,15 @@ function startRecord() {
 		}
 
 		$('#stopRecording').attr("hidden", true);
-		if (controls === "full" || controls === "full_forced_listening" ) {
+		$('#timer').attr("hidden", true);
+
+		if (controls === "full_forced_listening" ) {
 		    $('#listenButton').bind('click', playRecording);
 		    $('#listenButton').attr("hidden", false);
 		}
 		if (controls === "full") {
+		    $('#listenButton').bind('click', playRecording);
+		    $('#listenButton').attr("hidden", false);
 		    activateNext();		    
 		}
 		else if (controls === "start_only" || controls === "forced_play") {		    
