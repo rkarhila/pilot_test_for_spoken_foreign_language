@@ -48,15 +48,25 @@ router.get('/user/:user/task/:task/trial/:trial', function(req, res, next) {
 	// Check what is the next task/trial for this user:
 	var next;
 
-	// If there is another trial for this task, choose that one:
-	if (typeof (test['trials'][req.params.task][parseInt(req.params.trial)+1]) !== 'undefined') {
-	    next="/test/user/"+req.user.username+"/task/"+req.params.task+"/trial/"+(parseInt(req.params.trial) +1);
+	console.log("Define next task:");
+	if ([req.params.task]<test['tasks'].length-1) {
+	    // If there is another trial for this task, choose that one:
+	    if (typeof (test['trials'][req.params.task][parseInt(req.params.trial)+1]) !== 'undefined') {
+		next="/test/user/"+req.user.username+"/task/"+req.params.task+"/trial/"+(parseInt(req.params.trial) +1);
+	    }
+  	    // If not, then go to trial 0 of the next task:
+	    else {
+		next="/test/user/"+req.user.username+"/task/"+ ( parseInt(req.params.task) + 1 )+"/trial/0";
+	    }
 	}
-	// If not, then go to trial 0 of the next task:
-	else {
-	    next="/test/user/"+req.user.username+"/task/"+ ( parseInt(req.params.task) + 1 )+"/trial/0";
+	else
+	{
+	    next="/test/user/"+req.user.username+"/task/0/trial/0";
 	}
 
+	console.log("Next task is: "+next);
+
+	console.log("Get the task collection and do stuff");
 
 	// Use these collection variables to make the code slightly easier to read;
 	// and nest functions because I believe at the moment that it is the right thing to do...
@@ -65,10 +75,16 @@ router.get('/user/:user/task/:task/trial/:trial', function(req, res, next) {
 	// Get the task description from database:
 	taskcollection.findOne( { "task_id" : usertask }, {}, function(e,task) {
 	   	    
+	    console.log("Found task");
+	    
+
 	    // Get the trial description from the database:
 	    trialcollection = db.get('trials');
 	    trialcollection.findOne({ "task_id" : usertask, "trial_id" : usertrial },{},function(e,trial){
 		
+		console.log("Found trial");
+
+
 		task.trial=trial;
 		task.next= next;
 

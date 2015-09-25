@@ -98,7 +98,7 @@ function showTrial( data ) {
     }
 
 
-    if (controls == "full" || controls == "full_forced_listen") {
+    if (controls == "full" || controls == "full_forced_listening") {
 	/* Full controls use case:
 
 	   1. show [ Record ]-button  --->  2. show prompt  
@@ -147,7 +147,7 @@ function showTrial( data ) {
 
 	*/	
 
-	$('#controlarea').html('<input id="startRecording" type="button" onclick="showPromptAndStartRecord()" value="Start">');	
+	$('#controlarea').html('<input id="startRecording" type="button" onclick="showPromptAndStartRecord()" value="Aloita nauhoitus">');	
  	$('#controlarea').append('<input id="stopRecording" type="button"  value="Lopeta nauhoitus" hidden>');
  	$('#controlarea').append('<input id="nextButton" type="button"  value="Seuraava" name="next" hidden>');
 
@@ -187,15 +187,19 @@ function showTrial( data ) {
 }
 
 
+var filename_extra = 0;
+
 function populateTest( ) {
     //console.log('populating ' + nextUrl);
     
     // jQuery AJAX call for JSON
+    filename_extra = 0;
     $.getJSON( nextUrl, function( data ) {showTrial( data ) });
 }
 
 
 function repopulateTest( ) {
+    filename_extra += 1;
     showTrial( testListData );
 }
 
@@ -245,7 +249,10 @@ function bindControls () {
 function playRecording () {
     console.log('Playing sample');
     document.getElementById('recordedObject').play();
-    document.getElementById('recordedObject').onended = activateNext();
+    if (controls == "full_forced_listening" ) {
+	document.getElementById('recordedObject').addEventListener('ended', activateNext());
+    }
+    document.getElementById('recordedObject').play();
 }
 
 function activateNext() {
@@ -416,6 +423,9 @@ function startRecord() {
 		    $('#listenButton').bind('click', playRecording);
 		    $('#listenButton').attr("hidden", false);
 		}
+		if (controls === "full") {
+		    activateNext();		    
+		}
 		else if (controls === "start_only" || controls === "forced_play") {		    
 		    //$('#nextButton').attr("hidden", false);
 		    populateTest();
@@ -428,7 +438,12 @@ function startRecord() {
 var fileName;
 
 function postFiles(audioDataURL, videoDataURL) {
-    fileName = getRandomString();
+    //fileName = getRandomString();
+    fileName = username + '_' + (testListData.task_id) + '_' + (testListData.trial.trial_id);
+    if (filename_extra > 0) {
+	fileName += '_'+filename_extra;
+    }
+
     var files = { };
 
     files.audio = {
@@ -451,10 +466,10 @@ function postFiles(audioDataURL, videoDataURL) {
     console.log("File length: " + (files.video.contents).length);
 
     if (!isFirefox) {	
-	UploadFile( jsoned_files = JSON.stringify(files), "videofile");
+	UploadFile( JSON.stringify(files), fileName+'.*');
     } 
     else {
-	UploadFile( jsoned_files = JSON.stringify(files), "audio_and_videofile");
+	UploadFile( JSON.stringify(files), fileName+'.*');
     }
 
 }

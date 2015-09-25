@@ -10,7 +10,12 @@ router.post('/',  function(req, res, next) {
     for (name in req.body) {
         if (req.body.hasOwnProperty(name)) {
             console.log("Key: " + name);
-        }
+	    for (name2 in req.body[name]) {
+		if (req.body[name].hasOwnProperty(name2)) {
+		    console.log("Key: " + name + "."+name2.substring(0, 10));
+		}
+	    }
+	}	
     }
     console.log("That was it."); // form files
 
@@ -19,20 +24,22 @@ router.post('/',  function(req, res, next) {
     
     // writing audio file to disk
     
-    filePath = './uploads/foo.webm';
+    filePath = './uploads/'+req.body.video.name+'.webm';
     
     filecontents = files.video.contents.split(',').pop();
     fileBuffer = new Buffer(filecontents, "base64");
     fs.writeFileSync(filePath, fileBuffer);
+    var savemsg = 'Tallennettiin palvelimelle '+req.body.video.name;
 
     if (!files.isFirefox) {
-	filePath = './uploads/foo.wav';
+	filePath = './uploads/'+req.body.audio.name+'.wav';
 	filecontents = files.audio.contents.split(',').pop();
 	fileBuffer = new Buffer(filecontents, "base64");
 	fs.writeFileSync(filePath, fileBuffer);	
+	savemsg += ' ja '+req.body.audio.name;
     }
 
-    res.json({ response: 'ok!', msg: 'En tehnyt mitn!', errorcode: "0" });
+    res.json({ response: 'ok!', msg: savemsg, errorcode: "0" });
 });
 
 

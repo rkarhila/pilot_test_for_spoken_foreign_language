@@ -7,8 +7,8 @@ block content
 
 
   #main
-      h1= title
-      p Welcome to our test
+      //h1 Hejsan, pilot!
+      //p Ruotsin kielen ylioppilaskirjoitusten raakile. Tätä kypsytellään avullasi.
 
 
       // Wrapper
@@ -45,31 +45,32 @@ block content
 
 
           // USER INFO
-          #debug
-              h2 Test Info (For debugging)
-              p
-                  strong Task:
-                  |  <span id='testTask_id'></span>
-                  br
-                  strong Instructions:
-                  |  <span id='testInstructions'></span>
-                  br
-                  strong Stimulus layout:
-                  |  <span id='testStimulus_layout'></span>
-                  br
-                  strong Trial:
-                  |  <span id='testTrial_id'></span>
-                  br
-                  strong Stimulus:
-                  |  <span id='testStimulus'></span>
-                  br
-                  strong Response_time:
-                  |  <span id='testRespTime'></span>
-                  br
-                  strong Next:
-                  |  <span id='testNext'></span>
-                  br
-                  button#btnNext Next trial
+          -if (debug)
+              #debug
+                  h2 Test Info (For debugging)
+                  p
+                      strong Task:
+                      |  <span id='testTask_id'></span>
+                      br
+                      strong Instructions:
+                      |  <span id='testInstructions'></span>
+                      br
+                      strong Stimulus layout:
+                      |  <span id='testStimulus_layout'></span>
+                      br
+                      strong Trial:
+                      |  <span id='testTrial_id'></span>
+                      br
+                      strong Stimulus:
+                      |  <span id='testStimulus'></span>
+                      br
+                      strong Response_time:
+                      |  <span id='testRespTime'></span>
+                      br
+                      strong Next:
+                      |  <span id='testNext'></span>
+                      br
+                      button#btnNext Next trial
 
           // /USER INFO
 
