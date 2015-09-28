@@ -128,9 +128,9 @@ fieldset {
 
 #progress p
 {
-        font-size: 0.7em; 
+        font-size: 0.6em; 
 	display: block;
-	width: 240px;
+	width: 190px;
 	padding: 2px 5px;
 	margin: 2px 0;
 	border: 1px inset #446;
@@ -339,3 +339,11 @@ http://www.jqueryscript.net/loading/Graphical-Circular-Timer-with-jQuery-CSS3-pi
 }
 
 
+#backtosquareone {
+    z-index: 75;
+    position: fixed;
+    width:200px;
+    height:70px;
+    right:10px;
+    bottom:10px;
+}

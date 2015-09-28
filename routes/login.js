@@ -49,14 +49,21 @@ router.get('/', function(req, res, next) {
 //    console.log( req.flash('success_messages') );
 //    console.log( req.flash('error_messages') );
 
+    User.find(), function(err, user) {
 
-    res.render('login', { title: 'Express',
-			  user: req.user , 
-			  ui_language: req.ui_language, 
-			  error_message: req.flash('error'), 
-			  success_message: req.flash('error') 
-			});
+	console.log("Getting login information:" );
+	console.log(user);
+
+	res.render('login', { title: 'Express',
+			      user: req.user , 
+			      ui_language: req.ui_language, 
+			      error_message: req.flash('error'), 
+			      success_message: req.flash('error'),
+			      all_users : user
+			    });
+    }
 });
+	   
 
 /*
 router.post('/',function(req,res){

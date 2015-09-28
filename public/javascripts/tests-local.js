@@ -30,6 +30,7 @@ $(document).ready(function() {
     // Populate the user table on initial page load
     populateTest();
     $('#btnNext').on('click', populateTest );
+    $('#btnNext').on('touchstart', populateTest );
 
 });
 
@@ -123,14 +124,23 @@ function showTrial( data ) {
                                                                                          next task      go to 1
 
 	*/
-	$('#controlarea').html('<input id="startRecording" type="button" onclick="startRecord()" value="Aloita nauhoitus">');
+	$('#controlarea').html('<input id="startRecording" type="button" value="Aloita nauhoitus">');
+	$('#startRecording').bind('click', startRecord);
+	$('#startRecording').bind('touchstart', startRecord);
+
 	$('#controlarea').append('<input id="stopRecording" type="button"  value="Lopeta nauhoitus" hidden>');
 	$('#controlarea').append('<input id="listenButton" type="button"  value="Kuuntele" name="listen" hidden>');
 	$('#controlarea').append('<input id="nextButton" type="button"  value="Seuraava" name="next" hidden>');
 	$('#controlarea').append('<input id="againButton" type="button"  value="Uudestaan" name="next" hidden>');
 
 	$('#nextButton').on('click', populateTest );
+	$('#nextButton').on('touchstart', populateTest );
+	
+	
 	$('#againButton').bind('click', repopulateTest );
+	$('#againButton').bind('touchstart', repopulateTest );
+
+
 	
 	$('#stimulus').html(data.trial.stimulus);
 
@@ -147,11 +157,15 @@ function showTrial( data ) {
 
 	*/	
 
-	$('#controlarea').html('<input id="startRecording" type="button" onclick="showPromptAndStartRecord()" value="Aloita nauhoitus">');	
+	$('#controlarea').html('<input id="startRecording" type="button" value="Aloita nauhoitus">');	
+	$('#startRecording').on('click', showPromptAndStartRecord );
+	$('#startRecording').on('touchstart', showPromptAndStartRecord );
+
  	$('#controlarea').append('<input id="stopRecording" type="button"  value="Lopeta nauhoitus" hidden>');
  	$('#controlarea').append('<input id="nextButton" type="button"  value="Seuraava" name="next" hidden>');
 
 	$('#nextButton').on('click', populateTest );	
+	$('#nextButton').on('touchstart', populateTest );	
 
 	$('#controlarea').append('<div id="timer"></div>');
     }
@@ -170,12 +184,18 @@ function showTrial( data ) {
 
 
 	if (data.showinstructions == "1") {
-	    $('#controlarea').html('<input id="startRecording" type="button" onclick="startVideoCircus()" value="Aloita videokeskustelu">');	
+	    $('#controlarea').html('<input id="startRecording" type="button" value="Aloita videokeskustelu">');	
+	    $('#startRecording').on('click', startVideoCircus );
+	    $('#startRecording').on('touchstart', startVideoCircus );
+	    
  	    $('#controlarea').append('<input id="stopRecording" type="button"  value="Lopeta nauhoitus" hidden>');
 	    $('#controlarea').append('<div id="timer"></div>');
 	}
 	else {
-	    $('#controlarea').html('<input id="startRecording" type="button" onclick="startVideoCircus()" value="Aloita videokeskustelu" hidden>');	
+	    $('#controlarea').html('<input id="startRecording" type="button" value="Aloita videokeskustelu" hidden>');
+	    $('#startRecording').on('click', startVideoCircus );
+	    $('#startRecording').on('touchstart', startVideoCircus );	    
+	
  	    $('#controlarea').append('<input id="stopRecording" type="button"  value="Lopeta nauhoitus" hidden>');
 
 	    $('#controlarea').append('<div id="timer"></div>');
@@ -373,6 +393,8 @@ function startRecord() {
 	console.log('Trying to activate stop button');
         $('#stopRecording').attr("hidden", false);
 	$('#stopRecording').bind('click', stopRecording);
+	$('#stopRecording').bind('touchstart', stopRecording);
+
 	console.log('Done trying to activate stop button');
 
 
@@ -424,10 +446,12 @@ function startRecord() {
 
 		if (controls === "full_forced_listening" ) {
 		    $('#listenButton').bind('click', playRecording);
+		    $('#listenButton').bind('touchstart', playRecording);
 		    $('#listenButton').attr("hidden", false);
 		}
 		if (controls === "full") {
 		    $('#listenButton').bind('click', playRecording);
+		    $('#listenButton').bind('touchstart', playRecording);
 		    $('#listenButton').attr("hidden", false);
 		    activateNext();		    
 		}

@@ -23,7 +23,7 @@ block content
                video#camera-preview(autoplay muted)
                audio#recordedObject
                canvas#analyser
-               canvas#wavedisplay
+               //canvas#wavedisplay
                #progress
                form#upload(action="/upload" method="post" enctype="multipart/form-data")
                    input#MAX_FILE_SIZE(type="hidden" name="MAX_FILE_SIZE" value="63856800")
@@ -74,4 +74,14 @@ block content
 
           // /USER INFO
 
+      #backtosquareone
+          a(href="login") Takaisin alkuun
 
+block scripts
+    script(src='/javascripts/recorder.js')
+    script(src='/javascripts/uploadfile.js')
+    script(src='/javascripts/audio-analyser.js')
+    script(src='/javascripts/tests-local.js')
+    script(src='/javascripts/messages.js')
+    script(src="/javascripts/RecordRTC.js")
+    script(src='/javascripts/jquery.pietimer.modified.js')

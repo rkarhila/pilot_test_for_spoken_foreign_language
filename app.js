@@ -225,18 +225,26 @@ onFileUploadComplete: function (file) {
  */ 
 
 
+
+app.use('/users', users);
 app.get('/login', function(req, res, next) {
-    res.render('login', { title: 'Express',
-			  user: req.user , 
-			  ui_language: req.ui_language, 
-			  error_message: req.flash('error'), 
-			  success_message: req.flash('error') 
-			});
+    
+    User.find({}, function(err, user) {
+	res.render('login', { title: 'Express',
+			      user: req.user , 
+			      ui_language: req.ui_language, 
+			      error_message: req.flash('error'), 
+			      success_message: req.flash('error'),
+			      all_users : user
+			    });
+    });
 });
+
+
 
 app.post('/login', 
 	 passport.authenticate('local', 
-			       { failureRedirect: '/login', 
+			       { failureRedirect: '/users/adduser', 
 				 failureFlash: true }),
 	 function(req, res) {
 	     sess=req.session;
@@ -248,9 +256,10 @@ app.post('/login',
 
 
 app.use('/', routes);
+
 // app.use('/login', login);
 //app.use('/signin', auth);
-app.use('/users', users);
+
 
 
 app.use(function(req,res,next){

@@ -5,7 +5,7 @@ html(ng-app)
     link(rel='stylesheet', href='/stylesheets/style.css')
   body
     block content
-    -if(user)
+    -if(user && showuser)
         #user You are #{user}
     -if(error_message)
         div#error #{error_message}
@@ -14,20 +14,10 @@ html(ng-app)
 
 
     script(src='https://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js')
-    script(src='https://ajax.googleapis.com/ajax/libs/angularjs/1.4.6/angular.min.js')
-    script(src='https://ajax.googleapis.com/ajax/libs/angularjs/1.4.6/angular-sanitize.js')
-    script(type='text/javascript').
-        angular.module('app', ['ngSanitize']);
     script(src='/javascripts/global.js')
     script(type='text/javascript').
         var username =!{JSON.stringify( user )};
     script(type='text/javascript').
         var lang =!{JSON.stringify( ui_language )};
 
-    script(src='/javascripts/recorder.js')
-    script(src='/javascripts/uploadfile.js')
-    script(src='/javascripts/audio-analyser.js')
-    script(src='/javascripts/tests-local.js')
-    script(src='/javascripts/messages.js')
-    script(src="/javascripts/RecordRTC.js")
-    script(src='/javascripts/jquery.pietimer.modified.js')
+    block scripts

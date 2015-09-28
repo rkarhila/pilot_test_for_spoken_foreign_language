@@ -1,8 +1,8 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to our test
+  h1 Puhutun Ruotsin ylioppilaskokeen pilotti
+  p Tervetuloa kokeilemaan. Puhunnoksiasi ei tallenneta, ei naamasikaan vaikka kamera onkin päällä. Kirjaudu sisään jollain valmiista koetunnuksista. Salasanaa et tarvitse.
 
 
   // Wrapper
@@ -14,32 +14,40 @@ block content
           form#login(action="/login", method="post")
               input#username(type="text", name="username", placeholder='Username')
               br
-              input#password(type="password", name="password", placeholder='Password')
+              input#password(type="password", name="password", placeholder='Password' value="codeme!" readonly)
               br
               input(type="submit", value="login")
 
+      p Koetunnukset:
+      ol
+      -if (all_users)
+          each val in all_users
+              li= val.username
+              
+
       // ADD USER
-      h2 Add User
-      #addUser
-          fieldset
-              input#inputUserName(type='text', placeholder='Username')
-              input#inputUserEmail(type='text', placeholder='Email')
-              br
-              input#inputUserFullname(type='text', placeholder='Full Name')
-              input#inputUserAge(type='text', placeholder='Age')
-              br
-              input#inputUserLocation(type='text', placeholder='Location')
-              input#inputUserGender(type='text', placeholder='gender')
-              br
-              button#btnAddUser Add User
+      -if (adding_user)
+          h2 Add User
+          #addUser
+              fieldset
+                  input#inputUserName(type='text', placeholder='Username')
+                  input#inputUserEmail(type='text', placeholder='Email')
+                  br
+                  input#inputUserFullname(type='text', placeholder='Full Name')
+                  input#inputUserAge(type='text', placeholder='Age')
+                  br
+                  input#inputUserLocation(type='text', placeholder='Location')
+                  input#inputUserGender(type='text', placeholder='gender')
+                  br
+                  button#btnAddUser Add User
       // /ADD USER
 
 
       // UPLOAD PHOTO
-      #uploadPhoto
-          fieldset
-              input#inputFileName(type='file', placeholder='Photo file name')
-              br
-              button#btnUploadFile Upload File
-
+      -if (uploading_photo)
+          #uploadPhoto
+              fieldset
+                  input#inputFileName(type='file', placeholder='Photo file name')
+                  br
+                  button#btnUploadFile Upload File
   // /WRAPPER

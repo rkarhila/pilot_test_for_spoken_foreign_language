@@ -28,6 +28,8 @@ router.post('/adduser', function(req, res) {
 	return o;
     }
     
+    console.log("Trying to add user:");
+
 
     var db = req.db;
 
