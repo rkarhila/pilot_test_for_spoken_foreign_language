@@ -1,8 +1,8 @@
 extends layout
 
 block content
-  h1 Puhutun Ruotsin ylioppilaskokeen pilotti
-  p Tervetuloa kokeilemaan. Puhunnoksiasi ei tallenneta, ei naamasikaan vaikka kamera onkin päällä. Kirjaudu sisään jollain valmiista koetunnuksista. Salasanaa et tarvitse.
+  h1 Tervetuloa kokeilemaan puhutun ruotsin ylioppilaskokeen pilottia!
+  p Puhunnoksiasi ei tallenneta, ei naamasikaan vaikka kamera onkin päällä. Valitse tehtäväsarja:
 
 
   // Wrapper
@@ -10,19 +10,27 @@ block content
 
 
       // USER LIST
-      h2 Login
-          form#login(action="/login", method="post")
-              input#username(type="text", name="username", placeholder='Username')
-              br
-              input#password(type="password", name="password", placeholder='Password' value="codeme!" readonly)
-              br
-              input(type="submit", value="login")
+      -if (showlogin) 
+          h2 Login
+              form#login(action="/login", method="post")
+                  input#username(type="text", name="username", placeholder='Username')
+                  br
+                  input#password(type="password", name="password", placeholder='Password' value="codeme!" readonly)
+                  br
+                  input(type="submit", value="login")
 
-      p Koetunnukset:
-      ol
-      -if (all_users)
-          each val in all_users
-              li= val.username
+      form#login1(action="/login", method="post")
+          input#username(type="text", name="username", placeholder='Username' value="aa" hidden)
+          input#password(type="password", name="password", placeholder='Password' value="codeme!" readonly hidden)
+          input(type="submit", value="Aloita tehtäväsarja a")
+      form#login2(action="/login", method="post")
+          input#username(type="text", name="username", placeholder='Username' value="bb" hidden)
+          input#password(type="password", name="password", placeholder='Password' value="codeme!" readonly hidden)
+          input(type="submit", value="Aloita tehtäväsarja b")	  
+      form#login3(action="/login", method="post")
+          input#username(type="text", name="username", placeholder='Username' value="koe2" hidden)
+          input#password(type="password", name="password", placeholder='Password' value="codeme!" readonly hidden)
+          input(type="submit", value="Aloita tehtäväsarja c")                  
               
 
       // ADD USER
