@@ -5,7 +5,7 @@ var router = express.Router();
 router.get('/', function(req, res, next) {
     // Respond with the basic test template:
     res.render('tests', { title: 'Testing!', 
-			  user: req.user.username , 
+			  user: req.user , 
 			  ui_language: req.ui_language,
 			  error_message: req.flash('error'), 
 			  success_message: req.flash('error') 

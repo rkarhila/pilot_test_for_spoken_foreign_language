@@ -78,6 +78,9 @@ block content
           a(href="login") Takaisin alkuun
 
 block scripts
+    -if (user.username)
+        script(type='text/javascript').
+            var username =!{JSON.stringify( user.username )};
     script(src='/javascripts/recorder.js')
     script(src='/javascripts/uploadfile.js')
     script(src='/javascripts/audio-analyser.js')

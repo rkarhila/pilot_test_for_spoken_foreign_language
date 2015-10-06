@@ -11,6 +11,8 @@ $(document).ready(function() {
 
 // Functions =============================================================
 
+var adminListData;
+
 // Fill table with data
 function populateTable() {
 
@@ -18,12 +20,76 @@ function populateTable() {
     var tableContent = '';
 
     // jQuery AJAX call for JSON
+    $.getJSON( '/users/userlist/admins', function( adminData ) {
+
+	// Stick our user data array into a userlist variable in the global object
+	adminListData = adminData;
+
+        var aTableContent = "";
+        // For each item in our JSON, add a table row and cells to the content string
+        $.each(adminData, function(){
+            aTableContent += '<tr>';
+            aTableContent += '<td><a href="#" class="linkshowuser" rel="' + this.username + '">' + this.username + '</a></td>';
+            aTableContent += '<td>' + this.email + '</td>';
+            aTableContent += '<td><a href="#" class="linkdeleteuser" rel="' + this._id + '">delete</a></td>';
+            aTableContent += '</tr>';
+        });
+
+        // Inject the whole content string into our existing HTML table
+        $('#adminList table tbody').html(aTableContent);
+
+	
+	// Username link click
+	$('#adminList table tbody').on('click', 'td a.linkshowuser', showUserInfo);
+
+
+	// Add User button click
+	$('#btnAddUser').on('click', addUser);
+
+	// Delete User link click
+	$('#adminList table tbody').on('click', 'td a.linkdeleteuser', deleteUser);
+	
+
+    });
+
+    $.getJSON( '/users/userlist/teachers', function( teacherData ) {
+
+	// Stick our user data array into a userlist variable in the global object
+	teacherListData = teacherData;
+
+        var tTableContent="";
+
+        // For each item in our JSON, add a table row and cells to the content string
+        $.each(teacherData, function(){
+            tTableContent += '<tr>';
+            tTableContent += '<td><a href="#" class="linkshowuser" rel="' + this.username + '">' + this.username + '</a></td>';
+            tTableContent += '<td>' + this.email + '</td>';
+            tTableContent += '<td><a href="#" class="linkdeleteuser" rel="' + this._id + '">delete</a></td>';
+            tTableContent += '</tr>';
+        });
+
+        // Inject the whole content string into our existing HTML table
+        $('#teacherList table tbody').html(tTableContent);
+
+	
+	// Username link click
+	$('#teacherList table tbody').on('click', 'td a.linkshowuser', showUserInfo);
+
+
+	// Add User button click
+	$('#btnAddUser').on('click', addUser);
+
+	// Delete User link click
+	$('#teacherList table tbody').on('click', 'td a.linkdeleteuser', deleteUser);
+	
+    });
+
     $.getJSON( '/users/userlist', function( data ) {
 
 	// Stick our user data array into a userlist variable in the global object
 	userListData = data;
 
-
+        var tableContent="";
         // For each item in our JSON, add a table row and cells to the content string
         $.each(data, function(){
             tableContent += '<tr>';
@@ -47,11 +113,11 @@ function populateTable() {
 	// Delete User link click
 	$('#userList table tbody').on('click', 'td a.linkdeleteuser', deleteUser);
 	
-	// Upload file button click
-	$('#btnUploadFile').on('click', uploadFile);
 	
-
     });
+
+
+
 };
 
 // Show User Info

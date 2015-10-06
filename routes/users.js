@@ -3,16 +3,54 @@ var router = express.Router();
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
+    var db = req.db;
+    var collection = db.get('userlist');
+    // Respond with the basic test template:
+    res.render('usermanager', { title: 'User management', 
+				username: req.user.username ,
+				user: req.user, 
+				ui_language: req.ui_language,
+				error_message: req.flash('error'), 
+				success_message: req.flash('error') 
+			}); 
 });
+
+
+
+router.get('/userlist/admins', function(req, res) {
+    var db = req.db;
+    var collection = db.get('userlist');
+    collection.find({'role': { $in: ['local-admin', 'global-admin']}},{ fields : {password:0}},function(e,docs){
+        res.json(docs);
+    });
+});
+
+router.get('/userlist/teachers', function(req, res) {
+    var db = req.db;
+    var collection = db.get('userlist');
+    collection.find({'role': 'teacher'},{fields : {password:0}},function(e,docs){
+        res.json(docs);
+    });
+});
+
 
 router.get('/userlist', function(req, res) {
     var db = req.db;
     var collection = db.get('userlist');
-    collection.find({},{},function(e,docs){
+    collection.find({'role': 'user'},{fields : {password:0}},function(e,docs){
         res.json(docs);
     });
 });
+
+/*
+ * GET adduser to add users (what a logic!):
+ */
+
+router.get('/adduser', function(req, res) {
+    res.render('tests', { title: 'Testing!',     
+});
+});
+
 
 
 /*

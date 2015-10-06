@@ -117,21 +117,13 @@ app.use(flash());
 //});
 
 
-//Testing:
-app.get('/flash', function(req, res){
-  // Set a flash message by passing the key, followed by the value, to req.flash().
-  req.flash('info', 'Flash is back!')
-  res.redirect('/');
-});
-
-
 
 /* 
  *     AUTHENTICATION
  *
  */ 
 
-console.log("Now comes authentication:");
+
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -175,7 +167,6 @@ passport.deserializeUser(function(obj, done) {
 
 
 
-console.log("That was authentication.");
 
 
 /* 
@@ -224,9 +215,8 @@ onFileUploadComplete: function (file) {
  *
  */ 
 
-
-
 app.use('/users', users);
+
 app.get('/login', function(req, res, next) {
     
     User.find({}, function(err, user) {
@@ -241,10 +231,9 @@ app.get('/login', function(req, res, next) {
 });
 
 
-
 app.post('/login', 
 	 passport.authenticate('local', 
-			       { failureRedirect: '/users/adduser', 
+			       { failureRedirect: '/login', 
 				 failureFlash: true }),
 	 function(req, res) {
 	     sess=req.session;
@@ -253,6 +242,10 @@ app.post('/login',
 	 });
 
 
+app.use(function(req,res,next){
+    console.log(req.user);
+    next();
+});
 
 
 app.use('/', routes);
@@ -261,6 +254,7 @@ app.use('/', routes);
 //app.use('/signin', auth);
 
 
+// Require authentication for the other urls:
 
 app.use(function(req,res,next){
     if(req.isAuthenticated()) {
@@ -288,6 +282,8 @@ app.use(function(req,res,next){
 
 app.use('/test', test);
 app.use('/upload', uploads);
+
+
 
 
 
