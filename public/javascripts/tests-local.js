@@ -335,7 +335,12 @@ function showPromptAndStartRecord() {
     startRecord();
 }
 
+
+var uploadurl;
+
 function startRecord() {
+
+    uploadurl='/upload/'+ username+'/'+(testListData.task_id)+'/'+(testListData.trial.trial_id);
 
     $(function() {
 	$('#timer').pietimer({
@@ -466,9 +471,12 @@ function startRecord() {
 
 var fileName;
 
+'/test/user/'+username+'/task/0/trial/0';
+
 function postFiles(audioDataURL, videoDataURL) {
     //fileName = getRandomString();
     fileName = username + '_' + (testListData.task_id) + '_' + (testListData.trial.trial_id);
+
     if (filename_extra > 0) {
 	fileName += '_'+filename_extra;
     }
@@ -495,28 +503,15 @@ function postFiles(audioDataURL, videoDataURL) {
     console.log("File length: " + (files.video.contents).length);
 
     if (!isFirefox) {	
-	UploadFile( JSON.stringify(files), fileName+'.*');
+	UploadFile( JSON.stringify(files), fileName+'.*', uploadurl );
     } 
     else {
-	UploadFile( JSON.stringify(files), fileName+'.*');
+	UploadFile( JSON.stringify(files), fileName+'.*', uploadurl );
     }
 
 }
 
 function xhr(url, data, callback) {
-    /*
-    $.ajax({
-	type: "POST",
-	url: url,
-	data: data,
-	contentType : "application/json; charset=utf-8",
-	dataType: "json"
-    }).allways(function(response, status, xhr){
-	console.log("JSON-AJAX: "+response);
-	console.log("JSON-AJAX: "+status);
-	console.log("JSON-AJAX: "+xhr);
-    });
-    */
 
     var request = new XMLHttpRequest();
     request.onreadystatechange = function() {
@@ -546,133 +541,9 @@ function getRandomString() {
 
 
 
-/*
-
-
-var streamRecorder;
-var webcamstream;
-var uploadvideo
-
-
-function hasGetUserMedia() {
-    return !!(navigator.getUserMedia || navigator.webkitGetUserMedia ||
-              navigator.mozGetUserMedia || navigator.msGetUserMedia);
-}
-
-if (hasGetUserMedia()) {
-    // Good to go!
-
-    navigator.getUserMedia  = navigator.getUserMedia ||
-                          navigator.webkitGetUserMedia ||
-                          navigator.mozGetUserMedia ||
-                          navigator.msGetUserMedia;
-
-    // Set a small video size (otherwise uploads get too big!)
-    // Also remove sound from the stream (that is constantly played back);
-    var videoConstraints = {
-	video: {
-	    mandatory: {
-		maxWidth: 320,
-		maxHeight: 200
-	    }
-	},
-	audio:false
-    };
-
-    var errorCallback = function(e) {
-	alert("Video not working... Do you have a video camera there?");
-	console.log('Reeeejected!', e);
-    };
-
-    navigator.getUserMedia(videoConstraints, function(localMediaStream) {
-	
-	//var uservideo;
-	uservideo = document.getElementById('uservideo');
-	uservideo.src = window.URL.createObjectURL(localMediaStream);
-
-	// Note: onloadedmetadata doesn't fire in Chrome when using it with getUserMedia.
-	// See crbug.com/110938.
-	uservideo.onloadedmetadata = function(e) {
-	    // Ready to go. Do some stuff.
-	};
-    }, errorCallback);
-
-
-} else {
-    alert('getUserMedia() is not supported in your browser');
-}
 
 
 
-function startRec() {
-    streamRecorder = webcamstream.record();
-}
-function stopRec() {
-    streamRecorder.getRecordedData(startUpload);
-}
-
-
-
-*/
-/*
-function startUpload(blob){
-    var url = (window.URL || window.webkitURL).createObjectURL(blob);
-    //var link = document.getElementById("upload");
-    
-    var listenButton = document.getElementById("listenButton");
-    listenButton.disabled = false;
-    
-    document.getElementById('recordedObject').src=url;
-    
-    UploadFile(blob, "foo");
-    
-    $id("nextButton").disabled = false;
-    $id("listenButton").disabled = false;
-    
-    var recButton = document.getElementById("record");
-    recButton.innerHTML = messages['Rerecord']; //'Re-record<br>audio';    
-}
-
-
-*/
-
-// Woohoo!! finally!!! Audio time!!!!
-
-/*
-// First a curious relic from ancient times (oh, but Why?) 
-function overrideToggleRecording(thing) {
-    
-    toggleRecording(thing)
-}
-
-
-
-function toggleRecording( e ) {
-    if (e.classList.contains("recording")) {
-        // stop recording
-        stopRec();
-        e.classList.remove("recording");
-	$id("record").value="Aloita äänitys";
-	if (!allowRerecording) {
-	    $id("record").disabled=true;
-	}
-    } else {
-        // start recording
-        e.classList.add("recording");
-        //audioRecorder.clear();
-        audioRecorder.record();
-	startRec();
-	$id("record").value="Lopeta äänitys";
-    }
-}
-
-
-
-
-
-
-
-*/
 
 // This is for drawing the buffer on the 
 // audio monitoring thingy:
@@ -698,210 +569,5 @@ function drawBuffer( width, height, context, data ) {
 }
 
 
-/*
-
-// Fill table with data
-function populateTable() {
-
-    // Empty content string
-    var tableContent = '';
-
-    // jQuery AJAX call for JSON
-    $.getJSON( '/users/userlist', function( data ) {
-
-	// Stick our user data array into a userlist variable in the global object
-	userListData = data;
 
 
-        // For each item in our JSON, add a table row and cells to the content string
-        $.each(data, function(){
-            tableContent += '<tr>';
-            tableContent += '<td><a href="#" class="linkshowuser" rel="' + this.username + '">' + this.username + '</a></td>';
-            tableContent += '<td>' + this.email + '</td>';
-            tableContent += '<td><a href="#" class="linkdeleteuser" rel="' + this._id + '">delete</a></td>';
-            tableContent += '</tr>';
-        });
-
-        // Inject the whole content string into our existing HTML table
-        $('#userList table tbody').html(tableContent);
-
-	
-	// Username link click
-	$('#userList table tbody').on('click', 'td a.linkshowuser', showUserInfo);
-
-
-	// Add User button click
-	$('#btnAddUser').on('click', addUser);
-
-	// Delete User link click
-	$('#userList table tbody').on('click', 'td a.linkdeleteuser', deleteUser);
-	
-	// Upload file button click
-	$('#btnUploadFile').on('click', uploadFile);
-	
-
-    });
-};
-
-// Show User Info
-function showUserInfo(event) {
-
-    // Prevent Link from Firing
-    event.preventDefault();
-
-    // Retrieve username from link rel attribute
-    var thisUserName = $(this).attr('rel');
-
-    // Get Index of object based on id value
-    var arrayPosition = userListData.map(function(arrayItem) { return arrayItem.username; }).indexOf(thisUserName);
-
-   // Get our User Object
-    var thisUserObject = userListData[arrayPosition];
-
-    //Populate Info Box
-    $('#userInfoName').text(thisUserObject.fullname);
-    $('#userInfoAge').text(thisUserObject.age);
-    $('#userInfoGender').text(thisUserObject.gender);
-    $('#userInfoLocation').text(thisUserObject.location);
-    $('#userInfoTasks').text("");
-    thisUserObject.tasks.forEach(function( task ) {
-	$('#userInfoTasks').append("<br><strong>Task "+thisUserObject.tasks[task]+":</strong> ");
-	thisUserObject.trials[task].forEach(function( trial ) {	   
-	    $('#userInfoTasks').append(trial+", ");
-	});
-    });
-			      
-};
-
-
-// Add User
-function addUser(event) {
-    event.preventDefault();
-
-    // Super basic validation - increase errorCount variable if any fields are blank
-    var errorCount = 0;
-    $('#addUser input').each(function(index, val) {
-        if($(this).val() === '') { errorCount++; }
-    });
-
-    // Check and make sure errorCount's still at zero
-    if(errorCount === 0) {
-
-        // If it is, compile all user info into one object
-        var newUser = {
-            'username': $('#addUser fieldset input#inputUserName').val(),
-            'email': $('#addUser fieldset input#inputUserEmail').val(),
-            'fullname': $('#addUser fieldset input#inputUserFullname').val(),
-            'age': $('#addUser fieldset input#inputUserAge').val(),
-            'location': $('#addUser fieldset input#inputUserLocation').val(),
-            'gender': $('#addUser fieldset input#inputUserGender').val()
-        }
-
-        // Use AJAX to post the object to our adduser service
-        $.ajax({
-            type: 'POST',
-            data: newUser,
-            url: '/users/adduser',
-            dataType: 'JSON'
-        }).done(function( response ) {
-
-            // Check for successful (blank) response
-            if (response.msg === '') {
-
-                // Clear the form inputs
-                $('#addUser fieldset input').val('');
-
-                // Update the table
-                populateTable();
-
-            }
-            else {
-
-                // If something goes wrong, alert the error message that our service returned
-                alert('Error: ' + response.msg);
-
-            }
-        });
-    }
-    else {
-        // If errorCount is more than 0, error out
-        alert('Please fill in all fields');
-        return false;
-    }
-};
-
-
-// Delete User
-function deleteUser(event) {
-
-    event.preventDefault();
-
-    // Pop up a confirmation dialog
-    var confirmation = confirm('Are you sure you want to delete this user?');
-
-    // Check and make sure the user confirmed
-    if (confirmation === true) {
-
-        // If they did, do our delete
-        $.ajax({
-            type: 'DELETE',
-            url: '/users/deleteuser/' + $(this).attr('rel')
-        }).done(function( response ) {
-
-            // Check for a successful (blank) response
-            if (response.msg === '') {
-            }
-            else {
-                alert('Error: ' + response.msg);
-            }
-
-            // Update the table
-            populateTable();
-
-        });
-
-    }
-    else {
-
-        // If they said no to the confirm, do nothing
-        return false;
-
-    }
-
-};
-
-
-
-
-// UploadFile
-function uploadFile(event) {
-    event.preventDefault();
-
-    console.log('upload!');
-
-    var filename=$('#uploadPhhoto fieldset input#inputFileName').val();
-        // If it is, compile all user info into one object
-
-    // Use AJAX to post the object to our adduser service
-    $.ajax({
-        type: 'POST',
-        data: filename,
-        url: '/api/photo',
-        dataType: 'JSON'
-    }).done(function( response ) {
-	
-        // Check for successful (blank) response
-        if (response.msg === '') {
-	    
-	    alert('it\'s ok!');
-
-        }
-        else {
-
-            // If something goes wrong, alert the error message that our service returned
-            alert('Error: ' + response.msg);
-
-        }
-    });
-};
-*/

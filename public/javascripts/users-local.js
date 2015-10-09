@@ -108,7 +108,7 @@ function populateTable() {
 
 
 	// Add User button click
-	$('#btnAddUser').on('click', addUser);
+	$('#btnAddStudent').on('click', addStudent);
 
 	// Delete User link click
 	$('#userList table tbody').on('click', 'td a.linkdeleteuser', deleteUser);
@@ -152,12 +152,12 @@ function showUserInfo(event) {
 
 
 // Add User
-function addUser(event) {
+function addStudent(event) {
     event.preventDefault();
 
     // Super basic validation - increase errorCount variable if any fields are blank
     var errorCount = 0;
-    $('#addUser input').each(function(index, val) {
+    $('#addStudent input').each(function(index, val) {
         if($(this).val() === '') { errorCount++; }
     });
 
@@ -166,12 +166,10 @@ function addUser(event) {
 
         // If it is, compile all user info into one object
         var newUser = {
-            'username': $('#addUser fieldset input#inputUserName').val(),
-            'email': $('#addUser fieldset input#inputUserEmail').val(),
-            'fullname': $('#addUser fieldset input#inputUserFullname').val(),
-            'age': $('#addUser fieldset input#inputUserAge').val(),
+            'username': $('#addUser fieldset input#inputStudentsTeacher').val(),
             'location': $('#addUser fieldset input#inputUserLocation').val(),
-            'gender': $('#addUser fieldset input#inputUserGender').val()
+            'class': $('#addUser fieldset input#inputUserClass').val(),
+            'langgroup': $('#addUser fieldset input#inputUserLangGroup').val()
         }
 
         // Use AJAX to post the object to our adduser service

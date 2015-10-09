@@ -51,8 +51,8 @@ router.get('/', function(req, res, next) {
 
     User.find(), function(err, user) {
 
-	console.log("Getting login information:" );
-	console.log(user);
+	//console.log("Getting login information:" );
+	//console.log(user);
 
 	res.render('login', { title: 'Express',
 			      user: req.user , 

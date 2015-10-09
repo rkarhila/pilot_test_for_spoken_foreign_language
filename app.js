@@ -136,7 +136,7 @@ User = db.get('userlist');
 
 passport.use(new LocalStrategy(
   function(username, password, done) {
-      console.log("LocalStrategy working...");
+      //console.log("LocalStrategy working...");
       User.findOne({ username: username }, function(err, user) {
 	  if (err) { 
 	      console.log("Auth failed: username : "+username+ " password: "+password);
@@ -154,13 +154,13 @@ passport.use(new LocalStrategy(
 
 
 passport.serializeUser(function(user, done) {
-    console.log('Serializing: ', user);
+    //console.log('Serializing: ', user);
     done(null, user);
 });
 
 passport.deserializeUser(function(obj, done) {
     //console.log('Deserializing: ', id);    
-    console.log('Deserializing');
+    //console.log('Deserializing');
     done(null, obj);
 });
 
@@ -241,12 +241,12 @@ app.post('/login',
              res.redirect('/test');
 	 });
 
-
+/*
 app.use(function(req,res,next){
     console.log(req.user);
     next();
 });
-
+*/
 
 app.use('/', routes);
 
@@ -258,7 +258,7 @@ app.use('/', routes);
 
 app.use(function(req,res,next){
     if(req.isAuthenticated()) {
-	console.log('user logged in', req.user);
+	console.log('user logged in', req.user.username);
     }
     else {
 	console.log('user not logged in');

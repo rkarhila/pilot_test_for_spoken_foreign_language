@@ -2,6 +2,90 @@ var express = require('express');
 var router = express.Router();
 var fs = require('fs');
 
+var exec = require('child_process').exec;
+
+
+router.post('/:user/:task/:trial', function(req, res, next) {
+
+    var audiocodec = 'libvorbis';
+    
+    var uploaduser=req.params.user;
+    var uploadtask=req.params.task;
+    var uploadtrial=req.params.trial;
+
+    var files = req.body;
+    
+    // writing audio file to disk
+    
+    filePath = './uploads/raw_video/'+req.body.video.name;
+    
+    filecontents = files.video.contents.split(',').pop();
+    fileBuffer = new Buffer(filecontents, "base64");
+    fs.writeFileSync(filePath, fileBuffer);
+    var savemsg = 'Tallennettiin palvelimelle '+req.body.video.name;
+    
+    outputfilePath = './uploads/encoded_video/'+req.body.video.name;
+
+    if (!files.isFirefox) {
+
+	audiofilePath = './uploads/raw_video/'+req.body.audio.name;
+	audiofilecontents = files.audio.contents.split(',').pop();
+	audiofileBuffer = new Buffer(audiofilecontents, "base64");
+	fs.writeFileSync(audiofilePath, audiofileBuffer);	
+	savemsg += ' ja '+req.body.audio.name;
+
+        cmd='ffmpeg -i '+filePath+' -i '+audiofilePath+' -c:v libvpx -c:a '+audiocodec+' -strict experimental '+outputfilePath;
+
+    }
+    else {
+        cmd=cmd='ffmpeg -i '+filePath+' -c:v libvpx -c:a libvorbis -strict experimental '+outputfilePath;
+    }
+    console.log('Encoding '+filePath+': '+cmd);
+
+    exec(cmd, function(error, stdout, stderr) {
+
+        console.log('Done encoding '+filePath+'; error code: '+error);
+        
+        if (error) {
+            res.json({ response: 'Problem!', msg: stderr, errorcode: error }); 
+        }
+        else {
+       
+
+            var db = req.db;    
+            var collection = db.get('userlist');
+            var params= req.params;
+
+            // Rewriting this thingy:
+            // testsdone : { params['task'] : {params['trial'] : outputfilePath }}}
+
+            collection.findOne({username: req.user.username}, function(err, userdata) {
+
+                console.log(userdata.testsdone);
+                
+                if (!userdata.testsdone[params.task]) {
+                    userdata.testsdone[params.task] = {}
+                }         
+                userdata.testsdone[params.task][params.trial]=outputfilePath;
+
+                console.log(userdata.testsdone);
+   
+                collection.update({ "username": req.user.username  }, 
+                                  { $set:  {testsdone: userdata.testsdone} }, 
+                                  function(e,test){
+                                      if (e) {
+                                          res.json({ response: 'Problem!', msg: e.err, errorcode: e.code });
+                                      }
+                                      else {
+                                          res.json({ response: 'ok!', msg: 'videos/'+params.user+"/"+params.task+"/"+params.trial, errorcode: "0" });
+                                      }
+                                  });
+            });
+        }
+    });
+});
+
+
 
 /* POST upload file. */
 router.post('/',  function(req, res, next) {

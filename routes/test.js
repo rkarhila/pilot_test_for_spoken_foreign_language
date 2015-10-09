@@ -3,6 +3,11 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
+
+    if (req.user.role == 'global-admin') {
+        res.redirect('/users');
+    }
+
     // Respond with the basic test template:
     res.render('tests', { title: 'Testing!', 
 			  user: req.user , 
@@ -16,53 +21,62 @@ router.get('/', function(req, res, next) {
 
 router.get('/user/:user/task/:task/trial/:trial', function(req, res, next) {
 
+
     // Send task and trial information for the user:
 
-    console.log("Serving test for req.params.user "+ req.params.user.value );
+    console.log("Serving test for req.params.user "+ req.params.user );
 
     var db = req.db;    
     var collection = db.get('userlist');
 
     var showinstructions = (req.params.trial < 1);
-/*
-    if  (req.user.username != req.params.user.value) {
-	res.json({
-	    "stimulus_layout" : "<h2>Et ole kirjautunut enää järjestelmään!<H2><p>Mene kirjautumissivulle ja kokeile uudestaan</p>",
-	    "controls" : "None",
-	    "showinstructions" : 0,
-	    "trial": {
-		"response_time" : 100,
-		"stimulus" : "",
-	    }
-	});
-    }
-  */  
+
     collection.findOne({ "username" : req.user.username },{},function(e,test){
 
 	// extract the task arrays for this particular user:
 	var usertask=test['tasks'][req.params.task];
 	var usertrial=test['trials'][req.params.task][req.params.trial];
 
+        var donetrials=test['testsdone'];
+
 	console.log("Finding task " + usertask + " trial " +usertrial + " for user " + req.user.username );
 
 	// Check what is the next task/trial for this user:
 	var next;
 
-	console.log("Define next task:");
-	if ([req.params.task]<test['tasks'].length-1) {
-	    // If there is another trial for this task, choose that one:
-	    if (typeof (test['trials'][req.params.task][parseInt(req.params.trial)+1]) !== 'undefined') {
-		next="/test/user/"+req.user.username+"/task/"+req.params.task+"/trial/"+(parseInt(req.params.trial) +1);
+	console.log("Define next task:");        
+        
+        nexttask=req.params.task;
+        nexttrial=req.params.trial;
+
+        do {
+	    if ([nexttask]<test['tasks'].length-1) {
+	        // If there is another trial for this task, choose that one:
+	        if (typeof (test['trials'][nexttask][nexttrial+1]) !== 'undefined') {
+                    nexttrial=parseInt(nexttrial)+1;
+                    console.log("Next trial: "+nexttask+","+nexttrial);
+
+	        }
+  	        // If not, then go to trial 0 of the next task:
+	        else {
+                    nexttask=parseInt(nexttask)+1 ;
+                    nexttrial=0;
+                    console.log("Next task: "+nexttask+","+nexttrial);
+
+	        }
 	    }
-  	    // If not, then go to trial 0 of the next task:
-	    else {
-		next="/test/user/"+req.user.username+"/task/"+ ( parseInt(req.params.task) + 1 )+"/trial/0";
-	    }
-	}
-	else
-	{
-	    next="/test/user/"+req.user.username+"/task/0/trial/0";
-	}
+            else
+            {
+                nexttask=0;
+                nexttrial=0;
+                break;
+            }
+            
+        } while ( test.testsdone[ test['tasks'][nexttask] ][  test['trials'][nexttrial] ] );
+
+        console.log("Next: "+nexttask+", "+nexttrial);
+
+        next="/test/user/"+req.user.username+"/task/"+nexttask+"/trial/"+nexttrial;
 
 	console.log("Next task is: "+next);
 

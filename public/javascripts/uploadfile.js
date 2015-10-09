@@ -13,7 +13,7 @@
     m.innerHTML = msg + m.innerHTML;
     }
 */
-function UploadFile(file, filename) {
+function UploadFile(file, filename, uploadurl) {
 
     console.log("Going into Uploadfile with filename "+filename);
     var xhr = new XMLHttpRequest();
@@ -66,7 +66,7 @@ function UploadFile(file, filename) {
 
 	    // start upload
 	    console.log("Opening xhr for "+filename);	    
-	    xhr.open("POST", $id("upload").action, true);
+	    xhr.open("POST", uploadurl, true);
 	    xhr.setRequestHeader("X-FILENAME", filename);
 	    xhr.setRequestHeader("HTTP-X-FILENAME", filename);
 	    xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");

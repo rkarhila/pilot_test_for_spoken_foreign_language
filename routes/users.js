@@ -104,9 +104,26 @@ router.post('/adduser', function(req, res) {
 	    }
 	}
 	
+        // Add-on: An array of all tasks and trials to make it easier to handle:
+
+        var testsdone={};
+
+        for(var task in usertasks){
+            testsdone[task]={};
+            for (var trial in usertrials[task]) {
+                testsdone[task][trial]= false;
+            }
+        }
+
+        usertasks.push(i); // Is this a good idea?
+
+        req.body.username=shuffle(['a','b','c','d','e']);
 
 	req.body.tasks=usertasks;
 	req.body.trials=usertrials;
+        req.body.testsdone=testsdone;
+
+        req.body.role="user";
 
 	req.body.password="codeme!";
 
