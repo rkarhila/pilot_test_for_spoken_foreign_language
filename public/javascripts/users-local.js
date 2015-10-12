@@ -38,7 +38,7 @@ function populateTable() {
         // Inject the whole content string into our existing HTML table
         $('#adminList table tbody').html(aTableContent);
 
-	
+
 	// Username link click
 	$('#adminList table tbody').on('click', 'td a.linkshowuser', showUserInfo);
 
@@ -48,7 +48,7 @@ function populateTable() {
 
 	// Delete User link click
 	$('#adminList table tbody').on('click', 'td a.linkdeleteuser', deleteUser);
-	
+
 
     });
 
@@ -71,7 +71,7 @@ function populateTable() {
         // Inject the whole content string into our existing HTML table
         $('#teacherList table tbody').html(tTableContent);
 
-	
+
 	// Username link click
 	$('#teacherList table tbody').on('click', 'td a.linkshowuser', showUserInfo);
 
@@ -81,7 +81,7 @@ function populateTable() {
 
 	// Delete User link click
 	$('#teacherList table tbody').on('click', 'td a.linkdeleteuser', deleteUser);
-	
+
     });
 
     $.getJSON( '/users/userlist', function( data ) {
@@ -102,7 +102,7 @@ function populateTable() {
         // Inject the whole content string into our existing HTML table
         $('#userList table tbody').html(tableContent);
 
-	
+
 	// Username link click
 	$('#userList table tbody').on('click', 'td a.linkshowuser', showUserInfo);
 
@@ -112,8 +112,8 @@ function populateTable() {
 
 	// Delete User link click
 	$('#userList table tbody').on('click', 'td a.linkdeleteuser', deleteUser);
-	
-	
+
+
     });
 
 
@@ -143,11 +143,10 @@ function showUserInfo(event) {
     $('#userInfoTasks').text("");
     thisUserObject.tasks.forEach(function( task ) {
 	$('#userInfoTasks').append("<br><strong>Task "+thisUserObject.tasks[task]+":</strong> ");
-	thisUserObject.trials[task].forEach(function( trial ) {	   
+	thisUserObject.trials[task].forEach(function( trial ) {
 	    $('#userInfoTasks').append(trial+", ");
 	});
     });
-			      
 };
 
 
@@ -170,7 +169,7 @@ function addStudent(event) {
             'location': $('#addUser fieldset input#inputUserLocation').val(),
             'class': $('#addUser fieldset input#inputUserClass').val(),
             'langgroup': $('#addUser fieldset input#inputUserLangGroup').val()
-        }
+        };
 
         // Use AJAX to post the object to our adduser service
         $.ajax({
@@ -264,15 +263,12 @@ function uploadFile(event) {
         url: '/api/photo',
         dataType: 'JSON'
     }).done(function( response ) {
-	
+
         // Check for successful (blank) response
         if (response.msg === '') {
-	    
 	    alert('it\'s ok!');
-
         }
         else {
-
             // If something goes wrong, alert the error message that our service returned
             alert('Error: ' + response.msg);
 

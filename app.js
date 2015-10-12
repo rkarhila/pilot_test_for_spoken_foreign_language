@@ -52,7 +52,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Session control: User information in cookies etc?
 
-app.use(session({ secret: 'keyboard cat', 
+app.use(session({ secret: 'keyboard cat',
                   saveUninitialized: true,
                   resave: true,
 		  cookie: { maxAge: 3600000 }})); // Cookie lifetime: 1 hour
@@ -86,10 +86,10 @@ app.use(function(req, res, next){
 */
 
 
-/* 
+/*
  *     DATABASE CONNECTION
  *
- */ 
+ */
 
 
 
@@ -159,7 +159,7 @@ passport.serializeUser(function(user, done) {
 });
 
 passport.deserializeUser(function(obj, done) {
-    //console.log('Deserializing: ', id);    
+    //console.log('Deserializing: ', id);
     //console.log('Deserializing');
     done(null, obj);
 });
@@ -169,10 +169,10 @@ passport.deserializeUser(function(obj, done) {
 
 
 
-/* 
+/*
  *     LANGUAGE
  *
- */ 
+ */
 
 
 // Specify language of the UI:
@@ -185,10 +185,10 @@ app.use(function(req,res,next){
 
 
 
-/* 
+/*
  *     UPLOADS WITH MULTIPART FORMS
  *
- */ 
+ */
 
 
 /*Configure the multer.*/
@@ -210,20 +210,19 @@ onFileUploadComplete: function (file) {
 
 
 
-/* 
+/*
  *     ROUTING
  *
- */ 
+ */
 
 app.use('/users', users);
 
 app.get('/login', function(req, res, next) {
-    
     User.find({}, function(err, user) {
 	res.render('login', { title: 'Express',
-			      user: req.user , 
-			      ui_language: req.ui_language, 
-			      error_message: req.flash('error'), 
+			      user: req.user ,
+			      ui_language: req.ui_language,
+			      error_message: req.flash('error'),
 			      success_message: req.flash('error'),
 			      all_users : user
 			    });
@@ -231,9 +230,9 @@ app.get('/login', function(req, res, next) {
 });
 
 
-app.post('/login', 
-	 passport.authenticate('local', 
-			       { failureRedirect: '/login', 
+app.post('/login',
+	 passport.authenticate('local',
+			       { failureRedirect: '/login',
 				 failureFlash: true }),
 	 function(req, res) {
 	     sess=req.session;
