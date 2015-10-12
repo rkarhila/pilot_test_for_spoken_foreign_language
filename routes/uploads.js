@@ -34,7 +34,7 @@ router.post('/:user/:task/:trial', function(req, res, next) {
 	fs.writeFileSync(audiofilePath, audiofileBuffer);	
 	savemsg += ' ja '+req.body.audio.name;
 
-        cmd='ffmpeg -i '+filePath+' -i '+audiofilePath+' -c:v libvpx -c:a '+audiocodec+' -strict experimental '+outputfilePath;
+        cmd='ffmpeg -y -i '+filePath+' -i '+audiofilePath+' -c:v libvpx -c:a '+audiocodec+' -strict experimental '+outputfilePath;
 
     }
     else {
@@ -66,17 +66,17 @@ router.post('/:user/:task/:trial', function(req, res, next) {
                 if (!userdata.testsdone[params.task]) {
                     userdata.testsdone[params.task] = {}
                 }         
-                userdata.testsdone[params.task][params.trial]=outputfilePath;
+                userdata.testsdone[params.task][params.trial]=req.body.video.name;
 
                 console.log(userdata.testsdone);
    
                 collection.update({ "username": req.user.username  }, 
-                                  { $set:  {testsdone: userdata.testsdone} }, 
+                                  { $set:  {testsdone: userdata.testsdone, testcount: parseInt(userdata.testcount)+1} }, 
                                   function(e,test){
                                       if (e) {
                                           res.json({ response: 'Problem!', msg: e.err, errorcode: e.code });
                                       }
-                                      else {
+                                      else {					  
                                           res.json({ response: 'ok!', msg: 'videos/'+params.user+"/"+params.task+"/"+params.trial, errorcode: "0" });
                                       }
                                   });

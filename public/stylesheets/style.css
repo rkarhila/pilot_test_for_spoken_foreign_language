@@ -38,6 +38,20 @@ a {
 }
 
 #wrapper {
+	padding-left:512px;
+	padding-right:80px;
+	position:relative;
+	font: 16px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+select{
+    width: 250px;
+    text-overflow: ellipsis;
+}
+
+
+
+#testwrapper {
 	padding-left:312px;
 	padding-right:80px;
 	position:relative;
@@ -121,7 +135,7 @@ a {
 			}
 
 #userInfo {
-	width:250px;
+	width:450px;
 	position:absolute;
 	top:0; left:0;
 }
@@ -130,6 +144,15 @@ a {
 		border:1px solid #CCC;
 		background:rgba(80,120,255,0.05);
 	}
+	#infop {
+		padding:15px;
+		border:1px solid #CCC;
+		background:rgba(80,120,255,0.05);
+	}
+
+#userInfoTasks video {
+    width: 200px;
+}
 
 fieldset {
 	border:0;

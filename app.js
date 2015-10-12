@@ -18,6 +18,7 @@ var users = require('./routes/users');
 var test = require('./routes/test');
 var uploads = require('./routes/uploads');
 //var signin = require('./routes/signin');
+var answers = require('./routes/answers');
 
 
 
@@ -100,10 +101,10 @@ app.use(function(req,res,next){
 });
 
 
-/* 
+/*
  *     FLASH MESSAGES
  *
- */ 
+ */
 
 
 
@@ -118,10 +119,10 @@ app.use(flash());
 
 
 
-/* 
+/*
  *     AUTHENTICATION
  *
- */ 
+ */
 
 
 
@@ -138,7 +139,7 @@ passport.use(new LocalStrategy(
   function(username, password, done) {
       //console.log("LocalStrategy working...");
       User.findOne({ username: username }, function(err, user) {
-	  if (err) { 
+	  if (err) {
 	      console.log("Auth failed: username : "+username+ " password: "+password);
 	      return done(err); }
 	  if (!user) {
@@ -215,8 +216,6 @@ onFileUploadComplete: function (file) {
  *
  */
 
-app.use('/users', users);
-
 app.get('/login', function(req, res, next) {
     User.find({}, function(err, user) {
 	res.render('login', { title: 'Express',
@@ -270,10 +269,11 @@ app.use(function(req,res,next){
 	req.params.user = sess.username;
     }
     next();
-    
 });
 
 
+
+app.use('/users', users);
 
 
 
@@ -281,15 +281,16 @@ app.use(function(req,res,next){
 
 app.use('/test', test);
 app.use('/upload', uploads);
+app.use('/answers', answers);
 
 
 
 
 
-/* 
+/*
  *    ERROR HANDLING
  *
- */ 
+ */
 
 
 // catch 404 and forward to error handler

@@ -4,7 +4,7 @@ var router = express.Router();
 /* GET home page. */
 router.get('/', function(req, res, next) {
 
-    if (req.user.role == 'global-admin') {
+    if (req.user.role == 'global-admin' || req.user.role == 'local-admin') {
         res.redirect('/users');
     }
 
@@ -44,23 +44,29 @@ router.get('/user/:user/task/:task/trial/:trial', function(req, res, next) {
 	// Check what is the next task/trial for this user:
 	var next;
 
-	console.log("Define next task:");        
+	console.log("Define next task: (req.params.trial == "+req.params.trial+")");        
         
         nexttask=req.params.task;
         nexttrial=req.params.trial;
 
+	
         do {
 	    if ([nexttask]<test['tasks'].length-1) {
 	        // If there is another trial for this task, choose that one:
-	        if (typeof (test['trials'][nexttask][nexttrial+1]) !== 'undefined') {
-                    nexttrial=parseInt(nexttrial)+1;
+	        if (typeof (test['trials'][nexttask][parseInt(nexttrial)+1]) !== 'undefined') {
+
+                    console.log("Before update: "+nexttask+","+nexttrial);
+                    nexttrial = 1+parseInt(nexttrial);
+
                     console.log("Next trial: "+nexttask+","+nexttrial);
 
 	        }
   	        // If not, then go to trial 0 of the next task:
 	        else {
+
+		    console.log("typeof (test['trials']["+nexttask+"]["+(parseInt(nexttrial)+1)+"]) : " +typeof (test['trials'][nexttask][nexttrial+1]) );
                     nexttask=parseInt(nexttask)+1 ;
-                    nexttrial=0;
+                    nexttrial = 0;
                     console.log("Next task: "+nexttask+","+nexttrial);
 
 	        }
@@ -71,8 +77,15 @@ router.get('/user/:user/task/:task/trial/:trial', function(req, res, next) {
                 nexttrial=0;
                 break;
             }
-            
-        } while ( test.testsdone[ test['tasks'][nexttask] ][  test['trials'][nexttrial] ] );
+            console.log('Test done? test.testsdone[ '+
+			test['tasks'][nexttask]+
+			' ][ '+ 
+			test['trials'][nexttrial] +
+			' ] : '+ 
+			test.testsdone[ test['tasks'][nexttask] ][  test['trials'][nexttask][nexttrial] ] );
+        } while ( test.testsdone[ test['tasks'][nexttask] ][  test['trials'][nexttask][nexttrial] ] );
+
+
 
         console.log("Next: "+nexttask+", "+nexttrial);
 
