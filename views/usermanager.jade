@@ -1,0 +1,152 @@
+extends layout
+
+block content
+  h1 Käyttäjähallinta
+  p Olet 
+      strong= username 
+      |  (<i>
+      = user.fullname
+      | </i>), ja roolisi on 
+      strong= user.role 
+      -if (user.school)
+          |  koulussa 
+          strong= user.school
+          | .
+
+
+  // Wrapper
+  #wrapper
+
+      // USER INFO
+      #userInfo
+          h2 User Info
+          #infop
+              strong Name:
+              |  <span id='userInfoName'></span>
+              br
+              strong Role:
+              |  <span id='userInfoRole'></span>
+              br
+              strong School:
+              |  <span id='userInfoSchool'></span>
+              br
+              strong Email:
+              |  <span id='userInfoEmail'></span>
+              br
+              strong Phone:
+              |  <span id='userInfoPhone'></span>
+              br
+              strong Tasks:
+              |  <span id='userInfoTasks'></span>
+              br
+              strong Phonetic:
+              |  <span id='userInfoPhoneticScore'></span>
+              br
+              strong Fluency:
+              |  <span id='userInfoFluencyScore'></span>
+      // /USER INFO
+
+
+
+      // USER LIST
+      h2 User List
+      #adminList
+          table
+              thead
+                  th Name
+                  th Role 
+                  th School
+                  //th Email
+                  //th Phone
+                  //th Delete?
+              tbody
+
+      #teacherList
+          table
+              thead
+                  th Username
+                  th Email
+                  th Delete?
+              tbody
+
+      #userList
+          table
+              thead
+                  th Username
+                  th Password
+                  th School
+                  th Teacher
+                  th Year
+                  th A/B
+                  th tasks
+                  th Phonetics
+                  th Fluency
+                  th Delete?
+              tbody
+
+      // /USER LIST
+
+      -if (user.role == 'global-admin')
+          // ADD LOCAL ADMIN
+          h2 Add Local Admin
+          #addLocalAdmin
+              fieldset
+                  input#inputUsername(type='text', placeholder='Username')
+                  input#inputUserFullname(type='text', placeholder='Full Name')
+                  br
+                  input#inputAdminEmail(type='text', placeholder='Email')
+                  input#inputAdminPhone(type='text', placeholder='Phone Number')
+                  br
+                  input#inputAdminSchool(type='text', placeholder='School')
+                  br
+                  input#inputAdminPassword(type='password', placeholder='Password')
+                  input#inputAdminPassword2(type='password', placeholder='Repeat Password')
+                  br		  
+                  button#btnAddLocalAdmin Add Local Admin
+          // /ADD USER
+
+      -if (user.role == 'local-admin' || user.role == 'global-admin')
+          // ADD USER
+          h2 Add Teacher
+          #addUser
+              fieldset
+                  input#inputUserName(type='text', placeholder='Username')
+                  input#inputUserFullname(type='text', placeholder='Full Name')
+                  br
+                  input#inputUserEmail(type='text', placeholder='Email')
+                  input#inputUserPhone(type='text', placeholder='Phone Number')
+                  br
+                  -if (user.role == 'local-admin')
+                      input#inputUserLocation(type='text', value=user.school, readonly, disabled)
+                      br
+                  button#btnAddTeacher Add Teacher
+          // /ADD USER
+
+      h2 Add a Student (or maybe a hundred!)
+      #addStudent
+          fieldset
+              -if (user.role == 'local-admin' || user.role == 'global-admin')
+                  input#inputStudentsTeacher(type='text', placeholder='Teacher\'s username')
+              -if (user.role == 'teacher')
+                  input#inputStudentsTeacher(type='text', value=user.username, readonly, disabled )
+              -if (user.role == 'local-admin' || user.role == 'teacher')
+                 input#inputUserLocation(type='text', value=user.school, readonly, disabled)
+              -else
+                 input#inputUserLocation(type='text', placeholder='School')     
+              br
+              input#inputStudentsClass(type='text', placeholder='Students\' class')
+              input#inputStudentLangGroup(type='text', placeholder='Language class')
+              br
+              textarea#inputStudentList(type='textarea', rows='6' cols='35', placeholder='List of student\'s names (one each row)')
+              br
+              button#btnAddStudent Add Student
+      // /ADD USER
+
+
+
+
+
+  // /WRAPPER    
+block scripts
+    script(src='/javascripts/users-local.js')
+    script(src='/javascripts/dropmenus.js')
