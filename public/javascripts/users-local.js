@@ -29,7 +29,8 @@ function populateTable() {
         // For each item in our JSON, add a table row and cells to the content string
         $.each(adminData, function(){
             aTableContent += '<tr>';
-            aTableContent += '<td><a href="#" class="linkshowuser" rel="' + this.username + '">' + this.fullname + '</a></td>';
+            aTableContent += '<td><a href="#" class="linkshowuser" rel="' + this.username + '">' + this.username + '</a></td>';
+            aTableContent += '<td>' + this.fullname + '</td>';
             aTableContent += '<td>' + this.role + '</td>';
             aTableContent += '<td>' +this.school+'</td>';
             //aTableContent += '<td>' + this.email + '</td>';
@@ -47,6 +48,7 @@ function populateTable() {
 
 
 	// Add User button click
+	$('#btnAddLocalAdmin').unbind();
 	$('#btnAddLocalAdmin').on('click', addLocalAdmin);
 
 	// Delete User link click
@@ -66,21 +68,26 @@ function populateTable() {
         $.each(teacherData, function(){
             tTableContent += '<tr>';
             tTableContent += '<td><a href="#" class="linkshowuser" rel="' + this.username + '">' + this.username + '</a></td>';
-            tTableContent += '<td>' + this.email + '</td>';
-            tTableContent += '<td><a href="#" class="linkdeleteuser" rel="' + this._id + '">delete</a></td>';
+            tTableContent += '<td>' + this.fullname + '</td>';
+            tTableContent += '<td>' + this.role + '</td>';
+            tTableContent += '<td>' + this.school + '</td>';
+            //tTableContent += '<td><a href="#" class="linkdeleteuser" rel="' + this._id + '">delete</a></td>';
             tTableContent += '</tr>';
         });
 
         // Inject the whole content string into our existing HTML table
         $('#teacherList table tbody').html(tTableContent);
 
+	// Release old bindings:
+	$('#teacherList table tbody').unbind();
+	$('#btnAddTeacher').unbind();
 
 	// Username link click
-	$('#teacherList table tbody').on('click', 'td a.linkshowuser', showUserInfo);
+	$('#teacherList table tbody').on('click', 'td a.linkshowuser', showTeacherInfo);
 
 
 	// Add User button click
-	$('#btnAddUser').on('click', addUser);
+	$('#btnAddTeacher').on('click', addTeacher);
 
 	// Delete User link click
 	$('#teacherList table tbody').on('click', 'td a.linkdeleteuser', deleteUser);
@@ -103,8 +110,41 @@ function populateTable() {
             tableContent += '<td>' + this.yearclass + '</td>';
             tableContent += '<td>' + this.languageclass + '</td>';
             tableContent += '<td>' + this.testcount + '</td>';
-            tableContent += '<td>' + this.phoneticscore + '</td>';
-            tableContent += '<td>' + this.fluencyscore + '</td>';
+
+	    // My god this is getting too complicated: A teacher making reviews should not see
+	    // other teacher's grades, but the admins need to see both the grades and who have given
+	    // them:
+
+	    if (userrole=='teacher') {
+		if (typeof( this.evaluations.phonetic[username]) !== 'undefined') {
+		    tableContent += '<td>' + this.evaluations.phonetic[username].score + "</td>";
+		}
+		else {
+		    tableContent +='<td></td>';
+		}
+
+		if (typeof( this.evaluations.fluency[username]) !== 'undefined') {
+		    tableContent += '<td>' + this.evaluations.fluency[username].score + "</td>";
+		}
+		else {
+		    tableContent +='<td></td>';
+		}
+
+	    } 
+	    else {
+		tableContent += '<td>';
+		$.each(this.evaluations.phonetic, function() {
+		    tableContent += this.evaluated_by + ": " + this.score + "<br>";
+		});
+		tableContent +='</td>';
+		
+		tableContent += '<td>';
+		$.each(this.evaluations.fluency, function() {
+		    tableContent += this.evaluated_by + ": "+ this.score + " ";
+		});
+	    }
+	    
+
             tableContent += '<td><a href="#" class="linkdeleteuser" rel="' + this._id + '">delete</a></td>';
             tableContent += '</tr>';
         });
@@ -112,10 +152,13 @@ function populateTable() {
         // Inject the whole content string into our existing HTML table
         $('#userList table tbody').html(tableContent);
 
+	// Release old bindings:
+	$('#userList table tbody').unbind();
+	$('#btnAddStudent').unbind();
+
 
 	// Username link click
 	$('#userList table tbody').on('click', 'td a.linkshowuser', showUserInfo);
-
 
 	// Add User button click
 	$('#btnAddStudent').on('click', addStudent);
@@ -154,7 +197,7 @@ function showAdminInfo(event) {
 
 };
 // Show User Info
-function showUserInfo(event) {
+function showTeacherInfo(event) {
 
     // Prevent Link from Firing
     event.preventDefault();
@@ -163,16 +206,17 @@ function showUserInfo(event) {
     var thisUserName = $(this).attr('rel');
 
     // Get Index of object based on id value
-    var arrayPosition = userListData.map(function(arrayItem) { return arrayItem.username; }).indexOf(thisUserName);
+    var arrayPosition = teacherListData.map(function(arrayItem) { return arrayItem.username; }).indexOf(thisUserName);
 
    // Get our User Object
-    var thisUserObject = userListData[arrayPosition];
+    var thisUserObject = teacherListData[arrayPosition];
 
     //Populate Info Box
     $('#userInfoName').text(thisUserObject.fullname);
-    $('#userInfoAge').text(thisUserObject.age);
-    $('#userInfoGender').text(thisUserObject.gender);
-    $('#userInfoLocation').text(thisUserObject.location);
+    $('#userInfoSchool').text(thisUserObject.school);
+    $('#userInfoRole').text(thisUserObject.role);
+    $('#userInfoEmail').text(thisUserObject.email);
+    $('#userInfoPhone').text(thisUserObject.phone);
     $('#userInfoTasks').text("");
     thisUserObject.tasks.forEach(function( task ) {
 	$('#userInfoTasks').append("<br><strong>Task "+thisUserObject.tasks[task]+":</strong> ");
@@ -205,8 +249,29 @@ function showUserInfo(event) {
     $('#userInfoEmail').text("-");
     $('#userInfoPhone').text("-");
     $('#userInfoTasks').text("");
-    $('#userInfoPhoneticScore').html(getDropMenu("phonetic", thisUserObject.fluencyscore));
-    $('#userInfoFluencyScore').html(getDropMenu("fluency", thisUserObject.phoneticscore));
+
+    // If current teacher user has not evaluated the evaluee, then the default 
+    // value is set to '-'
+
+    if (typeof( thisUserObject.evaluations.phonetic[username]) === 'undefined') {
+	defaultPhonetic='-';
+    }
+    else {
+	defaultPhonetic=thisUserObject.evaluations.phonetic[username].score;
+    }
+    if (typeof(thisUserObject.evaluations.fluency[username]) === 'undefined') {
+	defaultFluency='-';
+    }
+    else {
+	defaultFluency=thisUserObject.evaluations.fluency[username].score;
+    }
+    
+    $('#userInfoPhoneticScore').html(getDropMenu("phonetic", defaultPhonetic));
+    $('#phonetic_dropdown').click(function(){sendScore("phonetic",thisUserObject.username )});
+
+    $('#userInfoFluencyScore').html(getDropMenu("fluency", defaultFluency));
+
+    $('#fluency_dropdown').click(function(){sendScore("fluency", thisUserObject.username )});
 
     thisUserObject.tasks.forEach(function( task ) {
 	$('#userInfoTasks').append("<br><strong>Task "+thisUserObject.tasks[task]+":</strong><br> ");
@@ -252,7 +317,6 @@ function deleteUser(event) {
 
             // Update the table
             populateTable();
-
         });
 
     }
@@ -314,10 +378,10 @@ function addStudent(event) {
 
         // If it is, compile all user info into one object
         var newUser = {
-            'username': $('#addUser fieldset input#inputStudentsTeacher').val(),
-            'location': $('#addUser fieldset input#inputUserLocation').val(),
-            'class': $('#addUser fieldset input#inputUserClass').val(),
-            'langgroup': $('#addUser fieldset input#inputUserLangGroup').val()
+            'teacher': $('#addStudent fieldset input#inputStudentsTeacher').val(),
+            'school': $('#addStudent fieldset input#inputStudentSchool').val(),
+            'yearclass': $('#addStudent fieldset select#inputStudentClass').val(),
+            'languageclass': $('#addStudent fieldset select#inputStudentLangGroup').val()
         };
 
         // Use AJAX to post the object to our adduser service
@@ -428,20 +492,28 @@ function addTeacher(event) {
 
     // Super basic validation - increase errorCount variable if any fields are blank
     var errorCount = 0;
-    $('#addStudent input').each(function(index, val) {
-        if($(this).val() === '') { errorCount++; }
+    var errormsg = "";
+
+    $('#addTeacher input').each(function(index, val) {
+        if($(this).val() === '') { errorCount++; errormsg+= "Missing value: "+ $('#addTeacher input')[index].placeholder+"\n" }
     });
+    if ( $('#addTeacher input#inputTeacherPassword').value !== $('#addTeacher input#inputTeacherPassword2').value ) {
+        errorCount++;
+	errormsg+= "Passwords do not match";
+    };
 
     // Check and make sure errorCount's still at zero
     if(errorCount === 0) {
 
         // If it is, compile all user info into one object
         var newUser = {
-            'username': $('#addUser fieldset input#inputStudentsTeacher').val(),
-            'location': $('#addUser fieldset input#inputUserLocation').val(),
-            'class': $('#addUser fieldset input#inputUserClass').val(),
-            'langgroup': $('#addUser fieldset input#inputUserLangGroup').val()
-        };
+            'newusername': $('#addTeacher fieldset input#inputTeacherUsername').val(),
+            'fullname': $('#addTeacher fieldset input#inputTeacherFullname').val(),
+            'email': $('#addTeacher fieldset input#inputTeacherEmail').val(),
+            'phone': $('#addTeacher fieldset input#inputTeacherPhone').val(),
+            'school': $('#addTeacher fieldset input#inputTeacherSchool').val(),
+ 	    'password' : $('#addTeacher fieldset input#inputTeacherPassword').val(),
+	    'role': 'teacher'       };
 
         // Use AJAX to post the object to our adduser service
         $.ajax({
@@ -455,7 +527,7 @@ function addTeacher(event) {
             if (response.msg === '') {
 
                 // Clear the form inputs
-                $('#addUser fieldset input').val('');
+                $('#addTeacher fieldset input').val('');
 
                 // Update the table
                 populateTable();

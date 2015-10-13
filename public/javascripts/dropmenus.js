@@ -32,13 +32,13 @@ function getDropMenu(type, default_val) {
 
     $.each(menuitems[type], function() {
 	def="";
-	if (default_val === this.value) {
-	    def=" default";
+	if (default_val == this.value) {
+	    def=" selected";
 	}
 	    
 	ret+="<option value="+this.value + def+">"+this.value+" "+this.description+"</option>";
     });
-    ret+="</select>";
+    ret+="</select>"
 
     
 
@@ -47,12 +47,34 @@ function getDropMenu(type, default_val) {
 }
 
 
-function sendScore (type) {
-    
-    console.log("Sending score: "+ $('#'+type+'_dropdown').val() + " from "+type);
+function sendScore (type, eval_user) {
+
+    var score=$('#'+type+'_dropdown').val();
+
+    console.log("Sending score: "+ score + " from "+type +" for user "+eval_user);
+
+
+    // Use AJAX to post the object to our adduser service
+    $.ajax({
+        type: 'POST',
+        data: {'eval_user': eval_user, 'score':score, 'evaltype': type},
+        url: '/evaluate/',
+        dataType: 'JSON'
+    }).done(function( response ) {
+
+        // Check for successful (blank) response
+        if (response.msg === '') {
+	    populateTable();	   
+        }
+        else {
+            // If something goes wrong, alert the error message that our service returned
+            alert('Error: ' + response.msg);
+
+        }
+    });
+
 }
 
 
 
-$('#userInfoPhoneticScore').change(sendScore("phonetic"));
-$('#userInfoFluencyScore').bind("onSelect", sendScore("fluency"));
+

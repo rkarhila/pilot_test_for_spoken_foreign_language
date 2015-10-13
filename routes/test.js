@@ -4,7 +4,7 @@ var router = express.Router();
 /* GET home page. */
 router.get('/', function(req, res, next) {
 
-    if (req.user.role == 'global-admin' || req.user.role == 'local-admin') {
+    if (req.user.role == 'global-admin' || req.user.role == 'local-admin' || req.user.role == 'teacher') {
         res.redirect('/users');
     }
 

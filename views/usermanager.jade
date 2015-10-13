@@ -44,16 +44,18 @@ block content
               br
               strong Fluency:
               |  <span id='userInfoFluencyScore'></span>
+
       // /USER INFO
 
 
 
       // USER LIST
-      h2 User List
+      h2 Ylläpitäjät
       #adminList
           table
               thead
-                  th Name
+                  th Username
+                  th Full Name
                   th Role 
                   th School
                   //th Email
@@ -61,14 +63,20 @@ block content
                   //th Delete?
               tbody
 
+      h2 Opettajat
       #teacherList
           table
               thead
                   th Username
-                  th Email
-                  th Delete?
+                  th Full Name
+                  th Role 
+                  th School
+                  //th Email
+                  //th Phone
+                  //th Delete?
               tbody
 
+      h2 Oppilaat
       #userList
           table
               thead
@@ -76,7 +84,7 @@ block content
                   th Password
                   th School
                   th Teacher
-                  th Year
+                  th Course
                   th A/B
                   th tasks
                   th Phonetics
@@ -91,8 +99,8 @@ block content
           h2 Add Local Admin
           #addLocalAdmin
               fieldset
-                  input#inputUsername(type='text', placeholder='Username')
-                  input#inputUserFullname(type='text', placeholder='Full Name')
+                  input#inputAdminUsername(type='text', placeholder='Username')
+                  input#inputAdminFullname(type='text', placeholder='Full Name')
                   br
                   input#inputAdminEmail(type='text', placeholder='Email')
                   input#inputAdminPhone(type='text', placeholder='Phone Number')
@@ -108,35 +116,68 @@ block content
       -if (user.role == 'local-admin' || user.role == 'global-admin')
           // ADD USER
           h2 Add Teacher
-          #addUser
+          #addTeacher
               fieldset
-                  input#inputUserName(type='text', placeholder='Username')
-                  input#inputUserFullname(type='text', placeholder='Full Name')
+                  label Username: 
+                  input#inputTeacherUsername(type='text', placeholder='Username')
                   br
-                  input#inputUserEmail(type='text', placeholder='Email')
-                  input#inputUserPhone(type='text', placeholder='Phone Number')
+                  label Full name:
+                  input#inputTeacherFullname(type='text', placeholder='Full Name')
                   br
+                  label Email:
+                  input#inputTeacherEmail(type='text', placeholder='Email')
+                  br
+                  label Phone number:
+                  input#inputTeacherPhone(type='text', placeholder='Phone Number')
+                  br
+                  label School:
                   -if (user.role == 'local-admin')
-                      input#inputUserLocation(type='text', value=user.school, readonly, disabled)
-                      br
+                      input#inputTeacherSchool(type='text', value=user.school, readonly, disabled)
+                  -else
+                      input#inputTeacherSchool(type='text', placeholder='School')
+                  br
+                  label Password:
+                  input#inputAdminPassword(type='password', placeholder='Password')
+                  br
+                  label Password (again):
+                  input#inputAdminPassword2(type='password', placeholder='Repeat Password')
+                  br
                   button#btnAddTeacher Add Teacher
           // /ADD USER
 
       h2 Add a Student (or maybe a hundred!)
       #addStudent
           fieldset
+              label Teacher's username:
               -if (user.role == 'local-admin' || user.role == 'global-admin')
                   input#inputStudentsTeacher(type='text', placeholder='Teacher\'s username')
               -if (user.role == 'teacher')
                   input#inputStudentsTeacher(type='text', value=user.username, readonly, disabled )
+              br
+              label School
               -if (user.role == 'local-admin' || user.role == 'teacher')
-                 input#inputUserLocation(type='text', value=user.school, readonly, disabled)
+                 input#inputStudentSchool(type='text', value=user.school, readonly, disabled)
               -else
-                 input#inputUserLocation(type='text', placeholder='School')     
+                 input#inputStudentSchool(type='text', placeholder='School')     
               br
-              input#inputStudentsClass(type='text', placeholder='Students\' class')
-              input#inputStudentLangGroup(type='text', placeholder='Language class')
+              label Current language course:
+              select#inputStudentClass(type='text')
+                  option(value="1") 1
+                  option(value="2") 2
+                  option(value="3") 3
+                  option(value="4") 4
+                  option(value="5") 5
+                  option(value="6") 6
+                  option(value="7") 7
               br
+              label Language class:
+              select#inputStudentLangGroup(type='text')
+                  option(value="A") A
+                  option(value="B") B
+                  option(value="C") C
+                  option(value="Native") Native
+              br
+              label Mass generation:
               textarea#inputStudentList(type='textarea', rows='6' cols='35', placeholder='List of student\'s names (one each row)')
               br
               button#btnAddStudent Add Student
@@ -148,5 +189,10 @@ block content
 
   // /WRAPPER    
 block scripts
+    -if (user.username)
+        script(type='text/javascript').
+            var username =!{JSON.stringify( user.username )};
+        script(type='text/javascript').
+            var userrole =!{JSON.stringify( user.role )};
     script(src='/javascripts/users-local.js')
     script(src='/javascripts/dropmenus.js')

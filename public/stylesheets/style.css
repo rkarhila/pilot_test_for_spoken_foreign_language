@@ -49,7 +49,15 @@ select{
     text-overflow: ellipsis;
 }
 
+fieldset select {
+    width: 100px;
+}
 
+fieldset label {
+    display: inline;
+    float: left;
+    width: 200px;
+}
 
 #testwrapper {
 	padding-left:312px;

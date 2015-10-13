@@ -19,6 +19,7 @@ var test = require('./routes/test');
 var uploads = require('./routes/uploads');
 //var signin = require('./routes/signin');
 var answers = require('./routes/answers');
+var evaluate = require('./routes/evaluate');
 
 
 
@@ -282,6 +283,7 @@ app.use('/users', users);
 app.use('/test', test);
 app.use('/upload', uploads);
 app.use('/answers', answers);
+app.use('/evaluate', evaluate);
 
 
 

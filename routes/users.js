@@ -1,6 +1,20 @@
 var express = require('express');
 var router = express.Router();
 
+
+function randomstring(random_string_length) {
+    var characters = 'abcdefghjkmnpqrstuvwxyz23456789';
+    var string = '';
+    for (i = 0; i < random_string_length; i++) {
+	string += characters[Math.floor( Math.random() * (characters.length) )];
+    }
+    return string;
+}
+
+
+
+
+
 /* GET users listing. */
 router.get('/', function(req, res, next) {
     var db = req.db;
@@ -37,7 +51,7 @@ router.get('/userlist/teachers', function(req, res) {
 router.get('/userlist/users', function(req, res) {
     var db = req.db;
     var collection = db.get('userlist');
-    collection.find({'role': 'user'},{},function(e,docs){
+    collection.find({'role': 'user'},{sort: {_id:1}},function(e,docs){
         res.json(docs);
     });
 });
@@ -73,12 +87,14 @@ router.post('/adduser/:userrole', function(req, res) {
 
     var collection = db.get('userlist');
 
-    collection.findOne( { username: req.body.newusername },{},function(e,foundUser){
+    collection.find( {},{fields : { username:1, _id: 0} },function(e,usernamelist){
+
 	console.log("db reply: >"+e+"<");
 	console.log("db result:");
-	console.log(foundUser);
+	console.log(usernamelist);
+	console.log(typeof(usernamelist[req.body.newusername]));
 
-	if (!foundUser) {
+	if ( typeof(usernamelist[req.body.newusername]) === 'undefined' ) {
 	    var testcollection = db.get('tests');
                             /* |  
                                |  TODO: Fix this when some test version control
@@ -132,15 +148,24 @@ router.post('/adduser/:userrole', function(req, res) {
 		req.body.trials=usertrials;
 		req.body.testsdone=testsdone;
 		req.body.testcount=0;				
+		req.body.evaluations={'phonetic':{}, 'fluency':{}};
 
 		req.body.role=req.params.userrole;
 
 		if (!req.body.password) {
-		    req.body.password="codeme!";
+		    req.body.password=randomstring(5);
 		}
 
 		addable=req.body;
-		addable.username=req.body.newusername;
+
+		if (!req.body.newusername) {
+		    do {
+			addable.username=(req.body.school).toLowerCase()+'_'+randomstring(3);
+		    } while ( typeof(usernamelist[addable.username]) !== 'undefined' )
+		}
+		else {
+		    addable.username=req.body.newusername;
+		}
 
 		var collection = db.get('userlist');
 
