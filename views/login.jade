@@ -2,8 +2,7 @@ extends layout
 
 block content
   h1 Tervetuloa kokeilemaan puhutun ruotsin ylioppilaskokeen pilottia!
-  p Puhunnoksiasi ei tallenneta, ei naamasikaan vaikka kamera onkin päällä. Valitse tehtäväsarja:
-
+  p Tunnukset sinulla pitäisi jo olla. Jos ei ole, niin taitaa jäädä kokeilt lyhyeksi.
 
   // Wrapper
   #wrapper
@@ -20,20 +19,12 @@ block content
                   input(type="submit", value="login")
 
       form#login1(action="/login", method="post")
-          input#username(type="text", name="username")
+          input#username(type="text", name="username", placeholder='Username')
+          br
           input#password(type="password", name="password", placeholder='Password')
+          br
           input(type="submit", value="Kirjaudu")
-      //    input#username(type="text", name="username", placeholder='Username' value="aa" hidden)
-      //    input#password(type="password", name="password", placeholder='Password' value="codeme!" readonly hidden)
-      //    input(type="submit", value="Aloita tehtäväsarja a")
-      //form#login2(action="/login", method="post")
-      //    input#username(type="text", name="username", placeholder='Username' value="turre" hidden)
-      //    input#password(type="password", name="password", placeholder='Password' value="foo" readonly hidden)
-      //    input(type="submit", value="local admin")	  
-      //form#login3(action="/login", method="post")
-      //    input#username(type="text", name="username", placeholder='Username' value="reima" hidden)
-      //    input#password(type="password", name="password", placeholder='Password' value="foo" readonly hidden)
-      //    input(type="submit", value="global admin")
+
 
       // ADD USER
       -if (adding_user)
