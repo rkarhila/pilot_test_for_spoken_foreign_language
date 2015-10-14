@@ -19,7 +19,8 @@ router.post('/', function(req, res, next) {
 	var evaluee=req.body.eval_user;
 	var score = req.body.score;
 	var evaltype = req.body.evaltype;
-	
+	var taskid = ""+req.body.task;
+
 	var evaluator= req.user.username;
 
 	console.log('Evaluee: '+evaluee);
@@ -29,10 +30,10 @@ router.post('/', function(req, res, next) {
 
 	collection.findOne({username: evaluee}, function(err, userdata) {
 	    if (!err) {
-		console.log("userdata.evaluations["+evaltype+"]");	    
-		console.log(userdata.evaluations[evaltype]);
+		console.log("userdata.evaluations["+taskid+"]["+evaltype+"]");	    
+		console.log(userdata.evaluations[taskid][evaltype]);
 		
-		userdata.evaluations[evaltype][evaluator]={'score' : score, 'evaluated_by':evaluator };
+		userdata.evaluations[taskid][evaltype][evaluator]={'score' : score, 'evaluated_by':evaluator };
 		
 		collection.update({ "username": evaluee  }, { $set : { evaluations : userdata.evaluations  }},  function(e,success){
 		    if (!e) {

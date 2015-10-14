@@ -1,70 +1,26 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to our test
+  h1 Puhutun ruotsin kokeen pilotti
+  p Olet 
+      strong= username 
+      |  (<i>
+      = user.fullname
+      | </i>), ja roolisi on 
+      strong= user.role 
+      -if (user.school)
+          |  koulussa 
+          strong= user.school
+          | . 
+      a(href="logout") Kirjaudu ulos.
 
 
   // Wrapper
   #wrapper
-
-      // USER INFO
-      #userInfo
-          h2 User Info
-          p
-              strong Name:
-              |  <span id='userInfoName'></span>
-              br
-              strong Age:
-              |  <span id='userInfoAge'></span>
-              br
-              strong Gender:
-              |  <span id='userInfoGender'></span>
-              br
-              strong Location:
-              |  <span id='userInfoLocation'></span>
-              br
-              strong Tasks:
-              |  <span id='userInfoTasks'></span>
-      // /USER INFO
-
-
-
-      // USER LIST
-      h2 User List
-      #userList
-          table
-              thead
-                  th UserName
-                  th Email
-                  th Delete?
-              tbody
-      // /USER LIST
-
-
-
-      // ADD USER
-      h2 Add User
-      #addUser
-          fieldset
-              input#inputUserName(type='text', placeholder='Username')
-              input#inputUserEmail(type='text', placeholder='Email')
-              br
-              input#inputUserFullname(type='text', placeholder='Full Name')
-              input#inputUserAge(type='text', placeholder='Age')
-              br
-              input#inputUserLocation(type='text', placeholder='Location')
-              input#inputUserGender(type='text', placeholder='gender')
-              br
-              button#btnAddUser Add User
-      // /ADD USER
-
-
-      // UPLOAD PHOTO
-      #uploadPhoto
-          fieldset
-              input#inputFileName(type='file', placeholder='Photo file name')
-              br
-              button#btnUploadFile Upload File
+      h2  #[a(href='/users') Käyttäjähallinta]
+      h2  Tehtävät 
+      //h2 #[a(href='/tasks') Tehtävät]
+      h2  Lataa data omalle koneelle 
+      //h2 #[a(href='/datadump') Lataa data omalle koneelle]
 
   // /WRAPPER

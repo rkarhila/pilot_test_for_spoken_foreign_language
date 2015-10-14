@@ -4,10 +4,6 @@ var router = express.Router();
 /* GET home page. */
 router.get('/', function(req, res, next) {
 
-    if (req.user.role == 'global-admin' || req.user.role == 'local-admin' || req.user.role == 'teacher') {
-        res.redirect('/users');
-    }
-
     // Respond with the basic test template:
     res.render('tests', { title: 'Testing!', 
 			  user: req.user , 

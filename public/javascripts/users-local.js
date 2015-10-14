@@ -116,32 +116,66 @@ function populateTable() {
 	    // them:
 
 	    if (userrole=='teacher') {
-		if (typeof( this.evaluations.phonetic[username]) !== 'undefined') {
-		    tableContent += '<td>' + this.evaluations.phonetic[username].score + "</td>";
-		}
-		else {
-		    tableContent +='<td></td>';
-		}
 
-		if (typeof( this.evaluations.fluency[username]) !== 'undefined') {
-		    tableContent += '<td>' + this.evaluations.fluency[username].score + "</td>";
-		}
-		else {
-		    tableContent +='<td></td>';
-		}
+		tableContent +='<td>';
+		$.each(this.evaluations, function () {
+		    if (typeof( this.phonetic[username]) !== 'undefined') {
+			tableContent += this.phonetic[username].score + "&nbsp;";
+		    }
+		});
+		tableContent +='</td>';
+	
+		tableContent +='<td>';
+		$.each(this.evaluations, function () {
+		    if (typeof( this.fluency[username]) !== 'undefined') {
+			tableContent += this.fluency[username].score + "&nbsp;";
+		    }
+		});
+		tableContent +='</td>';
 
 	    } 
 	    else {
+		// Goddam the specs changing just after I finished this!
+		// Now some cumbersome kludging to save the day:
 		tableContent += '<td>';
-		$.each(this.evaluations.phonetic, function() {
-		    tableContent += this.evaluated_by + ": " + this.score + "<br>";
+
+		// Make a dict of all evaluators who have evaluated this speaker:
+		phone_evaluators={};
+		flue_evaluators={};
+
+		// Go thtough the evaluation JSON:
+		$.each(this.evaluations, function() {
+		    $.each(this.phonetic, function() {
+			if (typeof(phone_evaluators[this.evaluated_by]) === 'undefined') {
+			    phone_evaluators[this.evaluated_by] = { 'evaluated_by': this.evaluated_by,
+								    'scores' : '' };
+			}
+			phone_evaluators[this.evaluated_by]['scores']+=this.score+'&nbsp;';
+		    });
+		       
+		    $.each(this.fluency, function() {
+			if (typeof(flue_evaluators[this.evaluated_by]) === 'undefined') {
+			    flue_evaluators[this.evaluated_by] = { 'evaluated_by': this.evaluated_by,
+								   'scores' : '' };
+			}
+			flue_evaluators[this.evaluated_by]['scores']+=this.score+'&nbsp;';
+		    });
+		});
+		
+		tableContent +='<td>';
+		$.each(phone_evaluators, function() {
+		    tableContent += this.evaluated_by+': '+this.scores +"<br>";
 		});
 		tableContent +='</td>';
 		
-		tableContent += '<td>';
-		$.each(this.evaluations.fluency, function() {
-		    tableContent += this.evaluated_by + ": "+ this.score + " ";
+		tableContent +='<td>';		
+		$.each(flue_evaluators, function() {
+		    tableContent += this.evaluated_by+': '+this.scores +"<br>";
 		});
+		tableContent +='</td>';
+		
+
+
 	    }
 	    
 
@@ -253,25 +287,6 @@ function showUserInfo(event) {
     // If current teacher user has not evaluated the evaluee, then the default 
     // value is set to '-'
 
-    if (typeof( thisUserObject.evaluations.phonetic[username]) === 'undefined') {
-	defaultPhonetic='-';
-    }
-    else {
-	defaultPhonetic=thisUserObject.evaluations.phonetic[username].score;
-    }
-    if (typeof(thisUserObject.evaluations.fluency[username]) === 'undefined') {
-	defaultFluency='-';
-    }
-    else {
-	defaultFluency=thisUserObject.evaluations.fluency[username].score;
-    }
-    
-    $('#userInfoPhoneticScore').html(getDropMenu("phonetic", defaultPhonetic));
-    $('#phonetic_dropdown').click(function(){sendScore("phonetic",thisUserObject.username )});
-
-    $('#userInfoFluencyScore').html(getDropMenu("fluency", defaultFluency));
-
-    $('#fluency_dropdown').click(function(){sendScore("fluency", thisUserObject.username )});
 
     thisUserObject.tasks.forEach(function( task ) {
 	$('#userInfoTasks').append("<br><strong>Task "+thisUserObject.tasks[task]+":</strong><br> ");
@@ -284,6 +299,56 @@ function showUserInfo(event) {
 		    $('#userInfoTasks').append("("+trial+")");
 		}
 	    });
+
+
+	    if (userrole === 'teacher' && parseInt(task) > 1) {
+		
+		if (typeof( thisUserObject.evaluations[parseInt(task)].phonetic[username]) === 'undefined') {
+		    defaultPhonetic='-';
+		}
+		else {
+		    defaultPhonetic=thisUserObject.evaluations[parseInt(task)].phonetic[username].score;
+		}
+		if (typeof(thisUserObject.evaluations[parseInt(task)].fluency[username]) === 'undefined') {
+		    defaultFluency='-';
+		}
+		else {
+		    defaultFluency=thisUserObject.evaluations[parseInt(task)].fluency[username].score;
+		}
+
+		$('#userInfoTasks').append('<br><span id=userInfoPhoneticScore'+parseInt(thisUserObject.tasks[task])+'>'+getDropMenu("phonetic", defaultPhonetic, thisUserObject.tasks[task])+'</span>');
+
+		$('#phonetic_dropdown'+parseInt(thisUserObject.tasks[task])).click(function(){sendScore("phonetic",thisUserObject.username, thisUserObject.tasks[task] )});
+
+
+		$('#userInfoTasks').append('<br><span id=userInfoFluencyScore'+parseInt(thisUserObject.tasks[task])+'>'+getDropMenu("fluency", defaultFluency, thisUserObject.tasks[task])+'</span>');
+
+		$('#fluency_dropdown'+parseInt(thisUserObject.tasks[task])).click(function(){sendScore("fluency",thisUserObject.username, thisUserObject.tasks[task] )});
+
+		//$('#userInfoFluencyScore').html(getDropMenu("fluency", defaultFluency));
+		//$('#fluency_dropdown').click(function(){sendScore("fluency", thisUserObject.username )});
+
+	    } 
+	    /*else {
+		var all_eval = '';
+		$.each(thisUserObject.evaluations.phonetic, function() {
+		    all_eval += this.evaluated_by + ": " + this.score + " ";
+		});
+		$('#userInfoPhoneticScore').html(all_eval);
+		var all_eval = '';
+
+		$.each(thisUserObject.evaluations.fluency, function() {
+		    all_eval += this.evaluated_by + ": " + this.score +" ";
+		});
+		$('#userInfoFluencyScore').html(all_eval);
+	    	
+	    }*/
+	    
+
+
+
+
+
 	}
     });
 
@@ -381,7 +446,8 @@ function addStudent(event) {
             'teacher': $('#addStudent fieldset input#inputStudentsTeacher').val(),
             'school': $('#addStudent fieldset input#inputStudentSchool').val(),
             'yearclass': $('#addStudent fieldset select#inputStudentClass').val(),
-            'languageclass': $('#addStudent fieldset select#inputStudentLangGroup').val()
+            'languageclass': $('#addStudent fieldset select#inputStudentLangGroup').val(),
+	    'addlist': $('#addStudent fieldset textarea#inputStudentList').val(),
         };
 
         // Use AJAX to post the object to our adduser service
@@ -394,7 +460,15 @@ function addStudent(event) {
 
             // Check for successful (blank) response
             if (response.msg === '') {
-
+		var namelist='';
+		$.each(response.userlist, function(key,val) {
+		    console.log(key);
+		    console.log(val);
+		    namelist+= key+'\t'+val+'\n';
+		});
+		if (namelist.length > 0) {
+		    $('#newNameList').html("Kopioi tästä lista uusista käyttäjistä ennen kuin nimet häviävät bittiavaruuden aurinkotuuleen: <pre>\n"+namelist+"</pre>");
+		}
                 // Clear the form inputs
                 $('#addUser fieldset input').val('');
 

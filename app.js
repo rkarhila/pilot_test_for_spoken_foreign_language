@@ -217,13 +217,33 @@ onFileUploadComplete: function (file) {
  *
  */
 
+app.get('/logout', function logout(req, res){
+  if(req.isAuthenticated()){
+      req.logout();
+      req.flash('success', 'Uloskirjautuminen onnistui');
+  }
+  res.redirect('/');
+});
+
+app.get('/logout', function(req, res, next) {
+    User.find({}, function(err, user) {
+	res.render('/', { title: 'Express',
+			      user: req.user ,
+			      ui_language: req.ui_language,
+			      error_message: req.flash('error'),
+			      success_message: req.flash('success'),
+			      all_users : user
+			    });
+    });
+});
+
 app.get('/login', function(req, res, next) {
     User.find({}, function(err, user) {
 	res.render('login', { title: 'Express',
 			      user: req.user ,
 			      ui_language: req.ui_language,
 			      error_message: req.flash('error'),
-			      success_message: req.flash('error'),
+			      success_message: req.flash('success'),
 			      all_users : user
 			    });
     });
@@ -237,7 +257,7 @@ app.post('/login',
 	 function(req, res) {
 	     sess=req.session;
 	     sess.username=req.body.username.value;
-             res.redirect('/test');
+             res.redirect('/');
 	 });
 
 /*
@@ -246,8 +266,6 @@ app.use(function(req,res,next){
     next();
 });
 */
-
-app.use('/', routes);
 
 // app.use('/login', login);
 //app.use('/signin', auth);
@@ -272,6 +290,8 @@ app.use(function(req,res,next){
     next();
 });
 
+
+app.use('/', routes);
 
 
 app.use('/users', users);

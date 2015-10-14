@@ -1,4 +1,4 @@
-function getDropMenu(type, default_val) {
+function getDropMenu(type, default_val, taskid) {
     
     var menuitems = {"fluency" : [ {value: "C1.1", description : "Osaa viestiä sujuvasti, spontaanisti ja lähes vaivattomasti."},
 				   {value: "B2.2", description : "Osaa viestiä spontaanisti, usein hyvinkin sujuvasti ja vaivattomasti satunnaisista epäröinneistä huolimatta."},
@@ -23,10 +23,10 @@ function getDropMenu(type, default_val) {
 				   {value: "A1.1", description : "Ääntäminen voi aiheuttaa suuria ymmärtämisongelmia."}
 				 ] };
     
-    ret="<select id='"+type+"_dropdown'>";
+    ret="<select id='"+type+"_dropdown"+taskid+"'>";
 
     if (default_val == "-") {
-	ret+="<option default> please select... </option>";
+	ret+="<option default value='-'> please select... </option>";
     }
 
 
@@ -47,17 +47,17 @@ function getDropMenu(type, default_val) {
 }
 
 
-function sendScore (type, eval_user) {
+function sendScore (type, eval_user, taskid) {
 
-    var score=$('#'+type+'_dropdown').val();
+    var score=$('#'+type+'_dropdown'+taskid).val();
 
-    console.log("Sending score: "+ score + " from "+type +" for user "+eval_user);
+    console.log("Sending score for task "+taskid+": "+ score + " from "+type +" for user "+eval_user);
 
 
     // Use AJAX to post the object to our adduser service
     $.ajax({
         type: 'POST',
-        data: {'eval_user': eval_user, 'score':score, 'evaltype': type},
+        data: {'eval_user': eval_user, 'score':score, 'evaltype': type, 'task': taskid},
         url: '/evaluate/',
         dataType: 'JSON'
     }).done(function( response ) {
