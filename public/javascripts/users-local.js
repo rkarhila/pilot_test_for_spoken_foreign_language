@@ -516,12 +516,12 @@ function addLocalAdmin(event) {
 
         // If it is, compile all user info into one object
         var newUser = {
-            'newusername': $('#addUser fieldset input#inputAdminUsername').val(),
-            'fullname': $('#addUser fieldset input#inputAdminFullName').val(),
-            'school': $('#addUser fieldset input#inputAdminSchool').val(),
-            'email': $('#addUser fieldset input#inputAdminEmail').val(),
-            'phone': $('#addUser fieldset input#inputAdminPhone').val(),
-	    'password' : $('#addUser fieldset input#inputAdminPassword').val(),
+            'newusername': $('#addLocalAdmin fieldset input#inputAdminUsername').val(),
+            'fullname': $('#addLocalAdmin fieldset input#inputAdminFullname').val(),
+            'school': $('#addLocalAdmin fieldset input#inputAdminSchool').val(),
+            'email': $('#addLocalAdmin fieldset input#inputAdminEmail').val(),
+            'phone': $('#addLocalAdmin fieldset input#inputAdminPhone').val(),
+	    'password' : $('#addLocalAdmin fieldset input#inputAdminPassword').val(),
 	    'role': 'local-admin'
         };
 
@@ -537,7 +537,7 @@ function addLocalAdmin(event) {
             if (response.msg === '') {
 
                 // Clear the form inputs
-                $('#addUser fieldset input').val('');
+                $('#addLocalAdmin fieldset input').val('');
 
                 // Update the table
                 populateTable();
