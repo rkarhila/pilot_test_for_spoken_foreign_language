@@ -71,7 +71,7 @@ function populateTable() {
             tTableContent += '<td>' + this.fullname + '</td>';
             tTableContent += '<td>' + this.role + '</td>';
             tTableContent += '<td>' + this.school + '</td>';
-            //tTableContent += '<td><a href="#" class="linkdeleteuser" rel="' + this._id + '">delete</a></td>';
+            tTableContent += '<td><a href="#" class="linkdeleteuser" rel="' + this._id + '">delete</a></td>';
             tTableContent += '</tr>';
         });
 
@@ -89,8 +89,10 @@ function populateTable() {
 	// Add User button click
 	$('#btnAddTeacher').on('click', addTeacher);
 
-	// Delete User link click
-	$('#teacherList table tbody').on('click', 'td a.linkdeleteuser', deleteUser);
+	if (userrole='global-admin') {
+	    // Delete User link click
+	    $('#teacherList table tbody').on('click', 'td a.linkdeleteuser', deleteUser);
+	}
 
     });
 
@@ -137,7 +139,6 @@ function populateTable() {
 	    else {
 		// Goddam the specs changing just after I finished this!
 		// Now some cumbersome kludging to save the day:
-		tableContent += '<td>';
 
 		// Make a dict of all evaluators who have evaluated this speaker:
 		phone_evaluators={};

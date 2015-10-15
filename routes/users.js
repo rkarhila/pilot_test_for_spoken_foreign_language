@@ -80,7 +80,7 @@ router.post('/adduser/:userrole', function(req, res) {
 	return o;
     }
     
-    console.log("Trying to add "+req.params.userrole +" "+req.body.username);
+    console.log("Trying to add "+req.params.userrole +" "+req.body.newusername);
 
 
     var db = req.db;
@@ -104,7 +104,7 @@ router.post('/adduser/:userrole', function(req, res) {
 
 	var collection = db.get('userlist');
 	
-	if ( typeof(req.body.newusername === 'undefined' )) {
+	if ( typeof(req.body.newusername) === 'undefined' ) {
 	    console.log('(new)username undefined')
 	    collection.find({ 'school' : req.body.school}, {fields : { username:1, _id: 0} },function(e,usernamelist){		    		    
 		// TODO: Error handling missing!
@@ -216,13 +216,13 @@ router.post('/adduser/:userrole', function(req, res) {
 	else {
 	    console.log('(new)username defined: '+ req.body.newusername)
 
-	    collection.findOne({ 'username':req.body.username},  {fields : { username:1, _id: 0}  },function(err,founduser){ 
+	    collection.findOne({ 'username':req.body.newusername},  {fields : { username:1, _id: 0}  },function(err,founduser){ 
 		
 		if (err) { /* handle err */ }
 		
 		if (founduser) {
 		    res.send(
-			{ msg: "Username "+req.body.username+" taken" }
+			{ msg: "Username "+req.body.newusername+" taken" }
 		    );			
 		}
 		else {

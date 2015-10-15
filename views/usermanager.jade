@@ -73,7 +73,8 @@ block content
                   th School
                   //th Email
                   //th Phone
-                  //th Delete?
+                  -if (user.role == 'global-admin')
+                      th Delete?
               tbody
 
       h2 Oppilaat
