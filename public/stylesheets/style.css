@@ -142,7 +142,16 @@ fieldset label {
 				text-align:center;
 			}
 
-#userInfo {
+/*#taskEditor {
+	width:450px;
+	position:fixed;
+	padding-left:30px;
+	padding-top:200px;
+	top:0; left:0;
+}*/
+
+
+#userInfo,#taskEditor {
 	width:450px;
 	position:absolute;
 	top:0; left:0;
@@ -157,6 +166,8 @@ fieldset label {
 		border:1px solid #CCC;
 		background:rgba(80,120,255,0.05);
 	}
+
+
 
 #userInfoTasks video {
     width: 200px;
@@ -344,6 +355,12 @@ fieldset {
 
       }
 
+#editTrialVideo{
+    max-width: 200px;
+}
+
+
+
 /* Timer from 
 
 http://www.jqueryscript.net/loading/Graphical-Circular-Timer-with-jQuery-CSS3-pietimer.html
@@ -428,4 +445,56 @@ http://www.jqueryscript.net/loading/Graphical-Circular-Timer-with-jQuery-CSS3-pi
     height:70px;
     right:10px;
     bottom:10px;
+}
+
+
+/* Stuff for task editor: */
+
+.task {
+    padding: 8px;
+    border: 1px solid #cccccc;   
+    margin-bottom: 10px;
+}
+
+.taskLabel {
+    float: left;
+    font-weight: bold;
+    width: 40px;
+    padding-top: 3px;
+}
+
+
+.taskSample {
+    margin-bottom: 3px;
+    background: #fcff00 ;
+    padding: 3px;
+    border: 1px solid #cccccc;
+    left: 200px;
+    margin-left:150px;
+}
+
+.trial {
+    padding: 8px;
+    border: 1px solid #cccccc;   
+    margin-bottom: 10px;
+}
+.trialLabel {
+    float: left;
+    font-weight: bold;
+    width: 40px;
+    padding-top: 3px;  
+}
+.trialSample {
+    margin-bottom: 3px;
+    background: #fcff00 ;
+    padding: 3px;
+    border: 1px solid #cccccc;
+    left: 200px;
+    margin-left:150px;
+}
+.trials {
+    margin-bottom: 3px;
+    padding: 3px;
+    left: 200px;
+    margin-left:150px;
 }

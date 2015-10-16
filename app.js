@@ -16,6 +16,8 @@ var multer  = require('multer');
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var test = require('./routes/test');
+var tasks= require('./routes/tasks');
+
 var uploads = require('./routes/uploads');
 //var signin = require('./routes/signin');
 var answers = require('./routes/answers');
@@ -301,6 +303,8 @@ app.use('/users', users);
 //app.use(ensureAuthenticated);
 
 app.use('/test', test);
+app.use('/tasks', tasks);
+
 app.use('/upload', uploads);
 app.use('/answers', answers);
 app.use('/evaluate', evaluate);

@@ -197,11 +197,10 @@ router.post('/adduser/:userrole', function(req, res) {
 		    //Ad-hoc copy of object:
 		    addables.push( JSON.parse(JSON.stringify(addable)));	
 		    
-		    resp[addlist[y]]=addable.username;
+		    resp[addlist[y]]=addable.username + '   ' +addable.password;
 		    
 		}
 		
-		console.log(addables);
 
 		collection.insert(addables, function(err, result){
 		    res.send(

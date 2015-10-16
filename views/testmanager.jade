@@ -1,0 +1,74 @@
+extends layout
+
+block content
+  h1 #[a(href='/') .] / Tehtävähallinta
+  p Olet 
+      strong= username 
+      |  (<i>
+      = user.fullname
+      | </i>), ja roolisi on 
+      strong= user.role 
+      -if (user.school)
+          |  koulussa 
+          strong= user.school
+          | . 
+      a(href="logout") Kirjaudu ulos.
+
+  // Wrapper
+  #wrapper
+
+      // TASK_EDITOR
+      #taskEditor
+          h2 Task/trial
+          #infop
+              strong Task_id:
+              |  <span id='EditTaskId'></span>
+              br
+              strong Evaluated:
+              |  <span id='EditTaskEvaluated'></span>
+              br
+              strong Controls:
+              |  <span id='EditTaskControls'></span>
+              br
+              strong Trial_id:
+              |  <span id='EditTrialId'></span>
+              br
+              strong Mediatype:
+              |  <span id='EditTrialMediaType'></span>
+              br
+              strong Hypermedia:
+              |  <span id='EditTrialHypermedia'></span>
+              br
+              strong Response_time:
+              |  <span id='EditTrialResponseTime'></span>
+          #infop
+              strong Instructions:
+              br
+              |  <span id='EditTaskInstructions'></span>
+              br
+          #infop
+              strong Trial:
+              br
+              |  <span id='EditTrialStimulus'></span>
+              #EditTrialNextStim
+
+
+      // /TASK_EDITOR
+
+
+
+      // TASK LIST
+      h2 Tasks
+      #TaskList
+
+
+
+  // /WRAPPER    
+block scripts
+    -if (user.username)
+        script(type='text/javascript').
+            var username =!{JSON.stringify( user.username )};
+        script(type='text/javascript').
+            var userrole =!{JSON.stringify( user.role )};
+    script(src='/javascripts/testmanager-local.js')
+    script(src='/javascripts/dropmenus.js')

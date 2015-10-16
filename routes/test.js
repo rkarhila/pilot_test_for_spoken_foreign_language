@@ -4,14 +4,21 @@ var router = express.Router();
 /* GET home page. */
 router.get('/', function(req, res, next) {
 
-    // Respond with the basic test template:
-    res.render('tests', { title: 'Testing!', 
-			  user: req.user , 
-			  ui_language: req.ui_language,
-			  error_message: req.flash('error'), 
-			  success_message: req.flash('error') 
-			});
-
+    
+    if (req.user.role == 'user') {
+	// Respond with the basic test template:
+	res.render('tests', { title: 'Testing!', 
+			      user: req.user , 
+			      ui_language: req.ui_language,
+			      error_message: req.flash('error'), 
+			      success_message: req.flash('error') 
+			    });
+    }
+    else {
+	// Respond with the test view/edit template:
+	res.redirect('/tasks');	
+    }
+    
 });
 
 
