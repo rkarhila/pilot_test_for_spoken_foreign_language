@@ -15,9 +15,6 @@ router.get('/', function(req, res, next) {
 	if (req.user.role == 'user') {
             res.redirect('/test');
 	}
-	if (req.user.role == 'teacher') {
-            res.redirect('/users');
-	}
 	else {
 	    res.render('index', {  title: 'User management', 
 				   username: req.user.username ,
