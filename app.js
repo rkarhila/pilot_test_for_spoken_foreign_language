@@ -30,7 +30,7 @@ var flash = require('connect-flash');
 //var login = require('./routes/login');
 
 
-var base_url=(process.env.PORT || '');
+var base_url=(process.env.BASEURL || '');
 
 // A little help from:
 // https://orchestrate.io/blog/2014/06/26/build-user-authentication-with-node-js-express-passport-and-orchestrate/
