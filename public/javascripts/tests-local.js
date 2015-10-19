@@ -340,7 +340,7 @@ var uploadurl;
 
 function startRecord() {
 
-    uploadurl='/upload/'+ username+'/'+(testListData.task_id)+'/'+(testListData.trial.trial_id);
+    uploadurl=base_url+'/upload/'+ username+'/'+(testListData.task_id)+'/'+(testListData.trial.trial_id);
 
     $(function() {
 	$('#timer').pietimer({

@@ -6,6 +6,7 @@ router.get('/', function(req, res, next) {
 
     if (!req.user) {
 	res.render('login', { title: 'Express',
+			      base_url: req.base_url,
 			      ui_language: req.ui_language, 
 			      error_message: req.flash('error'), 
 			      success_message: req.flash('error'),
@@ -18,6 +19,7 @@ router.get('/', function(req, res, next) {
 	else {
 	    res.render('index', {  title: 'User management', 
 				   username: req.user.username ,
+				   base_url: req.base_url,
 				   user: req.user, 
 				   ui_language: req.ui_language,
 				   error_message: req.flash('error'), 

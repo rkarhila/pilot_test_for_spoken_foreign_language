@@ -24,12 +24,13 @@ var answers = require('./routes/answers');
 var evaluate = require('./routes/evaluate');
 
 
-
 // User management imports:
 var passport = require('passport');
 var flash = require('connect-flash');
 //var login = require('./routes/login');
 
+
+var base_url=(process.env.PORT || '');
 
 // A little help from:
 // https://orchestrate.io/blog/2014/06/26/build-user-authentication-with-node-js-express-passport-and-orchestrate/
@@ -100,6 +101,9 @@ app.use(function(req, res, next){
 // Make our db accessible to our router
 app.use(function(req,res,next){
     req.db = db;
+
+    req.base_url=base_url;
+
     next();
 });
 
@@ -229,7 +233,7 @@ app.get('/logout', function logout(req, res){
 
 app.get('/logout', function(req, res, next) {
     User.find({}, function(err, user) {
-	res.render('/', { title: 'Express',
+	res.render(base_url+'/', { title: 'Express',
 			      user: req.user ,
 			      ui_language: req.ui_language,
 			      error_message: req.flash('error'),
@@ -241,7 +245,7 @@ app.get('/logout', function(req, res, next) {
 
 app.get('/login', function(req, res, next) {
     User.find({}, function(err, user) {
-	res.render('login', { title: 'Express',
+	res.render(base_url+'login', { title: 'Express',
 			      user: req.user ,
 			      ui_language: req.ui_language,
 			      error_message: req.flash('error'),
@@ -254,12 +258,12 @@ app.get('/login', function(req, res, next) {
 
 app.post('/login',
 	 passport.authenticate('local',
-			       { failureRedirect: '/login',
+			       { failureRedirect: base_url+'/login',
 				 failureFlash: true }),
 	 function(req, res) {
 	     sess=req.session;
 	     sess.username=req.body.username.value;
-             res.redirect('/');
+             res.redirect(base_url+'/');
 	 });
 
 /*
@@ -281,7 +285,7 @@ app.use(function(req,res,next){
     }
     else {
 	console.log('user not logged in');
-	res.redirect('/login');
+	res.redirect(base_url+'/login');
     }
 
     sess = req.session;
@@ -293,21 +297,21 @@ app.use(function(req,res,next){
 });
 
 
-app.use('/', routes);
+app.use(base_url+'/', routes);
 
 
-app.use('/users', users);
+app.use(base_url+'/users', users);
 
 
 
 //app.use(ensureAuthenticated);
 
-app.use('/test', test);
-app.use('/tasks', tasks);
+app.use(base_url+'/test', test);
+app.use(base_url+'/tasks', tasks);
 
-app.use('/upload', uploads);
-app.use('/answers', answers);
-app.use('/evaluate', evaluate);
+app.use(base_url+'/upload', uploads);
+app.use(base_url+'/answers', answers);
+app.use(base_url+'/evaluate', evaluate);
 
 
 

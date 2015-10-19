@@ -58,7 +58,7 @@ function sendScore (type, eval_user, taskid) {
     $.ajax({
         type: 'POST',
         data: {'eval_user': eval_user, 'score':score, 'evaltype': type, 'task': taskid},
-        url: '/evaluate/',
+        url: base_url+'/evaluate/',
         dataType: 'JSON'
     }).done(function( response ) {
 

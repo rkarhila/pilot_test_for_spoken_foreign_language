@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 
+
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
 
@@ -9,6 +11,7 @@ router.get('/', function(req, res, next) {
 	// Respond with the basic test template:
 	res.render('tests', { title: 'Testing!', 
 			      user: req.user , 
+			      base_url: req.base_url,
 			      ui_language: req.ui_language,
 			      error_message: req.flash('error'), 
 			      success_message: req.flash('error') 
@@ -92,7 +95,7 @@ router.get('/user/:user/task/:task/trial/:trial', function(req, res, next) {
 
         console.log("Next: "+nexttask+", "+nexttrial);
 
-        next="/test/user/"+req.user.username+"/task/"+nexttask+"/trial/"+nexttrial;
+        next=req.base_url+"/test/user/"+req.user.username+"/task/"+nexttask+"/trial/"+nexttrial;
 
 	console.log("Next task is: "+next);
 

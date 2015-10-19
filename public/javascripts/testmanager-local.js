@@ -184,7 +184,7 @@ function populateTasks( ) {
     
     // jQuery AJAX call for JSON
     filename_extra = 0;
-    $.getJSON( '/tasks/all', function( data ) {showTasks ( data ) });
+    $.getJSON( base_url+'/tasks/all', function( data ) {showTasks ( data ) });
 }
 
 

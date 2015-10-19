@@ -112,7 +112,7 @@ function addUser(event) {
         $.ajax({
             type: 'POST',
             data: newUser,
-            url: '/users/adduser',
+            url: base_url+'/users/adduser',
             dataType: 'JSON'
         }).done(function( response ) {
 
