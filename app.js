@@ -27,7 +27,7 @@ var evaluate = require('./routes/evaluate');
 // User management imports:
 var passport = require('passport');
 var flash = require('connect-flash');
-//var login = require('./routes/login');
+
 
 
 var base_url=(process.env.BASE_URL || '');
@@ -258,7 +258,7 @@ app.get('/login', function(req, res, next) {
 
 app.post('/login',
 	 passport.authenticate('local',
-			       { failureRedirect: base_url+'/login',
+			       { failureRedirect: '/login',
 				 failureFlash: true }),
 	 function(req, res) {
 	     sess=req.session;
