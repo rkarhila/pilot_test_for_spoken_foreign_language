@@ -228,12 +228,12 @@ app.get('/logout', function logout(req, res){
       req.logout();
       req.flash('success', 'Uloskirjautuminen onnistui');
   }
-  res.redirect('/');
+  res.redirect(base_url+'/');
 });
 
 app.get('/logout', function(req, res, next) {
     User.find({}, function(err, user) {
-	res.render(base_url+'/', { title: 'Express',
+	res.render('/', { title: 'Express',
 			      user: req.user ,
 			      ui_language: req.ui_language,
 			      error_message: req.flash('error'),
@@ -245,7 +245,7 @@ app.get('/logout', function(req, res, next) {
 
 app.get('/login', function(req, res, next) {
     User.find({}, function(err, user) {
-	res.render(base_url+'login', { title: 'Express',
+	res.render('login', { title: 'Express',
 			      user: req.user ,
 			      ui_language: req.ui_language,
 			      error_message: req.flash('error'),
@@ -258,7 +258,7 @@ app.get('/login', function(req, res, next) {
 
 app.post('/login',
 	 passport.authenticate('local',
-			       { failureRedirect: '/login',
+			       { failureRedirect: base_url+'/login',
 				 failureFlash: true }),
 	 function(req, res) {
 	     sess=req.session;
@@ -280,20 +280,19 @@ app.use(function(req,res,next){
 // Require authentication for the other urls:
 
 app.use(function(req,res,next){
-    if(req.isAuthenticated()) {
-	console.log('user logged in', req.user.username);
-    }
-    else {
+    if(!req.isAuthenticated()) {
 	console.log('user not logged in');
 	res.redirect(base_url+'/login');
     }
-
-    sess = req.session;
-    if (typeof(sess.username) !== 'undefined')
-    {
-	req.params.user = sess.username;
+    else {
+	console.log('user logged in', req.user.username);
+	sess = req.session;
+	if (typeof(sess.username) !== 'undefined')
+	{
+	    req.params.user = sess.username;
+	}
+	next();
     }
-    next();
 });
 
 
@@ -340,16 +339,16 @@ if (app.get('env') === 'development') {
     });
   });
 }
-
-// production error handler
-// no stacktraces leaked to user
-app.use(function(err, req, res, next) {
-  res.status(err.status || 500);
-  res.render('error', {
-    message: err.message,
-    error: {}
-  });
-});
-
+else {
+    // production error handler
+    // no stacktraces leaked to user
+    app.use(function(err, req, res, next) {
+	res.status(err.status || 500);
+	res.render('error', {
+	    message: err.message,
+	    error: {}
+	});
+    });
+}
 
 module.exports = app;
