@@ -30,7 +30,7 @@ var flash = require('connect-flash');
 //var login = require('./routes/login');
 
 
-var base_url=(process.env.BASEURL || '');
+var base_url=(process.env.BASE_URL || '');
 
 // A little help from:
 // https://orchestrate.io/blog/2014/06/26/build-user-authentication-with-node-js-express-passport-and-orchestrate/
@@ -297,23 +297,20 @@ app.use(function(req,res,next){
 });
 
 
-app.use(base_url+'/', routes);
 
-
-app.use(base_url+'/users', users);
-
+app.use('/users', users);
 
 
 //app.use(ensureAuthenticated);
 
-app.use(base_url+'/test', test);
-app.use(base_url+'/tasks', tasks);
+app.use('/test', test);
+app.use('/tasks', tasks);
 
-app.use(base_url+'/upload', uploads);
-app.use(base_url+'/answers', answers);
-app.use(base_url+'/evaluate', evaluate);
+app.use('/upload', uploads);
+app.use('/answers', answers);
+app.use('/evaluate', evaluate);
 
-
+app.use('/', routes);
 
 
 
