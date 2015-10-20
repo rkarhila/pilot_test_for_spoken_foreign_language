@@ -23,6 +23,7 @@ router.get('/', function(req, res, next) {
     res.render('usermanager', { title: 'User management', 
 				username: req.user.username ,
 				user: req.user, 
+				base_url: req.base_url,
 				ui_language: req.ui_language,
 				error_message: req.flash('error'), 
 				success_message: req.flash('error') 

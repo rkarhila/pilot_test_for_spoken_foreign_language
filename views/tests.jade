@@ -75,16 +75,16 @@ block content
           // /USER INFO
 
       #backtosquareone
-          a(href="logout") Takaisin alkuun
+          a(href="logout") Kirjaudu ulos
 
 block scripts
     -if (user.username)
         script(type='text/javascript').
             var username =!{JSON.stringify( user.username )};
-    script(src='/javascripts/recorder.js')
-    script(src='/javascripts/uploadfile.js')
-    script(src='/javascripts/audio-analyser.js')
-    script(src='/javascripts/tests-local.js')
-    script(src='/javascripts/messages.js')
-    script(src="/javascripts/RecordRTC.js")
-    script(src='/javascripts/jquery.pietimer.modified.js')
+    script(src='#{base_url}/javascripts/recorder.js')
+    script(src='#{base_url}/javascripts/uploadfile.js')
+    script(src='#{base_url}/javascripts/audio-analyser.js')
+    script(src='#{base_url}/javascripts/tests-local.js')
+    script(src='#{base_url}/javascripts/messages.js')
+    script(src="#{base_url}/javascripts/RecordRTC.js")
+    script(src='#{base_url}/javascripts/jquery.pietimer.modified.js')

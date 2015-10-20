@@ -19,7 +19,7 @@ router.get('/', function(req, res, next) {
     }
     else {
 	// Respond with the test view/edit template:
-	res.redirect('/tasks');	
+	res.redirect(req.base_url+'/tasks');	
     }
     
 });

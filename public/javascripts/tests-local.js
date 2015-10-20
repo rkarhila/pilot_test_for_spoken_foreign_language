@@ -1,7 +1,7 @@
 // Userlist data array for filling in info box
 var userListData = [];
 
-var nextUrl= '/test/user/'+username+'/task/0/trial/0';
+var nextUrl= base_url+'/test/user/'+username+'/task/0/trial/0';
 var maxrectime = 5;
 var allowRerecording = false;
 

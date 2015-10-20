@@ -20,7 +20,7 @@ function populateTable() {
     var tableContent = '';
 
     // jQuery AJAX call for JSON
-    $.getJSON( '/users/userlist/admins', function( adminData ) {
+    $.getJSON( base_url+'/users/userlist/admins', function( adminData ) {
 
 	// Stick our user data array into a userlist variable in the global object
 	adminListData = adminData;
@@ -57,7 +57,7 @@ function populateTable() {
 
     });
 
-    $.getJSON( '/users/userlist/teachers', function( teacherData ) {
+    $.getJSON(  base_url+'/users/userlist/teachers', function( teacherData ) {
 
 	// Stick our user data array into a userlist variable in the global object
 	teacherListData = teacherData;
@@ -89,14 +89,14 @@ function populateTable() {
 	// Add User button click
 	$('#btnAddTeacher').on('click', addTeacher);
 
-	if (userrole='global-admin') {
+	if (userrole==='global-admin') {
 	    // Delete User link click
 	    $('#teacherList table tbody').on('click', 'td a.linkdeleteuser', deleteUser);
 	}
 
     });
 
-    $.getJSON( '/users/userlist/users', function( data ) {
+    $.getJSON(  base_url+'/users/userlist/users', function( data ) {
 
 	// Stick our user data array into a userlist variable in the global object
 	userListData = data;
@@ -294,7 +294,7 @@ function showUserInfo(event) {
 	if (typeof(thisUserObject.trials[task]) !== 'undefined') {
 	    thisUserObject.trials[task].forEach(function( trial ) {
 		if (thisUserObject.testsdone[task][trial]) {
-		    $('#userInfoTasks').append('<video src=/answers/video/'+thisUserObject.testsdone[task][trial]+' controls>');
+		    $('#userInfoTasks').append('<video src='+base_url+'/answers/video/'+thisUserObject.testsdone[task][trial]+' controls>');
 		}
 		else {
 		    $('#userInfoTasks').append("("+trial+")");
@@ -371,7 +371,7 @@ function deleteUser(event) {
         // If they did, do our delete
         $.ajax({
             type: 'DELETE',
-            url: '/users/deleteuser/' + $(this).attr('rel')
+            url:  base_url+'/users/deleteuser/' + $(this).attr('rel')
         }).done(function( response ) {
 
             // Check for a successful (blank) response
@@ -411,7 +411,7 @@ function uploadFile(event) {
     $.ajax({
         type: 'POST',
         data: filename,
-        url: '/api/photo',
+        url:  base_url+'/api/photo',
         dataType: 'JSON'
     }).done(function( response ) {
 
@@ -455,7 +455,7 @@ function addStudent(event) {
         $.ajax({
             type: 'POST',
             data: newUser,
-            url: '/users/adduser/user',
+            url:  base_url+'/users/adduser/user',
             dataType: 'JSON'
         }).done(function( response ) {
 
@@ -529,7 +529,7 @@ function addLocalAdmin(event) {
         $.ajax({
             type: 'POST',
             data: newUser,
-            url: '/users/adduser/local-admin',
+            url:  base_url+'/users/adduser/local-admin',
             dataType: 'JSON'
         }).done(function( response ) {
 
@@ -594,7 +594,7 @@ function addTeacher(event) {
         $.ajax({
             type: 'POST',
             data: newUser,
-            url: '/users/adduser/teacher',
+            url:  base_url+'/users/adduser/teacher',
             dataType: 'JSON'
         }).done(function( response ) {
 

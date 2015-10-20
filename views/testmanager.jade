@@ -1,7 +1,7 @@
 extends layout
 
 block content
-  h1 #[a(href='/') .] / Tehtävähallinta
+  h1 #[a(href='#{base_url}/') .] / Tehtävähallinta
   p Olet 
       strong= username 
       |  (<i>
@@ -12,7 +12,7 @@ block content
           |  koulussa 
           strong= user.school
           | . 
-      a(href="logout") Kirjaudu ulos.
+      a(href="#{base_url}/logout") Kirjaudu ulos.
 
   // Wrapper
   #wrapper
@@ -70,5 +70,5 @@ block scripts
             var username =!{JSON.stringify( user.username )};
         script(type='text/javascript').
             var userrole =!{JSON.stringify( user.role )};
-    script(src='/javascripts/testmanager-local.js')
-    script(src='/javascripts/dropmenus.js')
+    script(src='#{base_url}/javascripts/testmanager-local.js')
+    script(src='#{base_url}/javascripts/dropmenus.js')

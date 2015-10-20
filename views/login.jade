@@ -3,6 +3,8 @@ extends layout
 block content
   h1 Tervetuloa kokeilemaan puhutun ruotsin ylioppilaskokeen pilottia!
   p Tunnukset sinulla pitäisi jo olla. Jos ei ole, niin taitaa jäädä kokeilu lyhyeksi.
+  p Ja jos käytössäsi ei ole verrattain uutta Chrome-selainta, tapahtuu kauheita! 
+      | #[a(href='https://www.google.com/chrome/') Selaimen voit ladata täältä.]
 
   // Wrapper
   #wrapper
@@ -11,14 +13,14 @@ block content
       // USER LIST
       -if (showlogin) 
           h2 Login
-              form#login(action="/login", method="post")
+              form#login(action="#{base_url}/login", method="post")
                   input#username(type="text", name="username", placeholder='Username')
                   br
                   input#password(type="password", name="password", placeholder='Password' value="codeme!" readonly)
                   br
                   input(type="submit", value="login")
 
-      form#login1(action="/login", method="post")
+      form#login1(action="#{base_url}/login", method="post")
           input#username(type="text", name="username", placeholder='Username')
           br
           input#password(type="password", name="password", placeholder='Password')

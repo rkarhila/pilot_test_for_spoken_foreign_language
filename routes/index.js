@@ -14,7 +14,7 @@ router.get('/', function(req, res, next) {
     }
     else {
 	if (req.user.role == 'user') {
-            res.redirect('/test');
+            res.redirect(req.base_url+'/test');
 	}
 	else {
 	    res.render('index', {  title: 'User management', 

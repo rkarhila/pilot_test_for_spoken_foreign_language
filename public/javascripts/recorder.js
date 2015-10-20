@@ -26,7 +26,7 @@
 
 (function(window){
 
-    var WORKER_PATH = '/javascripts/recorderWorker.js';
+    var WORKER_PATH = base_url+'/javascripts/recorderWorker.js';
 
     var Recorder = function(source, cfg){
 	var config = cfg || {};

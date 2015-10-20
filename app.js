@@ -231,23 +231,27 @@ app.get('/logout', function logout(req, res){
   res.redirect(base_url+'/');
 });
 
+/*
 app.get('/logout', function(req, res, next) {
-    User.find({}, function(err, user) {
+    User.find({}, function(err, user) {        
 	res.render('/', { title: 'Express',
 			      user: req.user ,
 			      ui_language: req.ui_language,
+			      base_url: req.base_url,
 			      error_message: req.flash('error'),
 			      success_message: req.flash('success'),
 			      all_users : user
 			    });
     });
 });
+*/
 
 app.get('/login', function(req, res, next) {
     User.find({}, function(err, user) {
 	res.render('login', { title: 'Express',
 			      user: req.user ,
 			      ui_language: req.ui_language,
+			      base_url: req.base_url,
 			      error_message: req.flash('error'),
 			      success_message: req.flash('success'),
 			      all_users : user
@@ -255,6 +259,7 @@ app.get('/login', function(req, res, next) {
     });
 });
 
+console.log("If auth fails, redirect to "+base_url+"/login");
 
 app.post('/login',
 	 passport.authenticate('local',
