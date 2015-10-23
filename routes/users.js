@@ -13,21 +13,26 @@ function randomstring(random_string_length) {
 
 
 
-
-
 /* GET users listing. */
 router.get('/', function(req, res, next) {
-    var db = req.db;
-    var collection = db.get('userlist');
-    // Respond with the basic test template:
-    res.render('usermanager', { title: 'User management', 
-				username: req.user.username ,
-				user: req.user, 
-				base_url: req.base_url,
-				ui_language: req.ui_language,
-				error_message: req.flash('error'), 
-				success_message: req.flash('error') 
-			}); 
+
+    if (req.user.role == 'user') {
+	res.render('error', {error:{status: 401, stack: ''}, message: 'Not authorised' });
+    }
+    else {
+
+	var db = req.db;
+	var collection = db.get('userlist');
+	// Respond with the basic test template:
+	res.render('usermanager', { title: 'User management', 
+				    username: req.user.username ,
+				    user: req.user, 
+				    base_url: req.base_url,
+				    ui_language: req.ui_language,
+				    error_message: req.flash('error'), 
+				    success_message: req.flash('error') 
+				  }); 
+    }
 });
 
 
