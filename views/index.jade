@@ -17,9 +17,38 @@ block content
 
   // Wrapper
   #wrapper
+      #userInfo
+        -if (user.role == 'global-admin')
+          p #[a(href='#{base_url}/users') Käyttäjähallinnassa] voit luoda 
+            | tilejä vastuukäyttäjille, opettajilla ja oppilaille, ja tarkastella
+            |  kaikkien oppilaiden suorituksia ja opettajien arvosteluja. 
+            | #[a(href='#{base_url}/test') Tehtävät]-sivulla voit tarkastella 
+            | koetehtäviä. Jos haluat tutustua testiin paremmin, tee itsellesi
+            | väliaikainen oppilastunnus ja kirjaudu sillä tekemään testiä.
+
+        -if (user.role == 'local-admin')
+          p #[a(href='#{base_url}/users') Käyttäjähallinnassa] voit luoda 
+            | tilejä opettajille ja oppilaille ja tarkastella koulusi oppilaiden suorituksia
+            | ja opettajien arviointeja. Voit myös poistaa tekemiäsi tilejä.
+          p #[a(href='#{base_url}/test') Tehtävät]-sivulla voit tarkastella 
+            | koetehtäviä.  Jos haluat tutustua testiin paremmin, tee itsellesi
+            | väliaikainen oppilastunnus ja kirjaudu sillä tekemään testiä.
+
+        -if (user.role == 'teacher')
+          p #[a(href='#{base_url}/users') Käyttäjähallinnassa] voit luoda 
+            | oppilastilejä ja arvostella oppilaiden suorituksia. 
+            | Voit myös poistaa tekemiäsi tilejä.
+          p #[a(href='#{base_url}/test') Tehtävät]-sivulla voit tarkastella 
+            | koetehtävälistaa. Jos haluat tutustua testiin paremmin, tee itsellesi
+            | väliaikainen oppilastunnus ja kirjaudu sillä tekemään testiä.
+
       h2  #[a(href='#{base_url}/users') Käyttäjähallinta]
       h2 #[a(href='#{base_url}/test') Tehtävät]
       h2  Lataa data omalle koneelle 
       //h2 #[a(href='#{base_url}/datadump') Lataa data omalle koneelle]
+
+
+
+
 
   // /WRAPPER

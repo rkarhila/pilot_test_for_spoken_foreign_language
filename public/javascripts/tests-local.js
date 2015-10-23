@@ -292,7 +292,7 @@ function startVideoCircus() {
     if (testListData.trial.hypermedia !== 'None') {
 	if (testListData.trial.mediatype == "video") {
 	    console.log("It should be an image!");
-	    $('#stimulusmedia').html("<video src=\""+testListData.trial.hypermedia+"\" autoplay onended='startRecord()'>");
+	    $('#stimulusmedia').html("<video src=\""+base_url+testListData.trial.hypermedia+"\" autoplay onended='startRecord()'>");
 	}
 	else {
 	    alert("Video not specified!");
@@ -308,7 +308,7 @@ function continueVideoCircus() {
     if (testListData.trial.hypermedia !== 'None') {
 	if (testListData.trial.mediatype == "video") {
 	    console.log("It should be an image!");
-	    $('#stimulusmedia').html("<video src=\""+testListData.trial.hypermedia+"\" autoplay onended='startRecord()'>");
+	    $('#stimulusmedia').html("<video src=\""+base_url+testListData.trial.hypermedia+"\" autoplay onended='startRecord()'>");
 	}
 	else {
 	    alert("Video not specified!");
@@ -326,7 +326,7 @@ function showPromptAndStartRecord() {
 	console.log("some media 2? "+ testListData.trial.mediatype);
 	if (testListData.trial.mediatype == "image") {
 	    console.log("It should be an image!");
-	    $('#stimulusmedia').html("<img src=\""+testListData.trial.hypermedia+"\">");
+	    $('#stimulusmedia').html("<img src=\""+base_url+testListData.trial.hypermedia+"\">");
 	}
     }
 

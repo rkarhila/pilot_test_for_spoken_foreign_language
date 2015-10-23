@@ -50,6 +50,8 @@ block content
 
       // USER LIST
       h2 Ylläpitäjät
+      p Lista vastuuhenkilöistä. Nimeä klikkaamalla näet yhteystiedot vasemmalla.
+        | Älä epäröi ottaa yhteyttä ongelmatapauksissa!
       #adminList
           table
               thead
@@ -63,6 +65,11 @@ block content
               tbody
 
       h2 Opettajat
+      p  Lista opettajista. Nimeä klikkaamalla näet yhteystiedot vasemmalla.
+        | Niiden olisi hyvä olla ajantasaisia.
+        | Ylläpito saattaa soitella jos asiat menevät ns. päin prinkkalaa 
+        | kesken nauhoitustilanteen. (Kyllä, me näemme kenen oppilaat ovat parhaillaan 
+        | tekemässä koetta.)
       #teacherList
           table
               thead
@@ -97,7 +104,10 @@ block content
       -if (user.role == 'global-admin')
           // ADD LOCAL ADMIN
           h2 Add Local Admin
-          p Käyttäkää vahvoja salasanoja! Niitä voi generoida esim. #[a(href='https://www.random.org/strings/?num=10&len=10&digits=on&loweralpha=on&unique=on&format=html&rnd=new', target='_blank') random.org]'ssa.
+          p Tässä voit lisätä vastuukäyttäjiä, atk-tukihenkilöitä yms. jotka 
+            | voivat etukäteen testata koejärjestelmää ja luoda tunnuksia koulunsa 
+            | opettajille.
+          p Käyttäkää vahvoja salasanoja! Niitä voi generoida esim #[a(href='https://www.random.org/strings/?num=10&len=10&digits=on&loweralpha=on&unique=on&format=html&rnd=new', target='_blank') random.org]'ssa.
           #addLocalAdmin
               fieldset
                   label Username
@@ -127,6 +137,7 @@ block content
       -if (user.role == 'local-admin' || user.role == 'global-admin')
           // ADD USER
           h2 Add Teacher
+          p  Tässä voit lisätä opettajatunnuksia. Käyttäkää vahvoja salasanoja! Niitä voi generoida esim #[a(href='https://www.random.org/strings/?num=10&len=10&digits=on&loweralpha=on&unique=on&format=html&rnd=new', target='_blank') random.org]'ssa.
           #addTeacher
               fieldset
                   label Username: 
@@ -157,6 +168,13 @@ block content
           // /ADD USER
 
       h2 Add a Student (or maybe a hundred!)
+      p Tässä voit lisätä oppilastunnuksia. Tunnuksille generoituu automaattisesti käyttäjänimi, 
+        | joka perustuu kouluun ja satunnaiseen merkkisarjaan. Myös salasana generoidaan 
+        | automaattisesti ja jää opettajien ja ylläpitäjien näkyviin, jotta se voidaan helposti
+        | uudelleen antaa oppilaalle.
+      p Oppilaat eivät pääse tarkastelemaan vastauksiaan tai arvostelujaan. Testin he voivat tehdä
+        | yhden kerran. Jos testi keskeytyy, se jatkuu seuraavalla kerralla uudestaan samasta 
+        | kohdasta.
       #addStudent
           fieldset
               label Teacher's username:

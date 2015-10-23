@@ -148,11 +148,11 @@ function previewTrial(task_id, trial_id){
 
     if ( taskList[task_id].trials[trial_id].mediatype == "video") {
 	console.log("It should be an image!");
-	$('#stimulusmedia').html("<video id=editTrialVideo src=\""+taskList[task_id].trials[trial_id].hypermedia+"\" controls>");
+	$('#stimulusmedia').html("<video id=editTrialVideo src=\""+base_url+taskList[task_id].trials[trial_id].hypermedia+"\" controls>");
     }
     
     else if ( taskList[task_id].trials[trial_id].mediatype == "image") {
-	$('#stimulusmedia').html("<img src=\""+taskList[task_id].trials[trial_id].hypermedia+"\">");
+	$('#stimulusmedia').html("<img src=\""+base_url+taskList[task_id].trials[trial_id].hypermedia+"\">");
     }
 
     if ( typeof(taskList[task_id].trials[trial_id].stimulus_2) !== 'undefined') {
