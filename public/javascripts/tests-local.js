@@ -47,6 +47,28 @@ $(document).keypress(function(e){
 });
 
 
+// From a stackoverflow link I've lost now:
+
+function onElementHeightChange(elm, callback){
+    var lastHeight = elm.clientHeight, newHeight;
+    (function run(){
+        newHeight = elm.clientHeight;
+        if( lastHeight != newHeight )
+            callback();
+        lastHeight = newHeight;
+
+        if( elm.onElementHeightChangeTimer )
+            clearTimeout(elm.onElementHeightChangeTimer);
+
+        elm.onElementHeightChangeTimer = setTimeout(run, 200);
+    })();
+}
+
+
+onElementHeightChange(document.body, function(){
+    $('#main').css('height', Math.max($( document ).height(), $(window).height()) +'px');
+});
+
 
 
 
@@ -73,7 +95,6 @@ function showTrial( data ) {
     testListData = data;
 
     $('#instructions').html(data.instructions + '<a href="#main" class="allClear">Tämä selvä!</a>');
-    $('#main').css('height', $( document ).height()+'px');
 
 
     $('#taskarea').html( data.stimulus_layout);
@@ -85,6 +106,8 @@ function showTrial( data ) {
     nextUrl=data.next;
 
 
+    console.log('This task: '+data.task_id+ '/'+data.trial.trial_id+' Next task: '+nextUrl);
+
     /* Debug data */
     $('#testTask_id').text(data.task_id);
     $('#testInstructions').text(data.instructions);
@@ -94,7 +117,7 @@ function showTrial( data ) {
     $('#testRespTime').text(responsetime);    
     $('#testNext').text(data.next);
         
-    $('#taskCounter').text(++tasksdone+'/'+18);
+    $('#taskCounter').text(++tasksdone+'/'+22);
     
 
     if (data.showinstructions == "1") {
@@ -212,6 +235,9 @@ function showTrial( data ) {
     else if ( controls == "sync_prepare_and_rec") {
 	prepareSync();
     }
+    else if (controls == "None" ) {
+	$('#controlarea').html('');
+    }
 }
 
 function prepareSync() {
@@ -288,7 +314,7 @@ function finishSync(waitingTime) {
     $('#controlarea').html('<p><i>Valmistautukaa keskustelemaan!</i> <div id="timer"></div>');
 
     $('#timer').pietimer({
-        timerSeconds: 5, //( testListData.trial.preparation_time || 100),
+        timerSeconds: ( testListData.trial.preparation_time || 100),
         color: '#234',
         fill: false,
         showPercentage: false,
@@ -299,7 +325,6 @@ function finishSync(waitingTime) {
         }
     });
 
-    $('#main').css('height', $( document ).height()+'px');
 }
 
 function startSyncRec() {
@@ -312,7 +337,7 @@ function startSyncRec() {
 
     $('#nextButton').on('click', populateTest );	
     $('#nextButton').on('touchend', populateTest );	
-    $('#controlarea').append('<p><i>Nauhoitus päällä! Keskustelkaa!</i> <div id="timer"></div>');
+    $('#controlarea').append('<p id="recordingWarningText"><i>Nauhoitus päällä! Keskustelkaa!</i> <div id="timer"></div>');
     startRecord();
 }
 
@@ -566,11 +591,18 @@ function startRecord() {
 		    $('#listenButton').bind('touchend', playRecording);
 		    $('#listenButton').attr("hidden", false);
 		}
-		if (controls === "full") {
+		else if (controls === "full" ) {
 		    $('#listenButton').bind('click', playRecording);
 		    $('#listenButton').bind('touchend', playRecording);
 		    $('#listenButton').attr("hidden", false);
-		    activateNext();		    
+		    activateNext();	
+		}
+		else if (controls == "sync_prepare_and_rec") {
+		    $('#listenButton').bind('click', playRecording);
+		    $('#listenButton').bind('touchend', playRecording);
+		    $('#listenButton').attr("hidden", false);
+		    $('#recordingWarningText').html('');
+		    activateNext();	
 		}
 		else if (controls === "start_only" || controls === "forced_play") {		    
 		    //$('#nextButton').attr("hidden", false);

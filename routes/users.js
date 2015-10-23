@@ -159,7 +159,7 @@ router.post('/adduser/:userrole', function(req, res) {
 
 		    var i=-1;
 		    while ( typeof(test["tasks"][++i]) !== 'undefined') {
-			usertasks.push(i);
+			usertasks.push( test["tasks"][i].task_id );
 			evaluations[i]={'phonetic':{}, 'fluency':{}};
 			trialcounts=test["tasks"][i]["trial_counts"];
 			for (var j = 0; j < trialcounts.length; j++) {
