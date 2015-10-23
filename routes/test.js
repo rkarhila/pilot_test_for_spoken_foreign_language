@@ -37,13 +37,13 @@ router.get('/user/:user/task/:task/trial/:trial', function(req, res, next) {
 
     var showinstructions = (req.params.trial < 1);
 
-    collection.findOne({ "username" : req.user.username },{},function(e,test){
+    collection.findOne({ "username" : req.user.username },{},function(e,usertest){
 
 	// extract the task arrays for this particular user:
-	var usertask=test['tasks'][req.params.task];
-	var usertrial=test['trials'][req.params.task][req.params.trial];
+	var usertask=usertest['tasks'][req.params.task];
+	var usertrial=usertest['trials'][req.params.task][req.params.trial];
 
-        var donetrials=test['testsdone'];
+        var donetrials=usertest['testsdone'];
 
 	console.log("Finding task " + usertask + " trial " +usertrial + " for user " + req.user.username );
 
@@ -57,9 +57,10 @@ router.get('/user/:user/task/:task/trial/:trial', function(req, res, next) {
 
 	
         do {
-	    if ([nexttask]<test['tasks'].length-1) {
+	    // If this is not the last task:
+	    if ([nexttask]<usertest['tasks'].length-1) {
 	        // If there is another trial for this task, choose that one:
-	        if (typeof (test['trials'][nexttask][parseInt(nexttrial)+1]) !== 'undefined') {
+	        if (typeof (usertest['trials'][nexttask][parseInt(nexttrial)+1]) !== 'undefined') {
 
                     console.log("Before update: "+nexttask+","+nexttrial);
                     nexttrial = 1+parseInt(nexttrial);
@@ -70,7 +71,8 @@ router.get('/user/:user/task/:task/trial/:trial', function(req, res, next) {
   	        // If not, then go to trial 0 of the next task:
 	        else {
 
-		    console.log("typeof (test['trials']["+nexttask+"]["+(parseInt(nexttrial)+1)+"]) : " +typeof (test['trials'][nexttask][nexttrial+1]) );
+		    console.log("typeof (usertest['trials']["+nexttask+"]["+(parseInt(nexttrial)+1)+"]) : " +typeof (usertest['trials'][nexttask][nexttrial+1]) );
+
                     nexttask=parseInt(nexttask)+1 ;
                     nexttrial = 0;
                     console.log("Next task: "+nexttask+","+nexttrial);
@@ -83,13 +85,13 @@ router.get('/user/:user/task/:task/trial/:trial', function(req, res, next) {
                 nexttrial=0;
                 break;
             }
-            console.log('Test done? test.testsdone[ '+
-			test['tasks'][nexttask]+
+            console.log('Test done? usertest.testsdone[ '+
+			usertest['tasks'][nexttask]+
 			' ][ '+ 
-			test['trials'][nexttrial] +
-			' ] : '+ 
-			test.testsdone[ test['tasks'][nexttask] ][  test['trials'][nexttask][nexttrial] ] );
-        } while ( test.testsdone[ test['tasks'][nexttask] ][  test['trials'][nexttask][nexttrial] ] );
+			usertest['trials'][nexttrial] +
+			' ] (= '+nexttask+','+nexttrial+': ');
+	    console.log(usertest.testsdone[ nexttask ][  nexttrial ] );
+        } while ( usertest.testsdone[ nexttask ][  nexttrial ] );
 
 
 

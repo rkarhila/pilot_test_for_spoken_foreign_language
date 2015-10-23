@@ -22,7 +22,7 @@ var uploads = require('./routes/uploads');
 //var signin = require('./routes/signin');
 var answers = require('./routes/answers');
 var evaluate = require('./routes/evaluate');
-
+var sync = require('./routes/sync');
 
 // User management imports:
 var passport = require('passport');
@@ -39,7 +39,6 @@ var base_url=(process.env.BASE_URL || '');
 
 var session = require('express-session');
 var app = express();
-
 
 
 
@@ -309,6 +308,7 @@ app.use('/users', users);
 
 app.use('/test', test);
 app.use('/tasks', tasks);
+app.use('/sync', sync);
 
 app.use('/upload', uploads);
 app.use('/answers', answers);

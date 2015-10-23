@@ -5,8 +5,8 @@ block content
 
   #instructions
 
+  #main 
 
-  #main
       //h1 Hejsan, pilot!
       //p Ruotsin kielen ylioppilaskirjoitusten raakile. Tätä kypsytellään avullasi.
 
@@ -18,6 +18,9 @@ block content
 
           // VIDEO AND CONTROLS
           #userControls
+               p Käyttäjä: #[=user.username]
+                 br
+                 | Tehtävä: #[span#taskCounter]
                #recording(class="blink_me")
                //video#uservideo(autoplay muted)
                video#camera-preview(autoplay muted)

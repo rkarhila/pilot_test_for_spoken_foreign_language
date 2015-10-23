@@ -47,6 +47,28 @@ $(document).keypress(function(e){
 });
 
 
+// From a stackoverflow link I've lost now:
+
+function onElementHeightChange(elm, callback){
+    var lastHeight = elm.clientHeight, newHeight;
+    (function run(){
+        newHeight = elm.clientHeight;
+        if( lastHeight != newHeight )
+            callback();
+        lastHeight = newHeight;
+
+        if( elm.onElementHeightChangeTimer )
+            clearTimeout(elm.onElementHeightChangeTimer);
+
+        elm.onElementHeightChangeTimer = setTimeout(run, 200);
+    })();
+}
+
+
+onElementHeightChange(document.body, function(){
+    $('#main').css('height', Math.max($( document ).height(), $(window).height()) +'px');
+});
+
 
 
 
@@ -62,6 +84,8 @@ var stimulusdata;
 var responsetime;
 var controls;
 
+var tasksdone = -1;
+
 function showTrial( data ) {
     
     // Empty content string
@@ -72,6 +96,7 @@ function showTrial( data ) {
 
     $('#instructions').html(data.instructions + '<a href="#main" class="allClear">Tämä selvä!</a>');
 
+
     $('#taskarea').html( data.stimulus_layout);
 
     responsetime = data.trial.response_time;
@@ -80,6 +105,8 @@ function showTrial( data ) {
     // Important control logic:
     nextUrl=data.next;
 
+
+    console.log('This task: '+data.task_id+ '/'+data.trial.trial_id+' Next task: '+nextUrl);
 
     /* Debug data */
     $('#testTask_id').text(data.task_id);
@@ -90,6 +117,8 @@ function showTrial( data ) {
     $('#testRespTime').text(responsetime);    
     $('#testNext').text(data.next);
         
+    $('#taskCounter').text(++tasksdone+'/'+22);
+    
 
     if (data.showinstructions == "1") {
 	// From http://stackoverflow.com/questions/13735912/anchor-jumping-by-using-javascript
@@ -203,8 +232,116 @@ function showTrial( data ) {
 	}
 	
     }
+    else if ( controls == "sync_prepare_and_rec") {
+	prepareSync();
+    }
+    else if (controls == "None" ) {
+	$('#controlarea').html('');
+    }
+}
+
+function prepareSync() {
+	$('#stimulus').html(testListData.trial.stimulus);
+	$('#controlarea').html('<input id="syncName" type="text" placeholder="Kaverisi tunnus">')
+	$('#controlarea').append('<input id="syncButton" type="button" value="Synkronoi">');
+
+	$('#syncButton').on('click', startSync );
+	$('#syncButton').on('touchend', startSync );
+}
+
+
+var targetUser;
+
+function startSync() {
+
+    if (typeof($('#syncName')).val() !== 'undefined' ) {
+	targetUser = $('#syncName').val();
+    }
+
+    $('#controlarea').html('<p>Synkronoidaan käyttäjän "'+targetUser+'" kanssa');
+    $('#controlarea').append('<input id="syncCancelButton" type="button" value="Peruuta">');
+    $('#syncCancelButton').on('click', cancelSync );
+    $('#syncCancelButton').on('touchend', cancelSync );  
+
+    $('#controlarea').append('<div id="timer"></div>');
+    $(function() {
+	$('#timer').pietimer({
+            timerSeconds: ( testListData.trial.sync_interval || 5),
+            color: '#234',
+            fill: false,
+            showPercentage: false,
+	    showRemainingSecs: false,
+            callback: function() {
+		startSync();		
+            }
+	});
+    });   
+
+    $.ajax({
+        type: 'GET',
+        url:  base_url+'/sync/'+username+'/'+targetUser,
+        dataType: 'JSON'
+    }).done(function( response ) {
+	if (response.code === "101") {
+	    finishSync();
+	}
+	else if (response.code === "100") {
+	    $('#syncCancelButton').disabled = true;
+	    console.log('finishsync in ' + (parseInt(response.nextcheck)/1000)+ ' s');
+	    setTimeout(finishSync, parseInt(response.nextcheck));
+	}	
+	console.log(response);
+    });
+}
+
+
+function cancelSync() {
+    $.ajax({
+        type: 'GET',
+        url:  base_url+'/sync/cancel',
+        dataType: 'JSON'
+    }).done(function( response ) {
+	console.log(response);
+    });  
+    prepareSync();
+}
+
+
+function finishSync(waitingTime) {
+
+    $('#stimulus').html(testListData.trial.stimulus_2);
+
+    $('#controlarea').html('<p><i>Valmistautukaa keskustelemaan!</i> <div id="timer"></div>');
+
+    $('#timer').pietimer({
+        timerSeconds: ( testListData.trial.preparation_time || 100),
+        color: '#234',
+        fill: false,
+        showPercentage: false,
+	showRemainingSecs: false,
+        callback: function() {
+	    console.log('Timer ready!');	    
+	    startSyncRec();		
+        }
+    });
 
 }
+
+function startSyncRec() {
+    $('#controlarea').html('<input id="startRecording" type="button" value="Aloita nauhoitus" hidden>');
+    //$('#startRecording').bind('click', startRecord);
+    //$('#startRecording').bind('touchend', startRecord);
+
+    $('#controlarea').html('<input id="nextButton" type="button"  value="Seuraava" name="next" hidden>');
+    $('#controlarea').append('<input id="stopRecording" type="button"  value="Lopeta nauhoitus" hidden>');    
+
+    $('#nextButton').on('click', populateTest );	
+    $('#nextButton').on('touchend', populateTest );	
+    $('#controlarea').append('<p id="recordingWarningText"><i>Nauhoitus päällä! Keskustelkaa!</i> <div id="timer"></div>');
+    startRecord();
+}
+
+
 
 
 var filename_extra = 0;
@@ -454,11 +591,18 @@ function startRecord() {
 		    $('#listenButton').bind('touchend', playRecording);
 		    $('#listenButton').attr("hidden", false);
 		}
-		if (controls === "full") {
+		else if (controls === "full" ) {
 		    $('#listenButton').bind('click', playRecording);
 		    $('#listenButton').bind('touchend', playRecording);
 		    $('#listenButton').attr("hidden", false);
-		    activateNext();		    
+		    activateNext();	
+		}
+		else if (controls == "sync_prepare_and_rec") {
+		    $('#listenButton').bind('click', playRecording);
+		    $('#listenButton').bind('touchend', playRecording);
+		    $('#listenButton').attr("hidden", false);
+		    $('#recordingWarningText').html('');
+		    activateNext();	
 		}
 		else if (controls === "start_only" || controls === "forced_play") {		    
 		    //$('#nextButton').attr("hidden", false);
@@ -570,4 +714,7 @@ function drawBuffer( width, height, context, data ) {
 
 
 
+
+// Once more around the sun: 
+// Getting clients to sync for a pair task.
 
