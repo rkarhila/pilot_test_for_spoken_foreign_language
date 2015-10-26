@@ -65,6 +65,9 @@ function onElementHeightChange(elm, callback){
 }
 
 
+$( window ).resize( function() {
+    $('#main').css('height', Math.max($( document ).height(), $(window).height()) +'px'); });
+
 onElementHeightChange(document.body, function(){
     $('#main').css('height', Math.max($( document ).height(), $(window).height()) +'px');
 });
@@ -87,7 +90,14 @@ var controls;
 var tasksdone = -1;
 
 function showTrial( data ) {
-    
+    var swedometer="";
+ 
+    data.all_tests.forEach(function (item) {	
+	swedometer+= "<div "+item.length+" style='min-width:"+((item.length/data.total_length*93))+"%;' class="+item.style+">"+item.task_id+"."+item.trial_id+"</div>";
+    });
+    swedometer += "</tr></table>";
+    $('#swedometer').html(swedometer);
+
     // Empty content string
     var testContent = '';
     
