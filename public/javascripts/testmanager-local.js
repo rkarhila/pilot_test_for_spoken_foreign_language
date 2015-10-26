@@ -41,7 +41,7 @@ $(document).ready(function() {
 
 $(document).keypress(function(e){
     console.log("Key presssed: "+e.which);
-    if (e.which == 110){
+    if (e.which == 144){
 	populateTasks();
     }
 });
@@ -89,7 +89,7 @@ function showTasks( tasks ) {
     var taskContent = '';
 
     $.each(tasks, function(task){
-	taskContent +="<div class=task>";
+	taskContent +="<div class=task id=task"+ tasks[task].task_id +">";
 	taskContent +="<div class=taskLabel> task_id </div><div class=taskSample>"+tasks[task].task_id+"</div>";
 	taskContent +="<div class=taskLabel> evaluated </div><div class=taskSample> " + tasks[task].evaluated+"</div>";
 	taskContent +="<div class=taskLabel> instructions </div><div class=taskSample>"+escapeHtml(tasks[task].instructions)+"</div>";
@@ -97,15 +97,17 @@ function showTasks( tasks ) {
 	taskContent +="<div class=taskLabel> controls </div><div class=taskSample>"+escapeHtml(tasks[task].controls)+"</div>";
 
 	taskContent +="<div class=taskLabel> trials </div><div class=trials>";
+	console.log('Let\'s look at the trials of task '+tasks[task].task_id+':');
+	console.log(tasks[task].trials);
 	$.each(tasks[task].trials, function(trial_id){
 	    var trial = tasks[task].trials[trial_id];
-	    taskContent +="<div class=trial>";	    
+	    taskContent +="<div class=trial  id=task"+ tasks[task].task_id +"_trial"+trial.trial_id+">";	    
 	    taskContent +="<div class=trialLabel> trial_id </div><div class=trialSample>"+trial.trial_id+"</div>";
 	    taskContent +="<div class=trialLabel> stimulus </div><div class=trialSample>"+escapeHtml(trial.stimulus)+"</div>";
 	    taskContent +="<div class=trialLabel> stimulus_2 </div><div class=trialSample>"+escapeHtml(trial.stimulus_2)+"</div>";
 	    taskContent +="<div class=trialLabel> stimulus_3 </div><div class=trialSample>"+escapeHtml(trial.stimulus_3)+"</div>";
 	    taskContent +="<div class=trialLabel> hypermedia </div><div class=trialSample>"+escapeHtml(trial.hypermedia)+"</div>";
-	    taskContent +="<div class=trialLabel> reponse_time </div><div class=trialSample>"+escapeHtml(trial.response_time)+"</div>";
+	    taskContent +="<div class=trialLabel> response_time </div><div class=trialSample>"+escapeHtml(trial.response_time)+"</div>";
 	    taskContent +="<div><input type=button value=Preview onClick='previewTrial("+tasks[task].task_id+","+trial.trial_id+")'></button></div>";
 	    taskContent +="</div>"; //  /trial
 

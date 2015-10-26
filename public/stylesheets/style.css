@@ -67,6 +67,32 @@ fieldset label {
 
 }
 
+#taskList {
+	margin:0 0 30px 0;
+}
+	#taskList table {
+		border-collapse:separate;
+		border-spacing:1px;
+		background:#CCC;
+	}
+		#taskList table th {
+			background:#EEE;
+			font-weight:600;
+			padding:10px 20px;
+			text-align:center;
+		}
+		#taskList table tbody {
+			padding:0; margin:0;
+			border-collapse:collapse;
+			border-spacing:0px;
+		}
+			#taskList table td {
+				background:#FFF;
+				padding:5px 10px;
+				text-align:center;
+			}
+
+
 #userList {
 	margin:0 0 30px 0;
 }
@@ -91,6 +117,8 @@ fieldset label {
 				padding:5px 10px;
 				text-align:center;
 			}
+
+
 
 #adminList {
 	margin:0 0 30px 0;
@@ -261,6 +289,42 @@ fieldset {
 
 #testarea {
 	margin:0 0 30px 0;
+}
+
+#swedometer {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 1.0em;
+    font-size:10px;
+    font-weight:bold;
+    color: #ffffff;
+    text-align: center;
+}
+
+.past, .now, .future {
+    display: inline-block;
+    /*float : left;
+    padding: 2px;*/
+    background: #FF5DB1;
+    border: 1px solid #a02966;
+    border-collapse:separate;
+    border-spacing:1px;
+    overflow: hidden;
+
+}
+
+.past {
+    background: #a02966 ;
+}
+
+.now {
+    background: #ff9dd0;
+}
+
+.future {
+
 }
 
 /* From http://www.corelangs.com/css/box/fulloverlay.html */

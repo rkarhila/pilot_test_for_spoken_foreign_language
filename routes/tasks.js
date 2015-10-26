@@ -9,17 +9,25 @@ router.get('/', function(req, res, next) {
 	res.redirect('/test');
     }
     else {
-	// Respond with the test view/edit template:
-	res.render('testmanager', { title: 'Testing!', 
-				    user: req.user , 
-				    base_url: req.base_url,
-				    ui_language: req.ui_language,
-				    error_message: req.flash('error'), 
-				    success_message: req.flash('error') 
-				  });
 	
-    }
+	var db = req.db;    
+	testcollection = db.get('tests');
+	testcollection.findOne( {}, {}, function(e,test) {	    
 
+	    console.log(test);
+
+	    // Respond with the test view/edit template:
+	    res.render('testmanager', { title: 'Testing!', 
+					user: req.user , 
+					base_url: req.base_url,
+					test: test,
+					ui_language: req.ui_language,
+					error_message: req.flash('error'), 
+					success_message: req.flash('error') 
+				      });
+	});
+    }
+    
 });
 
 
