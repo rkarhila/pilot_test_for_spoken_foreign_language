@@ -180,6 +180,13 @@ fieldset label {
 }*/
 
 
+#changeLog {
+ 	width:450px;
+	position:absolute;
+	top:200px; 
+	left:0;   
+}
+
 #userInfo,#taskEditor {
 	width:450px;
 	position:absolute;

@@ -4,6 +4,8 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var fs = require('fs');
+
 
 // Database
 var mongo = require('mongodb');
@@ -247,8 +249,14 @@ app.get('/logout', function(req, res, next) {
 
 app.get('/login', function(req, res, next) {
     User.find({}, function(err, user) {
+
+	console.log('Trying to get changelog');	
+	var changelog = JSON.parse(fs.readFileSync('./changelog.json', 'utf8'));
+	console.log('Got changelog');
+	
 	res.render('login', { title: 'Express',
 			      user: req.user ,
+			      changelog: changelog,
 			      ui_language: req.ui_language,
 			      base_url: req.base_url,
 			      error_message: req.flash('error'),

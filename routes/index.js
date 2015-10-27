@@ -7,10 +7,10 @@ router.get('/', function(req, res, next) {
 
     if (!req.user) {
 	
-	//console.log('Trying to get changelog');
+	console.log('Trying to get changelog');
 
 	var changelog = JSON.parse(fs.readFileSync('./changelog.json', 'utf8'));
-	//console.log('Got changelog');
+	console.log('Got changelog');
 
 	res.render('login', { title: 'Express',
 			      changelog: changelog,
