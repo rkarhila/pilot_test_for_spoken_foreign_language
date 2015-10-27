@@ -38,14 +38,14 @@ $(document).ready(function() {
 
 
 
-
+/*
 $(document).keypress(function(e){
     console.log("Key presssed: "+e.which);
     if (e.which == 110){
 	populateTest();
     }
 });
-
+*/
 
 // From a stackoverflow link I've lost now:
 

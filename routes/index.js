@@ -1,11 +1,19 @@
 var express = require('express');
 var router = express.Router();
+var fs = require('fs');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
 
     if (!req.user) {
+	
+	//console.log('Trying to get changelog');
+
+	var changelog = JSON.parse(fs.readFileSync('./changelog.json', 'utf8'));
+	//console.log('Got changelog');
+
 	res.render('login', { title: 'Express',
+			      changelog: changelog,
 			      base_url: req.base_url,
 			      ui_language: req.ui_language, 
 			      error_message: req.flash('error'), 

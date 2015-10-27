@@ -12,6 +12,16 @@ block content
   // Wrapper
   #wrapper
 
+      #userList
+          -if (changelog)
+            each change in changelog
+                h4= change.date
+                p= change.msg.fi
+                -if change.fixedlist.fi
+                  ul
+                  each fixed in change.fixedlist.fi
+                    li= fixed
+              
 
       // USER LIST
       -if (showlogin) 
