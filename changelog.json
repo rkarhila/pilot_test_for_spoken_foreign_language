@@ -1,0 +1,39 @@
+[
+    {
+	"date": "Oct-27-2015",
+	"msg": 
+	{
+	    "fi": "Bugien korjaus vielä kesken. En suosittele kokeilemaan.",
+	    "en": "In midst of bug fixing. I don't recommend trying this now."
+	},
+	"fixedlist":
+	{
+	    "fi": 
+	    [
+		"Muutosloki lisätty."
+	    ],
+	    "en":
+	    [
+		"Changelog added"
+	    ]
+	}	
+    },
+    {
+	"date": "Oct-26-2015",
+	"msg": 
+	{
+	    "fi": "Nippu parannuksia.",
+	    "en": "A stack of fixes and improvements made."
+	},
+	"fixedlist":
+	{
+	    "fi": 
+	    [
+		"Ruokatehtävän kuva muutettu",
+		"Kokeen etenemistä kuvaava palkki lisätty",
+		"Salaiset testietenemisnapit poistettu",
+		"Tehtäväjärjestyksen käyttäjäkohtaisen mäppäyksen bugeja liiskattu, mutta niitä on liikaa."
+	    ]
+	}	
+    }
+]
