@@ -70,11 +70,11 @@ router.get('/:initiator/:target', function(req, res, next) {
 	    });
 
 	    if (initset == false) {
-		console.log('Bad initiator username '+ initiator.username);
+		console.log('Bad initiator username '+ req.user.username);
 		res.json({code:'-101', msg:'Väärä käyttäjä / Jotain vikaa sessioinhallinnassa?'});
 	    }	    
 	    else if (targetset == false) {
-		console.log('Bad target username '+target.username);
+		console.log('Bad target username '+ req.params.target);
 		
 		res.json={code:'-9', msg:'Tuntematon käyttäjä '+ target.username+'!'};
 	    }	    

@@ -168,9 +168,9 @@ function showTrial( data ) {
 	$('#startRecording').bind('touchend', startRecord);
 
 	$('#controlarea').append('<input id="stopRecording" type="button"  value="Lopeta nauhoitus" hidden>');
-	$('#controlarea').append('<input id="listenButton" type="button"  value="Kuuntele" name="listen" hidden>');
-	$('#controlarea').append('<input id="nextButton" type="button"  value="Seuraava" name="next" hidden>');
+	$('#controlarea').append('<input id="listenButton" type="button"  value="Kuuntele" name="listen" hidden><br>');
 	$('#controlarea').append('<input id="againButton" type="button"  value="Uudestaan" name="next" hidden>');
+	$('#controlarea').append('<input id="nextButton" type="button"  value="Seuraava" name="next" hidden>');
 
 	$('#nextButton').on('click', populateTest );
 	$('#nextButton').on('touchend', populateTest );
@@ -306,6 +306,7 @@ function startSync() {
 
 
 function cancelSync() {
+    $('#timer').pietimer('reset');
     $.ajax({
         type: 'GET',
         url:  base_url+'/sync/cancel',
@@ -318,6 +319,7 @@ function cancelSync() {
 
 
 function finishSync(waitingTime) {
+    $('#timer').pietimer('reset');
 
     $('#stimulus').html(testListData.trial.stimulus_2);
 
@@ -338,6 +340,7 @@ function finishSync(waitingTime) {
 }
 
 function startSyncRec() {
+    $('#timer').pietimer('reset');
     $('#controlarea').html('<input id="startRecording" type="button" value="Aloita nauhoitus" hidden>');
     //$('#startRecording').bind('click', startRecord);
     //$('#startRecording').bind('touchend', startRecord);
@@ -419,14 +422,14 @@ function playRecording () {
     if (controls == "full_forced_listening" ) {
 	document.getElementById('recordedObject').addEventListener('ended', activateNext());
 	$('#stimulus').html(testListData.trial.stimulus_2);
-	$('#listenButton').attr("hidden", true);
+	//$('#listenButton').attr("hidden", true);
     }
     document.getElementById('recordedObject').play();
 }
 
 function activateNext() {
-    $('#nextButton').attr("hidden", false);
     $('#againButton').attr("hidden", false);
+    $('#nextButton').attr("hidden", false);
 }
 
 
