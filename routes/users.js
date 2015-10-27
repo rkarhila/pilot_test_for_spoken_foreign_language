@@ -40,26 +40,52 @@ router.get('/', function(req, res, next) {
 router.get('/userlist/admins', function(req, res) {
     var db = req.db;
     var collection = db.get('userlist');
-    collection.find({'role': { $in: ['local-admin', 'global-admin']}},{ fields : {password:0}},function(e,docs){
-        res.json(docs);
-    });
+    if (req.user.role=='teacher' || req.user.role=='local-admin') {		
+	collection.find({'role': 'global-admin', 'status':'active'},{ fields : {password:0}},function(e,docs){
+	    collection.find({'role': 'local-admin', 'school': req.user.school, 'status':'active'},{ fields : {password:0}},function(e,docs2){	    
+		res.json(docs.concat(docs2));
+	    });
+	});
+    }
+    else {
+	collection.find({'role': { $in: ['local-admin', 'global-admin']}, 'status':'active'},{ fields : {password:0}},function(e,docs){
+            res.json(docs);
+	});
+    }
 });
 
 router.get('/userlist/teachers', function(req, res) {
     var db = req.db;
     var collection = db.get('userlist');
-    collection.find({'role': 'teacher'},{fields : {password:0}},function(e,docs){
-        res.json(docs);
-    });
+
+    if (req.user.role=='teacher' || req.user.role=='local-admin') {	
+	collection.find({'role': 'teacher', 'school' : req.user.school, 'status':'active'},{fields : {password:0}},function(e,docs){
+            res.json(docs);
+	});
+    }
+    else 
+    {
+	collection.find({'role': 'teacher', 'status':'active'},{fields : {password:0}},function(e,docs){
+	    res.json(docs);
+	});
+    }
 });
 
 
 router.get('/userlist/users', function(req, res) {
     var db = req.db;
     var collection = db.get('userlist');
-    collection.find({'role': 'user'},{sort: {_id:1}},function(e,docs){
-        res.json(docs);
-    });
+
+    if (req.user.role=='teacher' || req.user.role=='local-admin') {	
+	collection.find({'role': 'user', 'school': req.user.school, 'status':'active' },{sort: {_id:1}},function(e,docs){
+            res.json(docs);
+	});
+    }
+    else {
+	collection.find({'role': 'user', 'status':'active'},{sort: {_id:1}},function(e,docs){
+            res.json(docs);
+	});
+    }
 });
 
 /*
@@ -157,10 +183,46 @@ router.post('/adduser/:userrole', function(req, res) {
 		    var usertrials = [];
 		    var evaluations = {};
 
-		    var i=-1;
+		    var testsdone = {};
+
+		    //var i=-1;
+
+		    for (var i=0; i< test.tasks.length; i++) {
+			var task=test.tasks.filter(function(p) { return p.task_order== i })[0];
+
+			usertasks.push(task.task_id);
+			evaluations[task.task_id] = {'phonetic':{}, 'fluency':{}};
+			testsdone[task.task_id] = {};
+			
+			trialcounts=task["trial_counts"];
+			for (var j = 0; j < trialcounts.length; j++) {
+
+			    var pool=task["trial_pools"][j];
+			    var trialcount=trialcounts[j];
+
+			    if (task["random_order"]=="yes") {
+				shuffled_pool=shuffle(pool);
+				usertrials.push(shuffled_pool.slice(0,trialcount) )
+
+			    }
+			    else {
+				usertrials.push(pool.slice(0,trialcount) )		    
+			    }
+			}
+			usertrials[i].forEach( function(trial_id) {
+			    testsdone[ task.task_id ][trial_id] = false;
+			});	
+		    }
+			
+
+		    /*
 		    while ( typeof(test["tasks"][++i]) !== 'undefined') {
 			usertasks.push( test["tasks"][i].task_id );
-			evaluations[i]={'phonetic':{}, 'fluency':{}};
+
+			evaluations[ test["tasks"][i].task_id ]={'phonetic':{}, 'fluency':{}};
+
+			testsdone[ test["tasks"][i].task_id ] = {};
+
 			trialcounts=test["tasks"][i]["trial_counts"];
 			for (var j = 0; j < trialcounts.length; j++) {
 
@@ -170,24 +232,32 @@ router.post('/adduser/:userrole', function(req, res) {
 			    if (test["tasks"][i]["random_order"]=="yes") {
 				shuffled_pool=shuffle(pool);
 				usertrials.push(shuffled_pool.slice(0,trialcount) )
+
 			    }
 			    else {
 				usertrials.push(pool.slice(0,trialcount) )		    
 			    }
 			}
+			usertrials[i].forEach( function(trial_id) {
+			    testsdone[ test["tasks"][i].task_id ][trial_id] = false;
+			});
 		    }
-		    
-		    // Add-on: An array of all tasks and trials to make it easier to handle:
+		    */
 
+
+		    // Add-on: An array of all tasks and trials to make it easier to handle:
+		    /*
 		    var testsdone={};
 
 		    for(var task in usertasks){
+
 			testsdone[task]={};
+
 			for (var trial in usertrials[task]) {
 			    testsdone[task][trial]= false;
 			}
 		    }
-
+		    */
 		    //usertasks.push(i); // Is this a good idea?
 
 
@@ -197,6 +267,13 @@ router.post('/adduser/:userrole', function(req, res) {
 		    addable.testcount=0;				
 		    addable.evaluations=evaluations; //{'phonetic':{}, 'fluency':{}};
 
+		    addable.status= 'active';
+
+		    addable.created = new Date().toISOString();
+		    addable.last_modified = addable.created;
+
+		    addable.created_by= req.user.username;
+		    addable.last_modified_by= req.user.username;
 
 		    usernamelist[addable.username] = true;
 
@@ -234,6 +311,16 @@ router.post('/adduser/:userrole', function(req, res) {
 		    addable.username=req.body.newusername;
 		    delete addable.newusername;
 
+		    addable.status= 'active';
+
+		    addable.created = new Date().toISOString();
+		    addable.last_modified = addable.created;
+
+		    addable.created_by= req.user.username;
+		    addable.last_modified_by= req.user.username;
+
+
+
 		    collection.insert(addable, function(err, result){
 			res.send(
 			    (err === null) ? { msg: '' } : { msg: err }
@@ -255,9 +342,12 @@ router.delete('/deleteuser/:id', function(req, res) {
     var db = req.db;
     var collection = db.get('userlist');
     var userToDelete = req.params.id;
-    collection.remove({ '_id' : userToDelete }, function(err) {
-        res.send((err === null) ? { msg: '' } : { msg:'error: ' + err });
-    });
+    //collection.remove({ '_id' : userToDelete }, function(err) {
+    collection.update({ '_id': req.params.id  }, 
+                      { $set:  {status: 'deleted' } }, 
+		      function(err) {
+			  res.send((err === null) ? { msg: '' } : { msg:'error: ' + err });
+		      });
 });
 
 module.exports = router;

@@ -299,7 +299,7 @@ function startSync() {
 	    $('#syncCancelButton').disabled = true;
 	    console.log('finishsync in ' + (parseInt(response.nextcheck)/1000)+ ' s');
 	    setTimeout(finishSync, parseInt(response.nextcheck));
-	}	
+	}
 	console.log(response);
     });
 }

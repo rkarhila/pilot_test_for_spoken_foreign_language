@@ -35,7 +35,8 @@ router.get('/user/:user/task/:task/trial/:trial', function(req, res, next) {
     var db = req.db;    
     var collection = db.get('userlist');
 
-    var showinstructions = (req.params.trial < 1);
+    //var showinstructions = (req.params.trial < 1);
+    var showinstructions;
 
     collection.findOne({ "username" : req.user.username },{},function(e,usertest){
 
@@ -55,8 +56,8 @@ router.get('/user/:user/task/:task/trial/:trial', function(req, res, next) {
 		console.log("Found trials (lots of them? "+all_trials.length+")");
 		
 		// extract the task arrays for this particular user:
-		var usertask=usertest['tasks'][req.params.task];
-		var usertrial=usertest['trials'][req.params.task][req.params.trial];
+		var usertask=req.params.task;
+		var usertrial=req.params.trial;
 
 		var donetrials=usertest['testsdone'];
 
@@ -77,29 +78,35 @@ router.get('/user/:user/task/:task/trial/:trial', function(req, res, next) {
 		total_length=0;
 
 		usertest.tasks.forEach(function(task_item, task_index) {
-		    console.log(task_index+ "\t "+task_item);
+		    console.log(task_index+ " -->  "+task_item);
 		    usertest.trials[task_index].forEach(function(trial_item, trial_index) {
-			console.log('   '+trial_index +"\t   " + trial_item);
-			if (  task_index== req.params.task && trial_index == req.params.trial ) {
+			
+			console.log(task_index+'.'+trial_index +" --> " + task_item+'.'+trial_item);
+			
+			if (  task_item == req.params.task && trial_item == req.params.trial ) {
 			    style="now";
+			    if (trial_index == 0) {
+				showinstructions = true;
+			    }
+
 			    // Since this is the active test, the next one in the loop has to be the 
 			    // next test:
 			    next_triggers=true;
 			}
-			else if (  usertest.testsdone[ task_index ][  trial_index ] ) {
+			else if (  usertest.testsdone[ task_item ][  trial_item ] ) {
 			    style="past";
 			}
 			else {
 			    style="future";
 			    if (next_triggers==true) {
 				console.log('next triggered!');
-				if (  usertest.testsdone[ task_index ][  trial_index ] == false ) { 
-				    nexttask = task_index;
-				    nexttrial = trial_index;
+				if (  usertest.testsdone[ task_item ][  trial_item ] == false ) { 
+				    nexttask = task_item;
+				    nexttrial = trial_item;
 				    next_triggers=false;
 				}
 				else {
-				    console.log('usertest.testsdone['+ task_index+' ]['+ trial_index+' ] == ' + usertest.testsdone[ task_index ][  trial_index ]  );
+				    console.log('usertest.testsdone['+ task_item+' ]['+ trial_item+' ] == ' + usertest.testsdone[ task_item ][  trial_item ]  );
 				}
 			    }
 			}
@@ -107,8 +114,8 @@ router.get('/user/:user/task/:task/trial/:trial', function(req, res, next) {
 			    filter(function(p) { return p.task_id== task_item }).
 			    filter(function(p) { return p.trial_id==trial_item })[0].response_time;
 			
-			all_tests.push( { task_id: task_index,
-					  trial_id: trial_index , 
+			all_tests.push( { task_id: task_item,
+					  trial_id: trial_item , 
 					  style: style,
 					  length: resp_time });
 			total_length += parseInt(resp_time);
@@ -185,7 +192,7 @@ router.get('/user/:user/task/:task/trial/:trial', function(req, res, next) {
 		    }
 		}*/
 
-		console.log('Filtering by task_id==='+usertask);
+		console.log('Filtering by task_id==='+usertask+' and trial_id=='+usertrial);
 		//console.log( all_tasks.filter(filterByTaskID, usertest.tasks[req.params.task]) )
 
 		

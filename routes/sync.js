@@ -3,8 +3,8 @@ var router = express.Router();
 
 
 
-var match_interval = 5000; // 3000 ms interval for checking pairings:
-
+var match_interval = 5 * 1000; // 5s interval for checking pairings:
+var max_timedelta = 7 * 1000 // 60s max time for making a match
 
 function timestamp() {
     return Date.now();
@@ -80,17 +80,17 @@ router.get('/:initiator/:target', function(req, res, next) {
 	    }	    
 	    // Badly done looping. What can you do? I'm in a hurry.	
 
+	    
 	    else if (   typeof(initiator.pairing) !== 'undefined' 
-		     && initiator.pairing.done 
 		     && initiator.pairing.user == target.username 
 		     && typeof(target.pairing) !== 'undefined' 
-		     && target.pairing.done 
-		     && target.pairing.user == initiator.username )
+		     && target.pairing.user == initiator.username 
+		     && (parseInt(timestamp()) - parseInt(target.pairing.time)) < max_timedelta )
 	    {
 		// Cool. Match might be done!
 		// Let the games commence!
 		console.log('Matching '+initiator.username + ' & '+target.username);
-		res.json({code:'101', msg:'Match! Let\'s go right now!' });		
+		res.json({code:'101', msg:'Match! Let\'s go right now!' });
 	    }
 	    else {
 		// What happens here?
@@ -114,10 +114,14 @@ router.get('/:initiator/:target', function(req, res, next) {
 		if (typeof(target.pairing) === 'undefined') {
 		    console.log('target.pairing === undefined kohteella '+target.username );
 		    // Not cool yet. The target has not accepted any pairing yet.		    
+		    initiator.pairing.time= timestamp();
+		    updateinit=true;		    
 		    res_json={code:'10002', msg:'Odotetaan hyväksyntää käyttäjältä '+ target.username+'!'};
 		} 
 		else if (target.pairing.user !== initiator.username) {
 		    console.log('Usernames target: '+ target.pairing.usename + ' and initiator: '+ initiator.username + ' do not match' );
+		    initiator.pairing.time= timestamp();
+		    updateinit=true;
 		    // Also not cool. The target is trying to pair with someone else.
 		    res_json={code:'10002', msg:'Odotetaan hyväksyntää käyttäjältä '+target.username+'!'};
 		}

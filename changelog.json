@@ -10,7 +10,11 @@
 	{
 	    "fi": 
 	    [
-		"Muutosloki lisätty."
+		"Muutosloki lisätty",
+		"Tehtävänumerointi yhtenäistetty",
+		"Paritehtävän synkronointia säädetty",
+		"Käyttäjähallinto vain omalle koululle"
+		
 	    ],
 	    "en":
 	    [
