@@ -20,9 +20,11 @@ block content
 
           // VIDEO AND CONTROLS
           #userControls
-               p Käyttäjä: #[=user.username]
+               p Käyttäjätunnus: #[=user.username]
                  br
-                 | Tehtävä: #[span#taskCounter]
+                 a(href="logout") Kirjaudu ulos
+                 //br
+                 //| Tehtävä: #[span#taskCounter]
                #recording(class="blink_me")
                //video#uservideo(autoplay muted)
                video#camera-preview(autoplay muted)
@@ -79,8 +81,8 @@ block content
 
           // /USER INFO
 
-      #backtosquareone
-          a(href="logout") Kirjaudu ulos
+      //#backtosquareone
+          //a(href="logout") Kirjaudu ulos
 
 block scripts
     -if (user.username)
