@@ -124,7 +124,7 @@ router.post('/adduser/:userrole', function(req, res) {
        |  TODO: Fix this when some test version control
        |        is accomplished
        V                                                */			
-    testcollection.findOne( { version: 1 },{},function(e,test){ 
+    testcollection.findOne( { version: 2 },{},function(e,test){ 
 	
 	// Check the test proceeding and generate an individual order for
 	// trials for this user

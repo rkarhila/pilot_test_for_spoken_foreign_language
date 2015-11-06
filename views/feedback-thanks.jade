@@ -1,0 +1,23 @@
+doctype html
+html
+  head
+    title= title
+    <link rel="stylesheet" href="#{base_url}/stylesheets/style.css">
+    //link(rel='stylesheet', href ='{base_url}/stylesheets/style.css')
+  body
+    block content
+    -if(error_message)
+        div#error #{error_message}
+    -if(success_message)
+        div#success #{success_message}
+
+  h2 Ha det bra! Jättekiva fiilis!
+
+
+
+    script(src='#{base_url}/javascripts/jquery-2.0.3.min.js')
+    script(type='text/javascript').
+        var lang =!{JSON.stringify( ui_language )};
+    script(type='text/javascript').
+        var base_url =!{JSON.stringify( base_url )};
+    block scripts

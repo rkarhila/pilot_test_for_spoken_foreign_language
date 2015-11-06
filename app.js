@@ -25,6 +25,7 @@ var uploads = require('./routes/uploads');
 var answers = require('./routes/answers');
 var evaluate = require('./routes/evaluate');
 var sync = require('./routes/sync');
+var feedback = require('./routes/feedback');
 
 // User management imports:
 var passport = require('passport');
@@ -317,6 +318,7 @@ app.use('/users', users);
 app.use('/test', test);
 app.use('/tasks', tasks);
 app.use('/sync', sync);
+app.use('/feedback', feedback);
 
 app.use('/upload', uploads);
 app.use('/answers', answers);

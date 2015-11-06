@@ -1,0 +1,175 @@
+doctype html
+html
+  head
+    title= title
+    <link rel="stylesheet" href="#{base_url}/stylesheets/style.css">
+    //link(rel='stylesheet', href ='{base_url}/stylesheets/style.css')
+  body
+    block content
+    -if(error_message)
+        div#error #{error_message}
+    -if(success_message)
+        div#success #{success_message}
+
+  form#feedbackform(name="feedback", action="/svenska/feedback", method="post")
+      fieldset
+          h2 Taustatiedot:
+
+          label Viimeisin kurssiarvosana:
+          select#inputLastGrade(type='text')
+              option(value="")  --- valitse ---
+              option(value="4") 4
+              option(value="5") 5
+              option(value="6") 6
+              option(value="7") 7
+              option(value="8") 8
+              option(value="9") 9
+              option(value="10") 10            
+          br
+          br
+          br
+
+          label Oletko suorittanut ruotsin suullisen kielitaidon kurssin?
+          select#inputSpokenCourse(type='text')
+              option(value="y") Kyllä
+              option(value="n") En
+          br
+          br
+          br
+          br
+
+          label Biologinen sukupuoli: 
+          select#inputSex(type='text')
+              option(value="") --- valitse ---
+              option(value="female") Nainen (XX-kromosomit)
+              option(value="male") Mies (XY-kromosomit)
+          br
+          br
+          br
+          br
+          //label Koettu sukupuoli:
+          //select#inputGender(type='text')
+          //    option(value="")  --- valitse ---
+          //    option(value="1",disabled) Nainen
+          //    option(value="2",disabled) Mies
+          //    option(value="3",disabled) Siltä väliltä
+          //    option(value="4",disabled) Poikatyttö
+          //    option(value="5",disabled) Naistenmies
+          //    option(value="6",disabled) Miesasiamies
+          //    option(value="7",disabled) Palohenkilö
+          //    option(value="8",disabled) Jokin trans-alkuinen
+          //    option(value="9") Ei kuulu sulle
+          //    option(value="10",disabled) Muu, mikä?
+          //    option(value="11") Ihan sama, kaikille on tilaa tällä pallolla
+          //br
+          //br
+
+          h2 Itsearviointi:
+ 
+          p Lue seuraava kuvaus taidosta puhua ruotsia ja vertaa omaa suoritustasi siihen:
+          //Puhutun ruotsin tason B1.1 kuvaus on seuraava:
+
+          ul
+            li Osaa kertoa tutuista asioista myös joitakin yksityiskohtia. Selviytyy 
+              | kielialueella tavallisimmista arkitilanteista ja epävirallisista keskusteluista. 
+              | Osaa viestiä itselleen tärkeistä asioista myös hieman vaativammissa tilanteissa.
+              | Pitkäkestoinen esitys tai käsitteelliset aiheet tuottavat ilmeisiä vaikeuksia.
+            li Pitää yllä ymmärrettävää puhetta, vaikka pitemmissä puhejaksoissa esiintyy taukoja
+              | ja epäröintiä.
+            li Ääntäminen on selvästi ymmärrettävää, vaikka vieras korostus on joskus ilmeistä ja
+              | ääntämisvirheitä esiintyy jonkin verran.
+            li Osaa käyttää melko laajaa jokapäiväistä sanastoa ja joitakin yleisiä fraaseja ja 
+              | idiomeja. Käyttää useita erilaisia rakenteita.
+            li Laajemmassa vapaassa puheessa kielioppivirheet ovat tavallisia (esim. artikkeleita
+              | ja päätteitä puuttuu), mutta ne haittaavat harvoin ymmärrettävyyttä.
+
+          label Oma arvio kokeen suorituksesta:
+          select#inputSelfAssessment(type='text')
+              option(value="")  --- valitse ---
+              option(value="+") Paremmin kuin kuvatulla tasolla
+              option(value="=") Osapuilleen kuvatulla tasolla
+              option(value="-") Huonommin kuin kuvatulla tasolla
+          br
+          br
+          br
+          br
+
+          h2 Palautetta testistä: 
+
+          h3 Puhekokeen tekninen toteutus:          
+
+          label Mikä toimi hyvin?
+          textarea#inputWhatWorkedTechnically(type='textarea', rows='6' cols='35', placeholder='')
+          br
+          br
+          label Mikä hankaloitti kokeen tekoa?
+          textarea#inputWhatMadeItHarder(type='textarea', rows='6' cols='35', placeholder='')
+          br
+          br
+          label Mitä neuvoja/ideoita antaisit kehittäjille?
+          textarea#inputWhatAdvice(type='textarea', rows='6' cols='35', placeholder='')
+          br
+          br
+ 
+          h3 Koetehtävät:
+          label Tehtävien vaikeus:
+          select#inputDifficultyGeneral(type='text')
+              option(value="")  --- valitse ---
+              option(value="liianhelppo") Liian helppoja
+              option(value="helpohko") Helpohkoja
+              option(value="sopiva") Sopivia
+              option(value="vaikea") Vaikeita
+              option(value="liianvaikea") Liian vaikeita
+          br
+          br
+          label Miksi?
+          textarea#inputDifficultyWhy(type='textarea', rows='6' cols='35', placeholder='')
+          br
+          br         
+          label Tehtävien määrä:
+          select#inputTaskCount(type='text')
+              option(value="")  --- valitse ---
+              option(value="liikaatehtäviä") Liikaa tehtäviä
+              option(value="sopiva") Sopivasti tehtäviä
+              option(value="liianvähäntehtäviä") Liian vähän tehtäviä
+          br
+          br
+          label Mikä tehtävä toimi hyvin?
+          textarea#inputWhatWorkedAsTest(type='textarea', rows='6' cols='35', placeholder='')
+          br
+          br
+          label Mitkä tehtävät olivat mielestäsi huonoja? Miksi?
+          textarea#inputWhatDidntWorkAsTest(type='textarea', rows='6' cols='35', placeholder='')
+          br
+          br
+          label Millainen tehtävä olisi hyvä lisätä mukaan?
+          textarea#inputWhatCouldBeAdded(type='textarea', rows='6' cols='35', placeholder='')
+          br
+          br
+          label Kokeen kesto:
+          select#inputTestLength(type='text')
+              option(value="")  --- valitse ---
+              option(value="liianpitkä") Liian pitkä
+              option(value="sopiva") Sopiva
+              option(value="liianlyhyt") Liian lyhyt
+          br
+          br
+          label Mikä olisi mielestäsi sopiva puhekokeen kestoaika?
+          textarea#inputIdealTestLength(type='textarea', rows='6' cols='35', placeholder='')
+          br
+          br
+
+          h2 Vapaa sana:
+          label Vapaita kommentteja:
+          textarea#inputFree(type='textarea', rows='6' cols='35', placeholder='')
+          br
+          input#btnSend(type='submit', value='Lähetä palaute')
+
+
+
+    script(src='#{base_url}/javascripts/jquery-2.0.3.min.js')
+    script(type='text/javascript').
+        var lang =!{JSON.stringify( ui_language )};
+    script(type='text/javascript').
+        var base_url =!{JSON.stringify( base_url )};
+    block scripts

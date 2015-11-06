@@ -12,7 +12,7 @@ router.get('/', function(req, res, next) {
 	
 	var db = req.db;    
 	testcollection = db.get('tests');
-	testcollection.findOne( {}, {}, function(e,test) {	    
+	testcollection.findOne( {version: 2}, {}, function(e,test) {	    
 
 	    console.log(test);
 
