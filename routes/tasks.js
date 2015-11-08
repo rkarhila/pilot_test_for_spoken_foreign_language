@@ -12,15 +12,15 @@ router.get('/', function(req, res, next) {
 	
 	var db = req.db;    
 	testcollection = db.get('tests');
-	testcollection.findOne( {version: 2}, {}, function(e,test) {	    
+	testcollection.find( {version: { $in: ['3a','3b'] }}, {}, function(e,tests) {	    
 
-	    console.log(test);
+	    console.log(tests);
 
 	    // Respond with the test view/edit template:
 	    res.render('testmanager', { title: 'Testing!', 
 					user: req.user , 
 					base_url: req.base_url,
-					test: test,
+					tests: tests,
 					ui_language: req.ui_language,
 					error_message: req.flash('error'), 
 					success_message: req.flash('error') 

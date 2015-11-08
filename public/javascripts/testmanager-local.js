@@ -145,6 +145,11 @@ function previewTrial(task_id, trial_id){
     $('#EditTrialMediaType').text( taskList[task_id].trials[trial_id].mediatype );
     $('#EditTrialStimulus').html( taskList[task_id].stimulus_layout);
     $('#stimulus').html( taskList[task_id].trials[trial_id].stimulus );
+    if (taskList[task_id].controls == "feedback") {
+	$('#stimulus').html("<iframe src=\""+base_url+"feedback\" width=100% height=100%>");
+    } else {
+	console.log(taskList[task_id]);
+    }
     $('#EditTrialResponseTime').text( taskList[task_id].trials[trial_id].response_time );
     
 

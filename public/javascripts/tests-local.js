@@ -248,6 +248,13 @@ function showTrial( data ) {
     else if (controls == "None" ) {
 	$('#controlarea').html('');
     }
+    else if (controls == "feedback") {
+	$('#controlarea').html("");
+	$('#testwrapper').css('height','90%');
+	$('#testarea').css('height','90%');
+	$('#testarea').html("<iframe src=\""+base_url+"feedback\" width=100% height=100%>");
+    }
+
 }
 
 function prepareSync() {

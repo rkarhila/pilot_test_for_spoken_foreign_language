@@ -11,12 +11,12 @@ html
     -if(success_message)
         div#success #{success_message}
 
-  form#feedbackform(name="feedback", action="/svenska/feedback", method="post")
+  form(name="feedbackform", action="#{base_url}/feedback", method="post", enctype="application/x-www-form-urlencoded")
       fieldset
           h2 Taustatiedot:
 
           label Viimeisin kurssiarvosana:
-          select#inputLastGrade(type='text')
+          select#inputLastGrade(type='text', name='background-grade_of_last_course')
               option(value="")  --- valitse ---
               option(value="4") 4
               option(value="5") 5
@@ -30,7 +30,8 @@ html
           br
 
           label Oletko suorittanut ruotsin suullisen kielitaidon kurssin?
-          select#inputSpokenCourse(type='text')
+          select#inputSpokenCourse(type='text', name='background-spoken_class_taken')
+              option(value="") --- valitse ---
               option(value="y") Kyllä
               option(value="n") En
           br
@@ -39,7 +40,7 @@ html
           br
 
           label Biologinen sukupuoli: 
-          select#inputSex(type='text')
+          select#inputSex(type='text', name='background-sex')
               option(value="") --- valitse ---
               option(value="female") Nainen (XX-kromosomit)
               option(value="male") Mies (XY-kromosomit)
@@ -84,7 +85,7 @@ html
               | ja päätteitä puuttuu), mutta ne haittaavat harvoin ymmärrettävyyttä.
 
           label Oma arvio kokeen suorituksesta:
-          select#inputSelfAssessment(type='text')
+          select#inputSelfAssessment(type='text', name='background-self_assessment')
               option(value="")  --- valitse ---
               option(value="+") Paremmin kuin kuvatulla tasolla
               option(value="=") Osapuilleen kuvatulla tasolla
@@ -99,21 +100,21 @@ html
           h3 Puhekokeen tekninen toteutus:          
 
           label Mikä toimi hyvin?
-          textarea#inputWhatWorkedTechnically(type='textarea', rows='6' cols='35', placeholder='')
+          textarea#inputWhatWorkedTechnically(type='textarea', rows='6' cols='35', placeholder='', name='feedback-technical-what_worked')
           br
           br
           label Mikä hankaloitti kokeen tekoa?
-          textarea#inputWhatMadeItHarder(type='textarea', rows='6' cols='35', placeholder='')
+          textarea#inputWhatMadeItHarder(type='textarea', rows='6' cols='35', placeholder='', name='feedback-technical-what_made_it_difficult')
           br
           br
           label Mitä neuvoja/ideoita antaisit kehittäjille?
-          textarea#inputWhatAdvice(type='textarea', rows='6' cols='35', placeholder='')
+          textarea#inputWhatAdvice(type='textarea', rows='6' cols='35', placeholder='', name='feedback-technical-ideas_to_developers')
           br
           br
  
           h3 Koetehtävät:
           label Tehtävien vaikeus:
-          select#inputDifficultyGeneral(type='text')
+          select#inputDifficultyGeneral(type='text', name='feedback-tasks-difficulty')
               option(value="")  --- valitse ---
               option(value="liianhelppo") Liian helppoja
               option(value="helpohko") Helpohkoja
@@ -123,7 +124,7 @@ html
           br
           br
           label Miksi?
-          textarea#inputDifficultyWhy(type='textarea', rows='6' cols='35', placeholder='')
+          textarea#inputDifficultyWhy(type='textarea', rows='6' cols='35', placeholder='', name='feedback-tasks-difficulty_why')
           br
           br         
           label Tehtävien määrä:
@@ -135,19 +136,19 @@ html
           br
           br
           label Mikä tehtävä toimi hyvin?
-          textarea#inputWhatWorkedAsTest(type='textarea', rows='6' cols='35', placeholder='')
+          textarea#inputWhatWorkedAsTest(type='textarea', rows='6' cols='35', placeholder='', name='feedback-tasks-which_worked')
           br
           br
           label Mitkä tehtävät olivat mielestäsi huonoja? Miksi?
-          textarea#inputWhatDidntWorkAsTest(type='textarea', rows='6' cols='35', placeholder='')
+          textarea#inputWhatDidntWorkAsTest(type='textarea', rows='6' cols='35', placeholder='', name='feedback-tasks-which_bad')
           br
           br
           label Millainen tehtävä olisi hyvä lisätä mukaan?
-          textarea#inputWhatCouldBeAdded(type='textarea', rows='6' cols='35', placeholder='')
+          textarea#inputWhatCouldBeAdded(type='textarea', rows='6' cols='35', placeholder='', name='feedback-tasks-what_to_add')
           br
           br
           label Kokeen kesto:
-          select#inputTestLength(type='text')
+          select#inputTestLength(type='text', name='feedback-tasks-test_length')
               option(value="")  --- valitse ---
               option(value="liianpitkä") Liian pitkä
               option(value="sopiva") Sopiva
@@ -155,13 +156,13 @@ html
           br
           br
           label Mikä olisi mielestäsi sopiva puhekokeen kestoaika?
-          textarea#inputIdealTestLength(type='textarea', rows='6' cols='35', placeholder='')
+          textarea#inputIdealTestLength(type='textarea', rows='6' cols='35', placeholder='', name='feedback-tasks-ideal_length')
           br
           br
 
           h2 Vapaa sana:
           label Vapaita kommentteja:
-          textarea#inputFree(type='textarea', rows='6' cols='35', placeholder='')
+          textarea#inputFree(type='textarea', rows='6' cols='35', placeholder='', name='feedback-free')
           br
           input#btnSend(type='submit', value='Lähetä palaute')
 

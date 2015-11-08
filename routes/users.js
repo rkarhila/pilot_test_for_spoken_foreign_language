@@ -124,7 +124,8 @@ router.post('/adduser/:userrole', function(req, res) {
        |  TODO: Fix this when some test version control
        |        is accomplished
        V                                                */			
-    testcollection.findOne( { version: 2 },{},function(e,test){ 
+
+    testcollection.find( { version: { $in: ["3a", "3b" ] }},{},function(e,tests){ 
 	
 	// Check the test proceeding and generate an individual order for
 	// trials for this user
@@ -168,6 +169,16 @@ router.post('/adduser/:userrole', function(req, res) {
 
 		for (var y=0; y<addcount; y++) {
 
+
+		    if (Math.random()<0.5) {
+			ver='3a';
+			test = tests[0];
+		    }
+		    else {
+			ver = '3b';
+			test = tests[1];
+		    }
+
 		    console.log("addable #"+y);
 
 		    do {
@@ -186,6 +197,7 @@ router.post('/adduser/:userrole', function(req, res) {
 		    var testsdone = {};
 
 		    //var i=-1;
+
 
 		    for (var i=0; i< test.tasks.length; i++) {
 			var task=test.tasks.filter(function(p) { return p.task_order== i })[0];
@@ -259,6 +271,8 @@ router.post('/adduser/:userrole', function(req, res) {
 		    }
 		    */
 		    //usertasks.push(i); // Is this a good idea?
+
+		    addable.testversion = ver;
 
 
 		    addable.tasks=usertasks;

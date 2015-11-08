@@ -16,37 +16,40 @@ block content
 
   // Wrapper
   #wrapper
+    #testDefinition
+      h2 Testimääritelmä
 
-      #testDefinition
-          h2 Testimääritelmä
-          strong Version:
-          = test.version
-          h3 Tasks
-      #taskList
-          table
-              thead
-                  th Id
-                  th Order
-                  th Help 
-                  th Trial_pools
-                  th Trial_counts
-                  th Random_order
-              tbody
-              each val, index in test.tasks
-                  tr
-                    td #[a(href=['#task']+"#{val.task_id}") #{val.task_id}]
-                    td= val.task_order
-                    td= val.help
-                    td 
-                        each trialpool in val.trial_pools 
-                            =['[ ']
-                            each trial in trialpool
-                                #[a(href=['#task']+"#{val.task_id}_trial#{trial}") #{trial}] 
-                            =[' ] ']
-                    td
-                        each trialcount in val.trial_counts
-                            = trialcount 
-                    td= val.random_order
+      each test in tests
+        strong Version:
+        = test.version
+        h3 Tasks
+
+        #taskList
+            table
+                thead
+                    th Id
+                    th Order
+                    th Help 
+                    th Trial_pools
+                    th Trial_counts
+                    th Random_order
+                tbody
+                -if (test.tasks)
+                  each val, index in test.tasks
+                    tr
+                      td #[a(href=['#task']+"#{val.task_id}") #{val.task_id}]
+                      td= val.task_order
+                      td= val.help
+                      td 
+                          each trialpool in val.trial_pools 
+                              =['[ ']
+                              each trial in trialpool
+                                  #[a(href=['#task']+"#{val.task_id}_trial#{trial}") #{trial}] 
+                              =[' ] ']
+                      td
+                          each trialcount in val.trial_counts
+                              = trialcount 
+                      td= val.random_order
 
       // TASK_EDITOR
       #taskEditor

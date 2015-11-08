@@ -111,6 +111,7 @@ function populateTable() {
             tableContent += '<td>' + this.teacher + '</td>';
             tableContent += '<td>' + this.yearclass + '</td>';
             tableContent += '<td>' + this.languageclass + '</td>';
+            tableContent += '<td>' + (this.testversion || "2") + '</td>';
             tableContent += '<td>' + this.testcount + '</td>';
 
 	    // My god this is getting too complicated: A teacher making reviews should not see
