@@ -88,6 +88,12 @@ block scripts
     -if (user.username)
         script(type='text/javascript').
             var username =!{JSON.stringify( user.username )};
+    -if (noVideo)
+        script(type='text/javascript').
+            var noVideo =!{JSON.stringify( noVideo )};
+    -else
+        script(type='text/javascript').
+            var noVideo = 0;
     script(src='#{base_url}/javascripts/recorder.js')
     script(src='#{base_url}/javascripts/uploadfile.js')
     script(src='#{base_url}/javascripts/audio-analyser.js')

@@ -524,7 +524,8 @@ function startRecord() {
     
 
     $('startRecording').disabled = true;
-    navigator.getUserMedia({
+
+    var mediaparam = {
         audio: true,
         video: {
 	    "mandatory": {
@@ -532,7 +533,10 @@ function startRecord() {
                 "maxHeight": videomaxheight
 	    }
         }
-    }, function(stream) {
+    };
+
+    navigator.getUserMedia( mediaparam, function(stream) {
+
         cameraPreview.src = window.URL.createObjectURL(stream);
         cameraPreview.play();
 	
@@ -548,7 +552,7 @@ function startRecord() {
 	
         recordAudio.startRecording();
 	
-        if (!isFirefox) {
+        if (!isFirefox && !noVideo) {
 	    recordVideo.startRecording();
         }
 
@@ -590,7 +594,11 @@ function startRecord() {
 
 		document.getElementById('recordedObject').src=audioDataURL;		
 
-		if (!isFirefox) {
+		if (noVideo) {
+		    postFiles(audioDataURL);
+		}
+		else if (!isFirefox) {
+		    console.log("Getting data urls for video (not firefox)");
                     recordVideo.getDataURL(function(videoDataURL) {
 			postFiles(audioDataURL, videoDataURL);
 			//UploadFile(cameraPreview.src, "foo");
@@ -647,25 +655,38 @@ function postFiles(audioDataURL, videoDataURL) {
 
     var files = { };
 
-    files.audio = {
-        name: fileName + (isFirefox ? '.webm' : '.wav'),
-        type: isFirefox ? 'video/webm' : 'audio/wav',
-        contents: audioDataURL
-    };
-
-    if (!isFirefox) {
-        files.video = {
-            name: fileName + '.webm',
-            type: 'video/webm',
-            contents: videoDataURL
-        };
+    if (noVideo) {
+	files.audio = {
+            name: fileName + '.wav',
+            type: 'audio/wav',
+            contents: audioDataURL
+	};	
+    }
+    else {
+	files.audio = {
+            name: fileName + (isFirefox ? '.webm' : '.wav'),
+            type: isFirefox ? 'video/webm' : 'audio/wav',
+            contents: audioDataURL
+	};	
+	if (!isFirefox) {
+            files.video = {
+		name: fileName + '.webm',
+		type: 'video/webm',
+		contents: videoDataURL
+            };
+	}
     }
 
     files.isFirefox = isFirefox;
 
-    console.log("typeof files.video.contents: "+typeof(files.video.contents))
-    console.log("File length: " + (files.video.contents).length);
-
+    if (noVideo) {
+	console.log("typeof files.audio.contents: "+typeof(files.audio.contents))
+	console.log("File length: " + (files.audio.contents).length);	
+    }
+    else {
+	console.log("typeof files.video.contents: "+typeof(files.video.contents))
+	console.log("File length: " + (files.video.contents).length);
+    }
     if (!isFirefox) {	
 	UploadFile( JSON.stringify(files), fileName+'.*', uploadurl );
     } 

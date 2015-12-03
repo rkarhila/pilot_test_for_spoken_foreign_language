@@ -17,28 +17,48 @@ router.post('/:user/:task/:trial', function(req, res, next) {
     
     // writing audio file to disk
     
-    filePath = './uploads/raw_video/'+req.body.video.name;
-    
-    filecontents = files.video.contents.split(',').pop();
-    fileBuffer = new Buffer(filecontents, "base64");
-    fs.writeFileSync(filePath, fileBuffer);
-    var savemsg = 'Tallennettiin palvelimelle '+req.body.video.name;
-    
-    outputfilePath = './uploads/encoded_video/'+req.body.video.name;
+    var no_video = (process.env.NOVIDEO || 0);
 
-    if (!files.isFirefox) {
 
-	audiofilePath = './uploads/raw_video/'+req.body.audio.name;
-	audiofilecontents = files.audio.contents.split(',').pop();
-	audiofileBuffer = new Buffer(audiofilecontents, "base64");
-	fs.writeFileSync(audiofilePath, audiofileBuffer);	
-	savemsg += ' ja '+req.body.audio.name;
+    if (no_video)
+    {
+	filePath = './uploads/raw_video/'+req.body.audio.name;
+	filecontents = files.audio.contents.split(',').pop();
+	fileBuffer = new Buffer(filecontents, "base64");
+	fs.writeFileSync(filePath, fileBuffer);
+	var savemsg = 'Tallennettiin palvelimelle '+req.body.audio.name;
 
-        cmd='echo ffmpeg -y -i '+filePath+' -i '+audiofilePath+' -c:v libvpx -c:a '+audiocodec+' -strict experimental '+outputfilePath + ' >> /home/digitala/digitala-node/lets_encode.sh';
+	outputfilePath = './uploads/encoded_video/'+req.body.audio.name+'.ogg';
 
+	cmd='ffmpeg -y -i '+filePath+' -c:a '+audiocodec+' -strict experimental '+outputfilePath;
     }
+
     else {
-        cmd='echo ffmpeg -i '+filePath+' -c:v libvpx -c:a libvorbis -strict experimental '+outputfilePath + ' >> /home/digitala/digitala-node/lets_encode.sh';
+
+	filePath = './uploads/raw_video/'+req.body.video.name;
+    
+	filecontents = files.video.contents.split(',').pop();
+	fileBuffer = new Buffer(filecontents, "base64");
+	fs.writeFileSync(filePath, fileBuffer);
+	var savemsg = 'Tallennettiin palvelimelle '+req.body.video.name;
+	
+	outputfilePath = './uploads/encoded_video/'+req.body.video.name;
+
+    
+	if (!files.isFirefox) {
+	    
+	    audiofilePath = './uploads/raw_video/'+req.body.audio.name;
+	    audiofilecontents = files.audio.contents.split(',').pop();
+	    audiofileBuffer = new Buffer(audiofilecontents, "base64");
+	    fs.writeFileSync(audiofilePath, audiofileBuffer);	
+	    savemsg += ' ja '+req.body.audio.name;
+	    
+            cmd='ffmpeg -y -i '+filePath+' -i '+audiofilePath+' -c:v libvpx -c:a '+audiocodec+' -strict experimental '+outputfilePath;
+	    
+	}
+	else {
+            cmd='ffmpeg -i '+filePath+' -c:v libvpx -c:a libvorbis -strict experimental '+outputfilePath; // >> /home/rkarhila/node_swedish/lets_encode.sh';
+	}
     }
     //console.log('Encoding '+filePath+': '+cmd);
 
@@ -66,7 +86,13 @@ router.post('/:user/:task/:trial', function(req, res, next) {
                 if (!userdata.testsdone[params.task]) {
                     userdata.testsdone[params.task] = {}
                 }         
-                userdata.testsdone[params.task][params.trial]=req.body.video.name;
+
+		if (no_video) {
+                    userdata.testsdone[params.task][params.trial]=req.body.audio.name;		    
+		}
+		else {
+                    userdata.testsdone[params.task][params.trial]=req.body.video.name;
+		}
 
                 console.log(userdata.testsdone);
    
