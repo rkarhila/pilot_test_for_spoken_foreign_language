@@ -44,6 +44,8 @@ router.get('/all', function(req, res, next) {
 
 	    // Assign the trials to their parent tasks:
 	    all_trials.forEach(function (trial) {
+
+		console.log( "trial.task_id: " + trial.task_id  );
 		
 		if (typeof(all_tasks[trial.task_id].trials) == 'undefined') {
 		    all_tasks[trial.task_id].trials={};

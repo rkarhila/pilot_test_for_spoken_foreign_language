@@ -34,11 +34,11 @@ router.post('/:user/:task/:trial', function(req, res, next) {
 	fs.writeFileSync(audiofilePath, audiofileBuffer);	
 	savemsg += ' ja '+req.body.audio.name;
 
-        cmd='ffmpeg -y -i '+filePath+' -i '+audiofilePath+' -c:v libvpx -c:a '+audiocodec+' -strict experimental '+outputfilePath;
+        cmd='echo ffmpeg -y -i '+filePath+' -i '+audiofilePath+' -c:v libvpx -c:a '+audiocodec+' -strict experimental '+outputfilePath + ' >> /home/digitala/digitala-node/lets_encode.sh';
 
     }
     else {
-        cmd='ffmpeg -i '+filePath+' -c:v libvpx -c:a libvorbis -strict experimental '+outputfilePath; // >> /home/rkarhila/node_swedish/lets_encode.sh';
+        cmd='echo ffmpeg -i '+filePath+' -c:v libvpx -c:a libvorbis -strict experimental '+outputfilePath + ' >> /home/digitala/digitala-node/lets_encode.sh';
     }
     //console.log('Encoding '+filePath+': '+cmd);
 
