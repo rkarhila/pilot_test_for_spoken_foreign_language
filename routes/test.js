@@ -9,19 +9,80 @@ router.get('/', function(req, res, next) {
     
     if (req.user.role == 'user') {
 	// Respond with the basic test template:
-	res.render('tests', { title: 'Testing!', 
-			      user: req.user , 
-			      base_url: req.base_url,
-			      ui_language: req.ui_language,
-			      error_message: req.flash('error'), 
-			      success_message: req.flash('error'),
-			      noVideo: (process.env.NOVIDEO || 0)
-			    });
+
+        var test_review=[];
+
+        var db = req.db;
+	var collection = db.get('userlist');
+
+	collection.findOne({ "username" : req.user.username },{},function(e,usertest){
+	    // Use these collection variables to make the code slightly easier to read;                                                                                             
+            // and nest functions because I believe at the moment that it is the right thing to do...                                                                               
+            taskcollection = db.get('tasks');
+
+            // Get the task descriptions from database:                                                                                                                             
+            taskcollection.find( { "task_id" : { $in: usertest.tasks}}, {}, function(e,all_tasks) {
+		
+		console.log("Found tasks ");
+
+		// Get the trial description from the database:                                                                                                                
+		trialcollection = db.get('trials');
+		trialcollection.find({ "task_id" : { $in: usertest.tasks}},{},function(e,all_trials){
+		    
+		    console.log("Found trials (lots of them? "+all_trials.length+")");
+		
+
+                    all_tasks.forEach( function(thistask) { 
+			
+			var taskdict = { task_id : thistask.task_id };
+			
+			console.log(usertest);
+			
+			taskdict.num_trials = usertest.trials[usertest.tasks.indexOf(thistask.task_id)].length;
+			
+			var trial_lengths;
+			var maxtime=0;
+			var mintime=10000;
+			all_trials.forEach(function(thistrial) {
+			    if (thistrial.task_id == thistask.task_id) {
+				if (thistrial.response_time < mintime) {
+				    mintime = thistrial.response_time;
+				}
+				if (thistrial.response_time > maxtime) {
+				    maxtime = thistrial.response_time;
+				}			
+			    }
+			});
+			trial_lengths = (maxtime)+" s";
+			if (mintime != maxtime) {
+			    trial_lengths = (mintime)+"-"+trial_lengths;
+			}
+			
+			taskdict.trial_lengths = trial_lengths;
+			
+			taskdict.description = thistask.description;		   		    
+			
+			test_review[usertest.tasks.indexOf(thistask.task_id)] = taskdict;
+			
+		    });
+		    
+		    res.render('tests', { title: 'Testing!', 
+					  user: req.user , 
+					  base_url: req.base_url,
+					  ui_language: req.ui_language,
+					  error_message: req.flash('error'), 
+					  success_message: req.flash('error'),
+					  noVideo: (process.env.NOVIDEO || 0),
+					  test_review : test_review
+					});
+		});		
+	    });		    
+	});
     }
     else {
 	// Respond with the test view/edit template:
 	res.redirect(req.base_url+'/tasks');	
-    }
+    }  
     
 });
 

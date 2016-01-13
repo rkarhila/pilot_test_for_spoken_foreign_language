@@ -4,7 +4,11 @@ block content
   #cover 
 
   #instructions
-
+      p Tervetuloa kokeilemaan varhaista kehitysprototyyppiä 
+        | puhutun vieraan kielen koejärjestelmästä!
+      p Jokainen osio alkaa tällaisella infoikkunalla. Ensin voit 
+        | tarkastella edessäolevaa urakkaa.
+      a(href="#main", class="allClear") Tämä selvä!
   #main 
 
       //h1 Hejsan, pilot!
@@ -42,6 +46,20 @@ block content
           #testarea
 
               #taskarea 
+                  p Koe koostuu seuraavista osioista:
+
+                  ol
+                    each val, index in test_review
+                        li 
+                          //Tehtävä #{val.task_id}:
+                          b #{val.description}: 
+                          br
+                          i #{val.num_trials} 
+                          if val.num_trials == 1
+                            i tehtävä,
+                          else
+                            i tehtävää,
+                          i vastausaika max. #{val.trial_lengths} / tehtävä.
 
               #controlarea
                    //input#listenButton(type="button" onClick='toggle_play();' oncanplay='canaudioplay=1' value="Kuuntele" name="listen" disabled)
