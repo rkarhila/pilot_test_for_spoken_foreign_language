@@ -12,7 +12,7 @@ router.get('/', function(req, res, next) {
 	
 	var db = req.db;    
 	testcollection = db.get('tests');
-	testcollection.find( {version: { $in: ['3a','3b'] }}, {}, function(e,tests) {	    
+	testcollection.find( {version: { $in: ['3b','3c'] }}, {}, function(e,tests) {	    
 
 	    console.log(tests);
 

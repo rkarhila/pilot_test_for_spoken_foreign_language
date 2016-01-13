@@ -125,7 +125,7 @@ router.post('/adduser/:userrole', function(req, res) {
        |        is accomplished
        V                                                */			
 
-    testcollection.find( { version: { $in: ["3a", "3b" ] }},{},function(e,tests){ 
+    testcollection.find( { version: { $in: ["3b", "3c" ] }},{},function(e,tests){ 
 	
 	// Check the test proceeding and generate an individual order for
 	// trials for this user
@@ -171,11 +171,11 @@ router.post('/adduser/:userrole', function(req, res) {
 
 
 		    if (Math.random()<0.5) {
-			ver='3a';
+			ver='3b';
 			test = tests[0];
 		    }
 		    else {
-			ver = '3b';
+			ver = '3c';
 			test = tests[1];
 		    }
 

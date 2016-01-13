@@ -336,14 +336,17 @@ fieldset {
 
 /* From http://www.corelangs.com/css/box/fulloverlay.html */
 
+
+
 #main {
     position: absolute;
     top: 0px;
     left: 0px;
-    bottom: 0px;
-    background: #fcff00 none repeat scroll 0% 0%;
-    height: 100%;
+    background: #fcff00 url("/svenska/images/yellow.png") repeat fixed 0% 0%;
     width: 100%;
+    bottom: 0px;
+    height: 100%;
+
 }
 
 #cover{ 

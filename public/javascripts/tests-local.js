@@ -28,9 +28,16 @@ var messagelist = {
 $(document).ready(function() {
 
     // Populate the user table on initial page load
-    populateTest();
-    $('#btnNext').on('click', populateTest );
-    $('#btnNext').on('touchend', populateTest );
+    // populateTest();
+    // initView();
+    //$('#instructions').html("These are your instructions!");
+
+    $('#controlarea').append('<input id="nextButton" type="button"  value="Seuraava" name="next">');
+
+    $('#nextButton').on('click', populateTest );
+    $('#nextButton').on('touchend', populateTest );
+
+    $('#main').css('height', Math.max($( document ).height(), $(window).height()) +'px');
 
 });
 
@@ -66,11 +73,15 @@ function onElementHeightChange(elm, callback){
 
 
 $( window ).resize( function() {
-    $('#main').css('height', Math.max($( document ).height(), $(window).height()) +'px'); });
+    console.log("__1__ Changing doc height to  either " + $( document ).height() + " or "+ $(window).height() +'px')
+    $('#main').css('height', Math.max($( document ).height(), $(window).height()) +'px'); 
+});
 
 onElementHeightChange(document.body, function(){
+    console.log("__1__ Changing doc height to  either " + $( document ).height() + " or "+ $(window).height() +'px')
     $('#main').css('height', Math.max($( document ).height(), $(window).height()) +'px');
 });
+
 
 
 
@@ -80,6 +91,13 @@ onElementHeightChange(document.body, function(){
 function $id(id) {
     return document.getElementById(id);
 }
+
+
+
+function initView() {
+    $('#instructions').html("Tervetuloa tekemään puhutun kielen koepilottia! ");
+}
+
 
 var test;
 var testListData;
@@ -93,7 +111,8 @@ function showTrial( data ) {
     var swedometer="";
  
     data.all_tests.forEach(function (item) {	
-	swedometer+= "<div "+item.length+" style='min-width:"+((item.length/data.total_length*93))+"%;' class="+item.style+">"+item.task_id+"."+item.trial_id+"</div>";
+	//swedometer+= "<div "+item.length+" style='min-width:"+((item.length/data.total_length*93))+"%;' class="+item.style+">"+item.task_id+"."+item.trial_id+"</div>";
+	swedometer+= "<div "+item.length+" style='min-width:25px' class="+item.style+">"+item.task_id+"."+item.trial_id+"</div>";
     });
     swedometer += "</tr></table>";
     $('#swedometer').html(swedometer);
@@ -185,6 +204,30 @@ function showTrial( data ) {
 
 	$('#controlarea').append('<div id="timer"></div>');
 
+    }
+    else if (controls == "start_only_with_visible_stimulus") {
+
+	/* Start only use case:
+
+	   1. show prompt
+              show [ Record ]-button  ---> 2. start Timer,         ---->  3. Automatically
+                                              show [ stop ] button ---->     go to next task
+
+	*/	
+
+	$('#controlarea').html('<input id="startRecording" type="button" value="Aloita nauhoitus">');	
+	$('#startRecording').on('click', startRecord );
+	$('#startRecording').on('touchend', startRecord );
+
+	$('#stimulus').html(testListData.trial.stimulus);
+
+ 	$('#controlarea').append('<input id="stopRecording" type="button"  value="Lopeta nauhoitus" hidden>');
+ 	$('#controlarea').append('<input id="nextButton" type="button"  value="Seuraava" name="next" hidden>');
+
+	$('#nextButton').on('click', populateTest );	
+	$('#nextButton').on('touchend', populateTest );	
+
+	$('#controlarea').append('<div id="timer"></div>');
     }
     else if (controls == "start_only") {
 
@@ -483,13 +526,13 @@ function showPromptAndStartRecord() {
 	console.log("some media 2? "+ testListData.trial.mediatype);
 	if (testListData.trial.mediatype == "image") {
 	    console.log("It should be an image!");
-	    $('#stimulusmedia').html("<img src=\""+base_url+testListData.trial.hypermedia+"\">");
+	    $('#stimulusmedia').html("<img src=\""+base_url+testListData.trial.hypermedia+"\" onload='startRecord();'>");
 	}
     }
-
-
-
-    startRecord();
+    // Moved this to onload-tag of the image, let's see if it works:
+    else {
+     startRecord();
+    }
 }
 
 
@@ -632,7 +675,7 @@ function startRecord() {
 		    $('#recordingWarningText').html('');
 		    activateNext();	
 		}
-		else if (controls === "start_only" || controls === "forced_play") {		    
+		else if (controls === "start_only" || controls === "forced_play" || controls === "start_only_with_visible_stimulus" ) {		    
 		    //$('#nextButton').attr("hidden", false);
 		    populateTest();
 		}
