@@ -114,6 +114,7 @@ router.post('/adduser/:userrole', function(req, res) {
     
     console.log("Trying to add "+req.params.userrole +" "+req.body.newusername);
 
+    var testversion = req.body.testversion;
 
     var db = req.db;
     var collection = db.get('userlist');
@@ -125,7 +126,8 @@ router.post('/adduser/:userrole', function(req, res) {
        |        is accomplished
        V                                                */			
 
-    testcollection.find( { version: { $in: ["3b", "3c" ] }},{},function(e,tests){ 
+    //testcollection.find( { version: { $in: ["3b", "3c" ] }},{},function(e,tests){
+    testcollection.find( { version: { $in: testversion }},{},function(e,tests){ 
 	
 	// Check the test proceeding and generate an individual order for
 	// trials for this user
@@ -134,7 +136,7 @@ router.post('/adduser/:userrole', function(req, res) {
 	addable=req.body;
 
 	addable.role=req.params.userrole;
-
+	
 	var collection = db.get('userlist');
 	
 	if ( typeof(req.body.newusername) === 'undefined' ) {
@@ -169,14 +171,15 @@ router.post('/adduser/:userrole', function(req, res) {
 
 		for (var y=0; y<addcount; y++) {
 
-
-		    if (Math.random()<0.5) {
-			ver='3b';
-			test = tests[0];
-		    }
+		    if (tests.length>1) {
+			if (Math.random()<0.5) {
+			    num = Math.floor(Math.random()*tests.length);
+			    test = tests[num];
+			    ver = testversion+"-"+num;
+			}
 		    else {
-			ver = '3c';
-			test = tests[1];
+			ver = testversion;
+			test = tests[0];
 		    }
 
 		    console.log("addable #"+y);
