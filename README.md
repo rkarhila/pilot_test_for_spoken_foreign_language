@@ -5,6 +5,7 @@
 #### The sourced work is intended for final examinations (leaving cert) in Finnish high schools, using the web browser, web cam and microphone for recording test answers ####
 
 Modifications for the demo:
+
 1. Simplified tasks, I'll probably hard-code these in the browser scripts to keep things really simple
 2. Sample pronunciations that user can parrot ("to parrot" is not really a verb, is it?)
 3. Record audio and video from mobile devices (better implemented in mobile browsers anyway!)
