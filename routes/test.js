@@ -3,6 +3,27 @@ var router = express.Router();
 
 
 
+router.get('/:user/:task/:trial', function(req, res, next) {
+
+    if (!req.user) {
+	req.user = {username: req.params.user};
+    }
+
+    var test_review = {};
+    
+
+    res.render('tests', { title: 'Testing!', 
+			  user: req.user , 
+			  base_url: req.base_url,
+			  ui_language: req.ui_language,
+			  error_message: req.flash('error'), 
+			  success_message: req.flash('error'),
+			  noVideo: (process.env.NOVIDEO || 0),
+			  test_review : test_review
+			});
+});
+
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
 

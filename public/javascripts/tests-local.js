@@ -32,12 +32,15 @@ $(document).ready(function() {
     // initView();
     //$('#instructions').html("These are your instructions!");
 
-    $('#controlarea').append('<input id="nextButton" type="button"  value="Seuraava" name="next">');
 
-    $('#nextButton').on('click', populateTest );
-    $('#nextButton').on('touchend', populateTest );
 
     $('#main').css('height', Math.max($( document ).height(), $(window).height()) +'px');
+
+    populateTest(0);
+
+    console.log("Binding controls");
+    bindControls ();
+    console.log("Bound controls!");
 
 });
 
@@ -45,14 +48,14 @@ $(document).ready(function() {
 
 
 
-/*
+
 $(document).keypress(function(e){
     console.log("Key presssed: "+e.which);
     if (e.which == 110){
 	populateTest();
     }
 });
-*/
+
 
 // From a stackoverflow link I've lost now:
 
@@ -70,19 +73,6 @@ function onElementHeightChange(elm, callback){
         elm.onElementHeightChangeTimer = setTimeout(run, 200);
     })();
 }
-
-
-$( window ).resize( function() {
-    console.log("__1__ Changing doc height to  either " + $( document ).height() + " or "+ $(window).height() +'px')
-    $('#main').css('height', Math.max($( document ).height(), $(window).height()) +'px'); 
-});
-
-onElementHeightChange(document.body, function(){
-    console.log("__1__ Changing doc height to  either " + $( document ).height() + " or "+ $(window).height() +'px')
-    $('#main').css('height', Math.max($( document ).height(), $(window).height()) +'px');
-});
-
-
 
 
 
@@ -108,14 +98,7 @@ var controls;
 var tasksdone = -1;
 
 function showTrial( data ) {
-    var swedometer="";
- 
-    data.all_tests.forEach(function (item) {	
-	//swedometer+= "<div "+item.length+" style='min-width:"+((item.length/data.total_length*93))+"%;' class="+item.style+">"+item.task_id+"."+item.trial_id+"</div>";
-	swedometer+= "<div "+item.length+" style='min-width:25px' class="+item.style+">"+item.task_id+"."+item.trial_id+"</div>";
-    });
-    swedometer += "</tr></table>";
-    $('#swedometer').html(swedometer);
+
 
     // Empty content string
     var testContent = '';
@@ -128,26 +111,32 @@ function showTrial( data ) {
 
     $('#taskarea').html( data.stimulus_layout);
 
-    responsetime = data.trial.response_time;
+    responsetime = data.response_time;
     controls=data.controls;
 
     // Important control logic:
-    nextUrl=data.next;
+    //nextUrl=data.next;
+    nextUrl="";
 
-
-    console.log('This task: '+data.task_id+ '/'+data.trial.trial_id+' Next task: '+nextUrl);
+    console.log('This task: '+data.task_id+ '/'+data.trial_id+' Next task: '+nextUrl);
 
     /* Debug data */
     $('#testTask_id').text(data.task_id);
     $('#testInstructions').text(data.instructions);
     $('#testStimulus_layout').text(data.stimulus_layout);    
-    $('#testTrial_id').text(data.trial.trial_id);
-    $('#testStimulus').text(data.trial.stimulus);
+    $('#testTrial_id').text(data.trial_id);
+    $('#testStimulus').text(data.stimulus);
     $('#testRespTime').text(responsetime);    
     $('#testNext').text(data.next);
         
     $('#taskCounter').text(++tasksdone+'/'+22);
-    
+
+    var buttontext_next = (data.buttontext_next || 'Next');
+    var buttontext_start_rec = (data.buttontext_start_rec || 'Start recording');
+    var buttontext_stop_rec = (data.buttontext_stop_rec || 'Stop recording');
+    var buttontext_listen = (data.buttontext_listen || 'Listen');
+    var buttontext_again = (data.buttontext_again || 'Try again');
+
 
     if (data.showinstructions == "1") {
 	// From http://stackoverflow.com/questions/13735912/anchor-jumping-by-using-javascript
@@ -182,14 +171,14 @@ function showTrial( data ) {
                                                                                          next task      go to 1
 
 	*/
-	$('#controlarea').html('<input id="startRecording" type="button" value="Aloita nauhoitus">');
+	$('#controlarea').html('<input id="startRecording" type="button" value="'+buttontext_start_rec+'">');
 	$('#startRecording').bind('click', startRecord);
 	$('#startRecording').bind('touchend', startRecord);
 
-	$('#controlarea').append('<input id="stopRecording" type="button"  value="Lopeta nauhoitus" hidden>');
-	$('#controlarea').append('<input id="listenButton" type="button"  value="Kuuntele" name="listen" hidden><br>');
-	$('#controlarea').append('<input id="againButton" type="button"  value="Uudestaan" name="next" hidden>');
-	$('#controlarea').append('<input id="nextButton" type="button"  value="Seuraava" name="next" hidden>');
+	$('#controlarea').append('<input id="stopRecording" type="button"  value="'+buttontext_stop_rec+'" hidden>');
+	$('#controlarea').append('<input id="listenButton" type="button"  value="'+buttontext_listen+'" name="listen" hidden><br>');
+	$('#controlarea').append('<input id="againButton" type="button"  value="'+buttontext_again+'" name="next" hidden>');
+	$('#controlarea').append('<input id="nextButton" type="button"  value="'+buttontext_next+'" name="next" hidden>');
 
 	$('#nextButton').on('click', populateTest );
 	$('#nextButton').on('touchend', populateTest );
@@ -200,7 +189,7 @@ function showTrial( data ) {
 
 
 	
-	$('#stimulus').html(data.trial.stimulus);
+	$('#stimulus').html(data.stimulus);
 
 	$('#controlarea').append('<div id="timer"></div>');
 
@@ -215,14 +204,14 @@ function showTrial( data ) {
 
 	*/	
 
-	$('#controlarea').html('<input id="startRecording" type="button" value="Aloita nauhoitus">');	
+	$('#controlarea').html('<input id="startRecording" type="button" value="'+buttontext_start_rec+'">');	
 	$('#startRecording').on('click', startRecord );
 	$('#startRecording').on('touchend', startRecord );
 
-	$('#stimulus').html(testListData.trial.stimulus);
+	$('#stimulus').html(testListData.stimulus);
 
- 	$('#controlarea').append('<input id="stopRecording" type="button"  value="Lopeta nauhoitus" hidden>');
- 	$('#controlarea').append('<input id="nextButton" type="button"  value="Seuraava" name="next" hidden>');
+ 	$('#controlarea').append('<input id="stopRecording" type="button"  value="'+buttontext_stop_rec+'" hidden>');
+ 	$('#controlarea').append('<input id="nextButton" type="button"  value='+buttontext_next+' name="next" hidden>');
 
 	$('#nextButton').on('click', populateTest );	
 	$('#nextButton').on('touchend', populateTest );	
@@ -239,12 +228,12 @@ function showTrial( data ) {
 
 	*/	
 
-	$('#controlarea').html('<input id="startRecording" type="button" value="Aloita nauhoitus">');	
+	$('#controlarea').html('<input id="startRecording" type="button" value="'+buttontext_start_rec+'">');	
 	$('#startRecording').on('click', showPromptAndStartRecord );
 	$('#startRecording').on('touchend', showPromptAndStartRecord );
 
- 	$('#controlarea').append('<input id="stopRecording" type="button"  value="Lopeta nauhoitus" hidden>');
- 	$('#controlarea').append('<input id="nextButton" type="button"  value="Seuraava" name="next" hidden>');
+ 	$('#controlarea').append('<input id="stopRecording" type="button"  value="'+buttontext_stop_rec+'" hidden>');
+ 	$('#controlarea').append('<input id="nextButton" type="button"  value='+buttontext_next+' name="next" hidden>');
 
 	$('#nextButton').on('click', populateTest );	
 	$('#nextButton').on('touchend', populateTest );	
@@ -270,7 +259,7 @@ function showTrial( data ) {
 	    $('#startRecording').on('click', startVideoCircus );
 	    $('#startRecording').on('touchend', startVideoCircus );
 	    
- 	    $('#controlarea').append('<input id="stopRecording" type="button"  value="Lopeta nauhoitus" hidden>');
+ 	    $('#controlarea').append('<input id="stopRecording" type="button"  value="'+buttontext_stop_rec+'" hidden>');
 	    $('#controlarea').append('<div id="timer"></div>');
 	}
 	else {
@@ -278,7 +267,7 @@ function showTrial( data ) {
 	    $('#startRecording').on('click', startVideoCircus );
 	    $('#startRecording').on('touchend', startVideoCircus );	    
 	
- 	    $('#controlarea').append('<input id="stopRecording" type="button"  value="Lopeta nauhoitus" hidden>');
+ 	    $('#controlarea').append('<input id="stopRecording" type="button"  value="'+buttontext_stop_rec+'" hidden>');
 
 	    $('#controlarea').append('<div id="timer"></div>');
 	    continueVideoCircus();
@@ -291,6 +280,16 @@ function showTrial( data ) {
     else if (controls == "None" ) {
 	$('#controlarea').html('');
     }
+    else if (controls == "accept_only") {
+	$('#stimulus').html( testListData.stimulus.replace(/\$username/, username));
+
+	$('#controlarea').append('<input id="nextButton" type="button"  value="'+buttontext_next+'" name="next">');
+	$('#nextButton').on('click', populateTest );
+	$('#nextButton').on('touchend', populateTest );	
+
+
+
+    }
     else if (controls == "feedback") {
 	$('#controlarea').html("");
 	$('#testwrapper').css('height','90%');
@@ -301,7 +300,7 @@ function showTrial( data ) {
 }
 
 function prepareSync() {
-	$('#stimulus').html(testListData.trial.stimulus);
+	$('#stimulus').html(testListData.stimulus);
 	$('#controlarea').html('<input id="syncName" type="text" placeholder="Kaverisi tunnus">')
 	$('#controlarea').append('<input id="syncButton" type="button" value="Synkronoi">');
 
@@ -326,7 +325,7 @@ function startSync() {
     $('#controlarea').append('<div id="timer"></div>');
     $(function() {
 	$('#timer').pietimer({
-            timerSeconds: ( testListData.trial.sync_interval || 5),
+            timerSeconds: ( testListData.sync_interval || 5),
             color: '#234',
             fill: false,
             showPercentage: false,
@@ -371,12 +370,12 @@ function cancelSync() {
 function finishSync(waitingTime) {
     $('#timer').pietimer('reset');
 
-    $('#stimulus').html(testListData.trial.stimulus_2);
+    $('#stimulus').html(testListData.stimulus_2);
 
     $('#controlarea').html('<p><i>Valmistautukaa keskustelemaan!</i> <div id="timer"></div>');
 
     $('#timer').pietimer({
-        timerSeconds: ( testListData.trial.preparation_time || 100),
+        timerSeconds: ( testListData.preparation_time || 100),
         color: '#234',
         fill: false,
         showPercentage: false,
@@ -391,12 +390,12 @@ function finishSync(waitingTime) {
 
 function startSyncRec() {
     $('#timer').pietimer('reset');
-    $('#controlarea').html('<input id="startRecording" type="button" value="Aloita nauhoitus" hidden>');
+    $('#controlarea').html('<input id="startRecording" type="button" value="'+buttontext_start_rec+'" hidden>');
     //$('#startRecording').bind('click', startRecord);
     //$('#startRecording').bind('touchend', startRecord);
 
-    $('#controlarea').html('<input id="nextButton" type="button"  value="Seuraava" name="next" hidden>');
-    $('#controlarea').append('<input id="stopRecording" type="button"  value="Lopeta nauhoitus" hidden>');    
+    $('#controlarea').html('<input id="nextButton" type="button"  value='+buttontext_next+' name="next" hidden>');
+    $('#controlarea').append('<input id="stopRecording" type="button"  value="'+buttontext_stop_rec+'" hidden>');    
 
     $('#nextButton').on('click', populateTest );	
     $('#nextButton').on('touchend', populateTest );	
@@ -408,13 +407,16 @@ function startSyncRec() {
 
 
 var filename_extra = 0;
+var trialindex = 0;
 
 function populateTest( ) {
     //console.log('populating ' + nextUrl);
     
     // jQuery AJAX call for JSON
     filename_extra = 0;
-    $.getJSON( nextUrl, function( data ) {showTrial( data ) });
+    //$.getJSON( nextUrl, function( data ) {showTrial( data ) });
+    console.log(tasks_and_stimuli[trialindex]);
+    showTrial( tasks_and_stimuli[trialindex++] );
 }
 
 
@@ -447,21 +449,18 @@ var audio;
 var isFirefox;
 var recordAudio, recordVideo;
 
-/*
+
 function bindControls () {
 
     cameraPreview = document.getElementById('camera-preview');
     listenButton = document.getElementById('listenbutton');
-
-// value="Kuuntele" name="listen" disabled');
-
     audio = document.querySelector('audio');
+    
+//    $('#startRecording').bind('onclick', startRecording());
+}
 
     isFirefox = !!navigator.mozGetUserMedia;
-
-    $('#startRecording').bind('onclick', startRecording());
-}
-*/
+    console.log("Is firefox? "+isFirefox);
 
 
 
@@ -471,7 +470,7 @@ function playRecording () {
     document.getElementById('recordedObject').play();
     if (controls == "full_forced_listening" ) {
 	document.getElementById('recordedObject').addEventListener('ended', activateNext());
-	$('#stimulus').html(testListData.trial.stimulus_2);
+	$('#stimulus').html(testListData.stimulus_2);
 	//$('#listenButton').attr("hidden", true);
     }
     document.getElementById('recordedObject').play();
@@ -486,13 +485,13 @@ function activateNext() {
 
 function startVideoCircus() {
     $('#startRecording').attr("hidden", true);
-    $('#stimulus').html(testListData.trial.stimulus);
+    $('#stimulus').html(testListData.stimulus);
 
     // MEDIA
-    if (testListData.trial.hypermedia !== 'None') {
-	if (testListData.trial.mediatype == "video") {
+    if (testListData.hypermedia !== 'None') {
+	if (testListData.mediatype == "video") {
 	    console.log("It should be an image!");
-	    $('#stimulusmedia').html("<video src=\""+base_url+testListData.trial.hypermedia+"\" autoplay onended='startRecord()'>");
+	    $('#stimulusmedia').html("<video src=\""+base_url+testListData.hypermedia+"\" autoplay onended='startRecord()'>");
 	}
 	else {
 	    alert("Video not specified!");
@@ -502,13 +501,13 @@ function startVideoCircus() {
 }
 
 function continueVideoCircus() {
-    $('#stimulus').html(testListData.trial.stimulus);
+    $('#stimulus').html(testListData.stimulus);
 
     // MEDIA
-    if (testListData.trial.hypermedia !== 'None') {
-	if (testListData.trial.mediatype == "video") {
+    if (testListData.hypermedia !== 'None') {
+	if (testListData.mediatype == "video") {
 	    console.log("It should be an image!");
-	    $('#stimulusmedia').html("<video src=\""+base_url+testListData.trial.hypermedia+"\" autoplay onended='startRecord()'>");
+	    $('#stimulusmedia').html("<video src=\""+base_url+testListData.hypermedia+"\" autoplay onended='startRecord()'>");
 	}
 	else {
 	    alert("Video not specified!");
@@ -519,14 +518,14 @@ function continueVideoCircus() {
 
 
 function showPromptAndStartRecord() {
-    $('#stimulus').html(testListData.trial.stimulus);
+    $('#stimulus').html(testListData.stimulus);
 
     // MEDIA
-    if (testListData.trial.hypermedia !== 'None') {
-	console.log("some media 2? "+ testListData.trial.mediatype);
-	if (testListData.trial.mediatype == "image") {
+    if (testListData.hypermedia !== 'None') {
+	console.log("some media 2? "+ testListData.mediatype);
+	if (testListData.mediatype == "image") {
 	    console.log("It should be an image!");
-	    $('#stimulusmedia').html("<img src=\""+base_url+testListData.trial.hypermedia+"\" onload='startRecord();'>");
+	    $('#stimulusmedia').html("<img src=\""+base_url+testListData.hypermedia+"\" onload='startRecord();'>");
 	}
     }
     // Moved this to onload-tag of the image, let's see if it works:
@@ -540,7 +539,7 @@ var uploadurl;
 
 function startRecord() {
 
-    uploadurl=base_url+'/upload/'+ username+'/'+(testListData.task_id)+'/'+(testListData.trial.trial_id);
+    uploadurl=base_url+'/upload/'+ username+'/'+(testListData.task_id)+'/'+(testListData.trial_id);
 
     $(function() {
 	$('#timer').pietimer({
@@ -565,7 +564,6 @@ function startRecord() {
 
     //$('startRecording').bind('onclick', startRecording());
     
-
     $('startRecording').disabled = true;
 
     var mediaparam = {
@@ -579,37 +577,38 @@ function startRecord() {
     };
 
     navigator.getUserMedia( mediaparam, function(stream) {
+    //navigator.mediaDevices.getUserMedia(mediaparam).
+	//then( function(stream) {
 
-        cameraPreview.src = window.URL.createObjectURL(stream);
-        cameraPreview.play();
-	
-        recordAudio = RecordRTC(stream, {
-	    bufferSize: 16384
-        });
-	
-        if (!isFirefox) {
-	    recordVideo = RecordRTC(stream, {
-                type: 'video'
-	    });
-        }
-	
-        recordAudio.startRecording();
-	
-        if (!isFirefox && !noVideo) {
-	    recordVideo.startRecording();
-        }
+            cameraPreview.src = window.URL.createObjectURL(stream);
+            cameraPreview.play();
+	    
+            recordAudio = RecordRTC(stream, {
+		bufferSize: 16384,
+		type: 'audio'
+            });
+	    
+            if (!isFirefox) {
+		recordVideo = RecordRTC(stream, {
+                    type: 'video'
+		});
+            }
+	    
+            recordAudio.startRecording();
+	    
+            if (!isFirefox && !noVideo) {
+		recordVideo.startRecording();
+            }
 
-	console.log('Trying to activate stop button');
-        $('#stopRecording').attr("hidden", false);
+	    console.log('Trying to activate stop button');
+            $('#stopRecording').attr("hidden", false);
 	$('#stopRecording').bind('click', stopRecording);
 	$('#stopRecording').bind('touchend', stopRecording);
-
+	
 	console.log('Done trying to activate stop button');
-
-
-
+	//}).catch(
     }, function(error) {
-        alert(JSON.stringify(error));
+	alert(JSON.stringify(error));
     });
 
     function stopRecording() {
@@ -637,12 +636,17 @@ function startRecord() {
 
 		document.getElementById('recordedObject').src=audioDataURL;		
 
+		/*
 		if (noVideo) {
 		    postFiles(audioDataURL);
 		}
-		else if (!isFirefox) {
+		else*/
+		if (!isFirefox) {
 		    console.log("Getting data urls for video (not firefox)");
                     recordVideo.getDataURL(function(videoDataURL) {
+
+			console.log("What is videoDataURL length? "+videoDataURL.length)
+			console.log("What is audioDataURL length? "+audioDataURL.length)
 			postFiles(audioDataURL, videoDataURL);
 			//UploadFile(cameraPreview.src, "foo");
 			//UploadFile(audioDataURL, "foo1");
@@ -686,56 +690,41 @@ function startRecord() {
 
 var fileName;
 
-'/test/user/'+username+'/task/0/trial/0';
 
 function postFiles(audioDataURL, videoDataURL) {
     //fileName = getRandomString();
-    fileName = username + '_' + (testListData.task_id) + '_' + (testListData.trial.trial_id);
+    fileName = username + '_' + (testListData.task_id) + '_' + (testListData.trial_id);
 
     if (filename_extra > 0) {
 	fileName += '_'+filename_extra;
     }
 
-    var files = { };
 
-    if (noVideo) {
-	files.audio = {
-            name: fileName + '.wav',
-            type: 'audio/wav',
-            contents: audioDataURL
-	};	
-    }
-    else {
-	files.audio = {
+    var files = { 
+	isFirefox : isFirefox,
+	audio : {
             name: fileName + (isFirefox ? '.webm' : '.wav'),
             type: isFirefox ? 'video/webm' : 'audio/wav',
             contents: audioDataURL
-	};	
-	if (!isFirefox) {
-            files.video = {
-		name: fileName + '.webm',
-		type: 'video/webm',
-		contents: videoDataURL
-            };
 	}
-    }
+    };	
 
-    files.isFirefox = isFirefox;
-
-    if (noVideo) {
-	console.log("typeof files.audio.contents: "+typeof(files.audio.contents))
-	console.log("File length: " + (files.audio.contents).length);	
+    if (!isFirefox) {
+	console.log("adding separate video stream!");
+        files.video = {
+	    name: fileName + '.webm',
+	    type: 'video/webm',
+	    contents: videoDataURL
+        };
     }
-    else {
-	console.log("typeof files.video.contents: "+typeof(files.video.contents))
-	console.log("File length: " + (files.video.contents).length);
-    }
-    if (!isFirefox) {	
-	UploadFile( JSON.stringify(files), fileName+'.*', uploadurl );
-    } 
-    else {
-	UploadFile( JSON.stringify(files), fileName+'.*', uploadurl );
-    }
+ 
+ 
+    console.log("typeof files.video.contents: "+typeof(files.video.contents))
+    console.log("File length: " + (files.video.contents).length);
+    console.log("typeof files.audio.contents: "+typeof(files.audio.contents))
+    console.log("File length: " + (files.audio.contents).length);
+    
+    UploadFile( JSON.stringify(files), fileName+'.*', uploadurl );
 
 }
 
@@ -752,9 +741,9 @@ function xhr(url, data, callback) {
     request.send(data);
 }
 
-window.onbeforeunload = function() {
-    startRecording.disabled = false;
-};
+//window.onbeforeunload = function() {
+//    startRecording.disabled = false;
+//};
 
 function getRandomString() {
     if (window.crypto) {
@@ -795,10 +784,3 @@ function drawBuffer( width, height, context, data ) {
         context.fillRect(i,(1+min)*amp,1,Math.max(1,(max-min)*amp));
     }
 }
-
-
-
-
-// Once more around the sun: 
-// Getting clients to sync for a pair task.
-

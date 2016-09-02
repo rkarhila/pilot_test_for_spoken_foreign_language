@@ -20,7 +20,7 @@ router.post('/:user/:task/:trial', function(req, res, next) {
     var no_video = (process.env.NOVIDEO || 0);
 
 
-    if (no_video)
+    /*if (no_video)
     {
 	filePath = './uploads/raw_video/'+req.body.audio.name;
 	filecontents = files.audio.contents.split(',').pop();
@@ -33,14 +33,16 @@ router.post('/:user/:task/:trial', function(req, res, next) {
 	cmd='ffmpeg -y -i '+filePath+' -c:a '+audiocodec+' -strict experimental '+outputfilePath;
     }
 
-    else {
+    else {*/
+    
+    if (true) {
 
 	filePath = './uploads/raw_video/'+req.body.video.name;
     
 	filecontents = files.video.contents.split(',').pop();
 	fileBuffer = new Buffer(filecontents, "base64");
 	fs.writeFileSync(filePath, fileBuffer);
-	var savemsg = 'Tallennettiin palvelimelle '+req.body.video.name;
+	var savemsg = 'Saved on server: '+req.body.video.name;
 	
 	outputfilePath = './uploads/encoded_video/'+req.body.video.name;
 
@@ -67,11 +69,16 @@ router.post('/:user/:task/:trial', function(req, res, next) {
         //console.log('Done encoding '+filePath+'; error code: '+error);
         
         if (error) {
+	    console.log("Error running:");
+	    console.log( cmd );
             res.json({ response: 'Problem!', msg: stderr, errorcode: error }); 
+	    
         }
         else {
        
+	    console.log("Wrote "+ outputfilePath)
 
+	    /*
             var db = req.db;    
             var collection = db.get('userlist');
             var params= req.params;
@@ -107,6 +114,7 @@ router.post('/:user/:task/:trial', function(req, res, next) {
                                       }
                                   });
             });
+*/
         }
     });
 });
