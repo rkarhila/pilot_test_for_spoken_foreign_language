@@ -43,6 +43,7 @@ var base_url=(process.env.BASE_URL || '');
 //var funct = require('./functions.js'); //funct file contains our helper functions for our Passport and database work
 
 var session = require('express-session');
+
 var app = express();
 
 
@@ -60,18 +61,16 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 
 // Session control: User information in cookies etc?
-
+/*
 app.use(session({ secret: 'keyboard cat',
                   saveUninitialized: true,
                   resave: true,
-		  cookie: { maxAge: 3600000 }})); // Cookie lifetime: 1 hour
-
-var sess;
-
-
-
+		  //cookie: { maxAge: 3600000 }})); // Cookie lifetime: 1 hour
+		  cookie: { maxAge: 60000 }})); // Cookie lifetime: 1 minute
 
 app.use(cookieParser());
+*/
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 
@@ -227,9 +226,6 @@ app.get('/logout', function(req, res, next) {
 */
 
 
-app.use('/start', start_test);
-
-
 
 app.get('/welcome', function(req, res, next) {
     User.find({}, function(err, user) {
@@ -249,6 +245,18 @@ app.get('/welcome', function(req, res, next) {
 			    });
     });
 });
+
+
+
+app.use(session({ secret: 'keyboard cat',
+                  saveUninitialized: true,
+                  resave: true,
+		  //cookie: { maxAge: 3600000 }})); // Cookie lifetime: 1 hour
+		  cookie: { maxAge: 60000 }})); // Cookie lifetime: 1 minute
+
+app.use(cookieParser());
+
+app.use('/start', start_test);
 
 
 
@@ -313,8 +321,9 @@ app.use('/sync', sync);
 app.use('/feedback', feedback);
 */
 app.use('/upload', uploads);
-app.use('/answers', answers);
-app.use('/evaluate', evaluate);
+//app.use('/answers', answers);
+//app.use('/evaluate', evaluate);
+
 
 app.use('/u', u);
 app.use('/', routes);

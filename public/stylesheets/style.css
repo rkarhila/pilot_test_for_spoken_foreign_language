@@ -46,6 +46,10 @@ a {
 	font: 16px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
+#resultwrapper {
+    padding: 20px;
+}
+
 select{
     width: 250px;
     text-overflow: ellipsis;

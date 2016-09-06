@@ -9,6 +9,8 @@ router.post('/:user/:task/:trial', function(req, res, next) {
 
     var audiocodec = 'libvorbis';
     
+    var akusfilepath='./uploads/validator_data/';
+
     var uploaduser=req.params.user;
     var uploadtask=req.params.task;
     var uploadtrial=req.params.trial;
@@ -19,6 +21,7 @@ router.post('/:user/:task/:trial', function(req, res, next) {
     
     var no_video = (process.env.NOVIDEO || 0);
 
+    var cmd, cmd2, cmd3;
 
     /*if (no_video)
     {
@@ -37,32 +40,42 @@ router.post('/:user/:task/:trial', function(req, res, next) {
     
     if (true) {
 
-	filePath = './uploads/raw_video/'+req.body.video.name;
+	filePath = './uploads/raw_video/'+uploaduser+'/'+req.body.video.name;
     
 	filecontents = files.video.contents.split(',').pop();
 	fileBuffer = new Buffer(filecontents, "base64");
 	fs.writeFileSync(filePath, fileBuffer);
 	var savemsg = 'Saved on server: '+req.body.video.name;
 	
-	outputfilePath = './uploads/encoded_video/'+req.body.video.name;
+	outputfilePath = './uploads/encoded_video/'+uploaduser+'/'+req.body.video.name;
 
     
 	if (!files.isFirefox) {
 	    
-	    audiofilePath = './uploads/raw_video/'+req.body.audio.name;
+	    audiofilePath = './uploads/raw_video/'+uploaduser+'/'+req.body.audio.name;
 	    audiofilecontents = files.audio.contents.split(',').pop();
 	    audiofileBuffer = new Buffer(audiofilecontents, "base64");
 	    fs.writeFileSync(audiofilePath, audiofileBuffer);	
 	    savemsg += ' ja '+req.body.audio.name;
 	    
             cmd='ffmpeg -y -i '+filePath+' -i '+audiofilePath+' -c:v libvpx -c:a '+audiocodec+' -strict experimental '+outputfilePath;
+
+	    var validaudio = akusfilepath + '/'+uploaduser+'/'+ (req.body.audio.name).replace(/_/g, '.');
+	    var tmpaudio = akusfilepath+'/tmp/'+ req.body.audio.name;
+	    cmd2='ffmpeg -i '+audiofilePath+ ' ' + tmpaudio;
+	    console.log(cmd2);
+	    cmd3='mv '+ tmpaudio + ' ' + validaudio;
+	    console.log(cmd3);
 	    
 	}
 	else {
             cmd='ffmpeg -i '+filePath+' -c:v libvpx -c:a libvorbis -strict experimental '+outputfilePath; // >> /home/rkarhila/node_swedish/lets_encode.sh';
+
 	}
     }
     //console.log('Encoding '+filePath+': '+cmd);
+
+    
 
     exec(cmd, function(error, stdout, stderr) {
 
@@ -75,46 +88,71 @@ router.post('/:user/:task/:trial', function(req, res, next) {
 	    
         }
         else {
-       
-	    console.log("Wrote "+ outputfilePath)
-
-	    /*
-            var db = req.db;    
-            var collection = db.get('userlist');
-            var params= req.params;
-
-            // Rewriting this thingy:
-            // testsdone : { params['task'] : {params['trial'] : outputfilePath }}}
-
-            collection.findOne({username: req.user.username}, function(err, userdata) {
-
-                console.log(userdata.testsdone);
-                
-                if (!userdata.testsdone[params.task]) {
-                    userdata.testsdone[params.task] = {}
-                }         
-
-		if (no_video) {
-                    userdata.testsdone[params.task][params.trial]=req.body.audio.name;		    
-		}
-		else {
-                    userdata.testsdone[params.task][params.trial]=req.body.video.name;
+	    exec(cmd2, function(error, stdout, stderr) {
+		
+		if (error) {
+		    console.log("Tried "+cmd2);
+		    console.log(error);
+		    console.log(stdout);
+		    console.log(stderr);		
 		}
 
-                console.log(userdata.testsdone);
-   
-                collection.update({ "username": req.user.username  }, 
-                                  { $set:  {testsdone: userdata.testsdone, testcount: parseInt(userdata.testcount)+1} }, 
-                                  function(e,test){
-                                      if (e) {
-                                          res.json({ response: 'Problem!', msg: e.err, errorcode: e.code });
-                                      }
-                                      else {					  
-                                          res.json({ response: 'ok!', msg: 'videos/'+params.user+"/"+params.task+"/"+params.trial, errorcode: "0" });
-                                      }
-                                  });
-            });
+
+		exec(cmd3, function(error, stdout, stderr) {
+		    
+		    if (error) {
+			console.log("Tried "+cmd2);
+			console.log(error);
+			console.log(stdout);
+			console.log(stderr);
+		    }
+
+		    console.log("Tried "+cmd3);
+		    console.log(error)
+		    
+		    console.log("Wrote "+ outputfilePath)
+		    var params= req.params;
+		    res.json({ response: 'ok!', msg: 'videos/'+params.user+"/"+params.task+"/"+params.trial, errorcode: "0" });
+		    
+		    /*
+		      var db = req.db;    
+		      var collection = db.get('userlist');
+		      var params= req.params;
+
+		      // Rewriting this thingy:
+		      // testsdone : { params['task'] : {params['trial'] : outputfilePath }}}
+
+		      collection.findOne({username: req.user.username}, function(err, userdata) {
+
+                      console.log(userdata.testsdone);
+                      
+                      if (!userdata.testsdone[params.task]) {
+                      userdata.testsdone[params.task] = {}
+                      }         
+
+		      if (no_video) {
+                      userdata.testsdone[params.task][params.trial]=req.body.audio.name;		    
+		      }
+		      else {
+                      userdata.testsdone[params.task][params.trial]=req.body.video.name;
+		      }
+
+                      console.log(userdata.testsdone);
+		      
+                      collection.update({ "username": req.user.username  }, 
+                      { $set:  {testsdone: userdata.testsdone, testcount: parseInt(userdata.testcount)+1} }, 
+                      function(e,test){
+                      if (e) {
+                      res.json({ response: 'Problem!', msg: e.err, errorcode: e.code });
+                      }
+                      else {					  
+                      res.json({ response: 'ok!', msg: 'videos/'+params.user+"/"+params.task+"/"+params.trial, errorcode: "0" });
+                      }
+                      });
+		      });
 */
+		});
+	    });
         }
     });
 });

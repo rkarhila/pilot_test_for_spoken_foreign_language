@@ -1,0 +1,115 @@
+extends layout
+
+block content
+  #main 
+
+    #resultwrapper
+
+      h2 These are your results;
+
+      h4 If you don't like them, you should practice more. Or is it the noise? Find a more quiet space and try again!
+    
+      p Your user  code is <b>#[=user.username]</b>. 
+        | You can view your results for 72 hours after finishing the test with 
+        | your code (until #[=results.expiry_date] ie. for #[=results.expiry_hours]
+        |  hours and  #[=results.expiry_minutes] minutes).
+
+      h3 1 Phonetic clarity within the population of Finnish High School students
+
+      center
+        img(src="#{base_url}/images/bird_phonetics_to_grade.png")
+      
+      p Your computational score is #[=results.computational_score]. 
+        | That would predict a score between #[=results.approx_human_lower] 
+        | and  #[=results.approx_human_upper] in the 10-step human evaluation.
+
+      h3 2 Phonetic performance phone by phone, in comparison to native speakers
+
+      h4 Consonants
+
+      h5 plosives:
+      table
+        each phone in [ "p", "b", "t", "d", "k", "g" ]
+          tr
+            td= phone
+            td score
+            td yours
+            td sample
+
+      h5 fricatives:
+      table
+        each phone in [ "f", "v", "s", "S","h", "C" ]
+          tr
+            td= phone
+            td score
+            td yours
+            td sample
+
+
+      h5 sonorant consonants (nasals, liquids and semivowels):
+      table
+        each phone in [ "m", "n", "N", "r", "l", "j"  ]
+          tr
+            td= phone
+            td score
+            td yours
+            td sample
+
+      h5 short vowels:
+      table
+        each phone in [ "I", "e", "E", "Y","u0", "2", "U", "O", "a"  ]
+          tr
+            td= phone
+            td score
+            td yours
+            td sample
+
+
+      h5 long vowels:
+      table
+        each phone in [ "I:", "e:", "E:", "Y:", "u0:", "2:", "U:", "O:", "a:"  ]
+          tr
+            td= phone
+            td score
+            td yours
+            td sample
+
+
+      h5 some important allophonic variants:
+      table
+        each phone in [ "{:", "9:", "{", 9, "@", "rt", "rd", "rn", "rs", "rl" ]
+          tr
+            td= phone
+            td score
+            td yours
+            td sample
+
+
+      
+
+      h3 3 Plotted fluency
+
+
+block scripts
+    -if (user.username)
+        script(type='text/javascript').
+            var username =!{JSON.stringify( user.username )};
+    -if (noVideo)
+        script(type='text/javascript').
+            var noVideo =!{JSON.stringify( noVideo )};
+    -else
+        script(type='text/javascript').
+            var noVideo = 0;
+
+    -if (1 == 2)
+      script(src='#{base_url}/javascripts/short_test.js')
+
+      script(src='#{base_url}/javascripts/recorder.js')
+      script(src='#{base_url}/javascripts/uploadfile.js')
+      script(src='#{base_url}/javascripts/audio-analyser.js')
+      script(src='#{base_url}/javascripts/tests-local.js')
+      script(src='#{base_url}/javascripts/tests-control.js')
+      script(src='#{base_url}/javascripts/tests-video.js')
+      script(src='#{base_url}/javascripts/messages.js')
+      script(src="#{base_url}/javascripts/RecordRTC.js")
+      script(src='#{base_url}/javascripts/jquery.pietimer.modified.js')
