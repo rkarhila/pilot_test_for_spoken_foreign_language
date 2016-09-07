@@ -9,7 +9,7 @@ router.post('/:user/:task/:trial', function(req, res, next) {
 
     var audiocodec = 'libvorbis';
     
-    var akusfilepath='./uploads/validator_data/';
+    var akusfilepath='./uploads/validator_data/' ;
 
     var uploaduser=req.params.user;
     var uploadtask=req.params.task;
@@ -60,12 +60,20 @@ router.post('/:user/:task/:trial', function(req, res, next) {
 	    
             cmd='ffmpeg -y -i '+filePath+' -i '+audiofilePath+' -c:v libvpx -c:a '+audiocodec+' -strict experimental '+outputfilePath;
 
-	    var validaudio = akusfilepath + '/'+uploaduser+'/'+ (req.body.audio.name).replace(/_/g, '.');
-	    var tmpaudio = akusfilepath+'/tmp/'+ req.body.audio.name;
-	    cmd2='ffmpeg -i '+audiofilePath+ ' ' + tmpaudio;
-	    console.log(cmd2);
-	    cmd3='mv '+ tmpaudio + ' ' + validaudio;
-	    console.log(cmd3);
+	    if (uploadtask == "16" || uploadtask == 16) {
+		if (uploadtrial == "0" || uploadtrial == 0) {
+		    fs.mkdirSync('uploads/validator_data/'+uploaduser);
+		    exec('chmod a+w uploads/validator_data/'+uploaduser, function(error, stdout, stderr) {
+			if (error)
+			    console.log(error);
+		    });
+		}		
+
+		var validaudio = akusfilepath + '/'+uploaduser+'/'+ (req.body.audio.name).replace(/_/g, '.');
+		var tmpaudio = akusfilepath+'/tmp/'+ req.body.audio.name;
+		cmd2='ffmpeg -i '+audiofilePath+ ' ' + tmpaudio;
+		cmd3='mv '+ tmpaudio + ' ' + validaudio;
+	    }
 	    
 	}
 	else {
@@ -88,72 +96,48 @@ router.post('/:user/:task/:trial', function(req, res, next) {
 	    
         }
         else {
-	    exec(cmd2, function(error, stdout, stderr) {
+	    if (req.params.task == "16" || req.params.task == 16 ) {
 		
-		if (error) {
-		    console.log("Tried "+cmd2);
-		    console.log(error);
-		    console.log(stdout);
-		    console.log(stderr);		
-		}
-
-
-		exec(cmd3, function(error, stdout, stderr) {
+		exec(cmd2, function(error, stdout, stderr) {
 		    
 		    if (error) {
 			console.log("Tried "+cmd2);
 			console.log(error);
 			console.log(stdout);
-			console.log(stderr);
+			console.log(stderr);		
 		    }
 
-		    console.log("Tried "+cmd3);
-		    console.log(error)
-		    
-		    console.log("Wrote "+ outputfilePath)
-		    var params= req.params;
-		    res.json({ response: 'ok!', msg: 'videos/'+params.user+"/"+params.task+"/"+params.trial, errorcode: "0" });
-		    
-		    /*
-		      var db = req.db;    
-		      var collection = db.get('userlist');
-		      var params= req.params;
 
-		      // Rewriting this thingy:
-		      // testsdone : { params['task'] : {params['trial'] : outputfilePath }}}
+		    exec(cmd3, function(error, stdout, stderr) {
+			
+			if (error) {
+			    console.log("Tried "+cmd3);
+			    console.log(error);
+			    console.log(stdout);
+			    console.log(stderr);
+			}
+			
+			console.log("Wrote "+ outputfilePath)
+			var params= req.params;
+			
+			//if (params.task == "16" && params.trial == "8") {
+			// Fire off the Kaldi validator scripts:
+			// Oh no we don't. Let's rely on the listeners!
+			//}
+			
 
-		      collection.findOne({username: req.user.username}, function(err, userdata) {
-
-                      console.log(userdata.testsdone);
-                      
-                      if (!userdata.testsdone[params.task]) {
-                      userdata.testsdone[params.task] = {}
-                      }         
-
-		      if (no_video) {
-                      userdata.testsdone[params.task][params.trial]=req.body.audio.name;		    
-		      }
-		      else {
-                      userdata.testsdone[params.task][params.trial]=req.body.video.name;
-		      }
-
-                      console.log(userdata.testsdone);
-		      
-                      collection.update({ "username": req.user.username  }, 
-                      { $set:  {testsdone: userdata.testsdone, testcount: parseInt(userdata.testcount)+1} }, 
-                      function(e,test){
-                      if (e) {
-                      res.json({ response: 'Problem!', msg: e.err, errorcode: e.code });
-                      }
-                      else {					  
-                      res.json({ response: 'ok!', msg: 'videos/'+params.user+"/"+params.task+"/"+params.trial, errorcode: "0" });
-                      }
-                      });
-		      });
-*/
+			res.json({ response: 'ok!', msg: 'videos/'+params.user+"/"+params.task+"/"+params.trial, errorcode: "0" });
+			
+		    });
 		});
-	    });
-        }
+            }
+	    else {
+		var params= req.params;
+
+		res.json({ response: 'ok!', msg: 'videos/'+params.user+"/"+params.task+"/"+params.trial, errorcode: "0" });
+		
+	    }
+	}
     });
 });
 

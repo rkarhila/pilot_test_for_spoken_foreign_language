@@ -101,11 +101,7 @@ var get_new_user = function() {
 
     fs.mkdirSync('uploads/raw_video/'+ran);
     fs.mkdirSync('uploads/encoded_video/'+ran);
-    fs.mkdirSync('uploads/validator_data/'+ran);
-     exec('chmod a+w uploads/validator_data/'+ran, function(error, stdout, stderr) {
-	 if (error)
-	     console.log(error);
-     });
+
     return {'username' : ran };
     
 }

@@ -89,32 +89,79 @@ router.get('/:username/checkresults', function(req, res, next) {
 
     console.log('checking '+ 'uploads/validator_data/'+username+'/');
 
-    var message = '';
+    var message = 'Working...';
 
     // Check files uploded:
     fs.readdir( 'uploads/validator_data/'+username+'/',  function (err, files){
-	console.log(files);
+	//console.log(files);
 	var files_uploaded = files.filter(function(item){
 	    return /16.[0-8].wav/.test(item);
 	}).length;
-	console.log("Uploaded files: " + files_uploaded);
-	message += "Uploaded files: " + files_uploaded;
+	//console.log("Uploaded files: " + files_uploaded);
+	message = "Uploaded files: " + files_uploaded;
 
 	fs.readdir( 'uploads/validator_data/'+username+'/',  function (err, files){
 
-	    console.log(files);
+	    //console.log(files);
 	    var files_aligned = files.filter(function(item){
 		return /16.[0-8].lab/.test(item);
 	    }).length;
 
-	    console.log("Aligned files: " + files_aligned);
-	    message += "<br>Verified and aligned files: " + files_uploaded
-	    res.json(
-		{
-		    'code': '100', 
-		    'message': message
-		});
+	    //console.log("Aligned files: " + files_aligned);
+	    message += "<br>Verified and aligned files: " + files_aligned
 
+	    fs.readdir( 'classification_data/pickles/',  function (err, files){
+		
+		var re = new RegExp(username,"g");
+		var pickles = files.filter(function(item){
+		    return re.test(item);
+		}).length;
+		
+		if (pickles > 0)
+		    message += "<br>Feature pickles: Done";
+		else 
+		    message += "<br>Feature pickles: Not yet";
+
+
+		fs.readdir( 'classification_data/results/',  function (err, files){
+
+		    var re = new RegExp(username,"g");
+
+		    var results = files.filter(function(item){
+			return re.test(item);
+		    }).length;
+
+		    if (results > 1)
+			message += "<br>Segment inspection: Done";
+		    else 
+			message += "<br>Segment inspection: Not yet";		    
+
+		    fs.readdir( 'classification_data/results_charts/',  function (err, files){
+
+			var resultchart = files.filter(function(item){
+			    return /username/.test(item);
+			}).length;
+						
+			if (resultchart > 0) {
+			    message += "<br>Results postprocessing: Done";			    
+			    res.json(
+				{
+				    'code': '101', 
+				    'message': message
+				});
+			}
+			else {
+			    message += "<br>Result postprocessing: Not yet";	
+			    
+			    res.json(
+				{
+				    'code': '100', 
+				    'message': message
+				});
+			}
+		    })
+		})
+	    });
 	});
     });
 });

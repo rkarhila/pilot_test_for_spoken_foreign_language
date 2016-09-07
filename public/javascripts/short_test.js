@@ -164,7 +164,7 @@ var tasks_and_stimuli=[
 	"task_id":    9 ,
 	"trial_id" : 0,
 	"evaluated": true,
-	"stimulus_layout" : "<div class=main><h2>Finished! </h2><p><i>Ha det bra! Jättekiva fiilis!</i></p><p>That's it. Now let's wait for all the audio files to transfer and your results to be computed. Let's hope it works!</p></div>",
+	"stimulus_layout" : "<div class=main><h2>Finished! </h2><p><i>Ha det bra! Jättekiva fiilis!</i></p><p>That's it. Now let's wait for all the audio files to transfer and your results to be computed. It's a long wait because we are bad programmers and burdened with other work. Let's hope it works!</p></div>",
 	"stimulus" : "<p>checking if results are done...</p>",
 	"controls" :  "wait_for_results",
 	"hypermedia": 'None'
