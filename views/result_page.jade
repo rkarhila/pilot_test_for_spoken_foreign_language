@@ -5,89 +5,94 @@ block content
 
     #resultwrapper
 
+      table
+        tr
+          td 
+            a(href='#{base_url}')  Back to homepage
+          td 
+            a(href='http://blogs.helsinki.fi/digitala-projekti/about-digitala/')  Digitala <br>project
+          td 
+            a(href='http://spa.aalto.fi/en/research/research_groups/speech_recognition/')  Aalto University <br> Speech Recognition <br>Group
+          td 
+            a(href='http://www.helsinki.fi/speechsciences/introduction/index.htm')  Helsinki University <br>Speech Sciences
+          td 
+            a(href='http://www.helsinki.fi/teachereducation/')  Helsinki University<br> Teacher Education
+
       h2 These are your results;
 
       h4 If you don't like them, you should practice more. Or is it the noise? Find a more quiet space and try again!
     
       p Your user  code is <b>#[=user.username]</b>. 
-        | You can view your results for 72 hours after finishing the test with 
-        | your code (until #[=results.expiry_date] ie. for #[=results.expiry_hours]
-        |  hours and  #[=results.expiry_minutes] minutes).
+        | You can view your results until noon next Wednesday (#[=results.expiry_date])
+        |  with your code  ie. for #[=results.expiry_hours]
+        |  hours and  #[=results.expiry_minutes] minutes.
 
-      h3 1 Phonetic clarity within the population of Finnish High School students
+      h3 1. Pronunciation clarity within the population of Finnish High School students
 
-      center
-        img(src="#{base_url}/images/bird_phonetics_to_grade.png")
+      p The chart below shows a mapping from computational score to human evaluation. 
+        | Samples from the training data are shown. The blue dots show median evaluation, and 
+        | the error bars encompass the complete variety of human evaluations for that particular speaker.
+        | The human evaluation is based on a 10-step scale, where every step has been
+        | described:
+        ul
+          li 1: Pronunciation causes major difficulties in understanding
+          li 2: Pronunciation causes frequent difficulties in understanding
+          li 3: Pronunciation sometimes causes difficulties in understanding
+          li 4:  Pronunciation is understandable, although foreign accent is very apparent and pronunciation mistakes can cause understanding problems
+          li 5: Pronunciation is understandable, although foreign accent is very apparent and there are pronunciation mistakes
+          li 6: Pronunciation is clearly understandable, although foreign accent is apparent and there are infrequent pronunciation mistakes
+          li 7: Pronunciation is very understandable, although intonation and weighting are not according to target language
+          li 8: Pronunciation and intonation are clear and natural. 
+          li 9: Pronunciation and intonation are very clear and natural. 
+          li 10: Able to vary intonation and communicate the most subtlest of meanings via prosodic weighting
+
+        | As is apparent from the chart, the reviewers are using the scale in a varying manners.
+
       
-      p Your computational score is #[=results.computational_score]. 
-        | That would predict a score between #[=results.approx_human_lower] 
-        | and  #[=results.approx_human_upper] in the 10-step human evaluation.
 
-      h3 2 Phonetic performance phone by phone, in comparison to native speakers
-
-      h4 Consonants
-
-      h5 plosives:
-      table
-        each phone in [ "p", "b", "t", "d", "k", "g" ]
-          tr
-            td= phone
-            td score
-            td yours
-            td sample
-
-      h5 fricatives:
-      table
-        each phone in [ "f", "v", "s", "S","h", "C" ]
-          tr
-            td= phone
-            td score
-            td yours
-            td sample
+      //center
+      //  img(src="#{base_url}/images/bird_phonetics_to_grade_new_model.svg")
 
 
-      h5 sonorant consonants (nasals, liquids and semivowels):
-      table
-        each phone in [ "m", "n", "N", "r", "l", "j"  ]
-          tr
-            td= phone
-            td score
-            td yours
-            td sample
 
-      h5 short vowels:
-      table
-        each phone in [ "I", "e", "E", "Y","u0", "2", "U", "O", "a"  ]
-          tr
-            td= phone
-            td score
-            td yours
-            td sample
+      p 
+        | !{results.computational_score}
+        //| That would predict a score between #[=results.approx_human_lower] 
+        //| and  #[=results.approx_human_upper] in the 10-step human evaluation.
 
-
-      h5 long vowels:
-      table
-        each phone in [ "I:", "e:", "E:", "Y:", "u0:", "2:", "U:", "O:", "a:"  ]
-          tr
-            td= phone
-            td score
-            td yours
-            td sample
-
-
-      h5 some important allophonic variants:
-      table
-        each phone in [ "{:", "9:", "{", 9, "@", "rt", "rd", "rn", "rs", "rl" ]
-          tr
-            td= phone
-            td score
-            td yours
-            td sample
 
 
       
 
-      h3 3 Plotted fluency
+      h3 3. Plotted fluency
+
+      each utt in [ 0, 1, 2, 3, 4, 5, 6, 7, 8 ]
+        h4 Utterance #{utt}
+        table
+          tr(valign="top")
+            td
+              p Your recording:
+              video(width='100%', src='#{base_url}/encoded_video/#{user.username}/#{user.username}_16_#{utt}.webm', controls, preload="auto")
+            td 
+              p Wavelet of your utterance (click to enlarge):
+                a(href='#{base_url}/images/wavelets/#{user.username}.16.#{utt}.svg')
+                  img(src='#{base_url}/images/wavelets/#{user.username}.16.#{utt}.svg', width='100%')
+            td 
+              p Wavelet of native utterance (click to enlarge):
+                a(href='#{base_url}/images/wavelets/stig.sentence-16.#{utt}.svg')
+                  img(src='#{base_url}/images/wavelets/stig.sentence-16.#{utt}.svg', width='100%')
+
+      h3 4. We made this!
+
+      ul
+          li Reima Karhila, pronunciation scoring, system integration
+          li Aku Rouhe, speech segment validation, wavelet integration
+          li Peter Smit, Swedish speech recognition
+          li André Mansikkaniemi, Swedish speech recognition adaptation
+          li Antti Suni, Wavelet analysis
+          li Heini Kallio & Erik Lindroos, data collection
+          li Stig-Arne Grönroos, model pronunciation
+          li Martti Vainio, Raili Hilden & Mikko Kurimo, project leaders
 
 
 block scripts

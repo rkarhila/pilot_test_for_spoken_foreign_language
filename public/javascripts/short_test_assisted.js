@@ -78,7 +78,7 @@ var tasks_and_stimuli=[
 	"stimulus_layout" : "<div class=main><p><i>Tryck på knapp och läs texten högt. Du har 15 sekunder att läsa varje text.</i></p> \
 <p>When you click the record button, you will see a bit of text from a dialogue. Read it aloud. You have a maximum of 15 seconds for each text.</p><div id=stimulus style=\"font-family: 'Arial Black', 'Arial';font-size: 52px;font-style: normal; font-variant: normal; font-weight: bold; line-height: 70.4px;\"></div></div>",
 	"controls" :  "start_only",
-	"stimulus" : "Sittplatserna kostar 420 kronor och ståplatserna kostar 320 kronor.",
+	"stimulus" : "Sittplatserna kostar 420 (fyra hundra tjugo) kronor och ståplatserna kostar 320 (tre hundra tjugo) kronor.",
 	"easy_stimulus" : "Sittplatserna <br> kostar <br> fyra hundra <br> tjugo kronor <br> och ståplatserna <br> kostar <br> tre hundra  <br> tjugo kronor.",
 	"hypermedia" : "None",
 	"response_time": "15",

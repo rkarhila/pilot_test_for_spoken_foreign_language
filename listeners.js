@@ -31,6 +31,10 @@ var start_listening = function() {
 
 			    exec(extractioncmd);
 			    
+			    var waveletcmd = '/l/opt/wavelet_prosody_analyzer/produce_wavelet_analyses.sh `pwd`/uploads/validator_data/' + userdir + ' `pwd`/public/images/wavelets'
+
+			    exec(waveletcmd);
+
 			}
 		    }
 		});

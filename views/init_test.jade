@@ -6,8 +6,8 @@ block content
       //h1 Hejsan, pilot!
       //p Ruotsin kielen ylioppilaskirjoitusten raakile. Tätä kypsytellään avullasi.
 
-      #swedometer
-          | Swed-o-meter 
+      //#swedometer
+      //    | Swed-o-meter 
 
       // Wrapper
       #testwrapper
@@ -42,7 +42,7 @@ block content
                   h2 Welcome the the test! 
 
                   p Your user  code is <b>#[=user.username]</b>. 
-                    | You can return to the test and your results with this code.
+                    | You can view your results later with this code.
 
                   p If you can read this, there is something wrong with your javascripts.
 
@@ -91,6 +91,10 @@ block scripts
     -if (user.username)
         script(type='text/javascript').
             var username =!{JSON.stringify( user.username )};
+    -if (start_trial)
+        script(type='text/javascript').
+            var start_trial =!{JSON.stringify( start_trial )};
+
     -if (noVideo)
         script(type='text/javascript').
             var noVideo =!{JSON.stringify( noVideo )};
@@ -104,7 +108,7 @@ block scripts
             var test_type = 'standard';
 
     -if (test_type == "assisted_short")
-        script(src='#{base_url}/javascripts/short_test.js')
+        script(src='#{base_url}/javascripts/short_test_assisted.js')
         script(type='text/javascript').
             var test_type = 'assisted';
 

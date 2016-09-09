@@ -23,20 +23,6 @@ router.post('/:user/:task/:trial', function(req, res, next) {
 
     var cmd, cmd2, cmd3;
 
-    /*if (no_video)
-    {
-	filePath = './uploads/raw_video/'+req.body.audio.name;
-	filecontents = files.audio.contents.split(',').pop();
-	fileBuffer = new Buffer(filecontents, "base64");
-	fs.writeFileSync(filePath, fileBuffer);
-	var savemsg = 'Tallennettiin palvelimelle '+req.body.audio.name;
-
-	outputfilePath = './uploads/encoded_video/'+req.body.audio.name+'.ogg';
-
-	cmd='ffmpeg -y -i '+filePath+' -c:a '+audiocodec+' -strict experimental '+outputfilePath;
-    }
-
-    else {*/
     
     if (true) {
 
@@ -60,30 +46,35 @@ router.post('/:user/:task/:trial', function(req, res, next) {
 	    
             cmd='ffmpeg -y -i '+filePath+' -i '+audiofilePath+' -c:v libvpx -c:a '+audiocodec+' -strict experimental '+outputfilePath;
 
-	    if (uploadtask == "16" || uploadtask == 16) {
-		if (uploadtrial == "0" || uploadtrial == 0) {
-		    fs.mkdirSync('uploads/validator_data/'+uploaduser);
-		    exec('chmod a+w uploads/validator_data/'+uploaduser, function(error, stdout, stderr) {
-			if (error)
-			    console.log(error);
-		    });
-		}		
 
-		var validaudio = akusfilepath + '/'+uploaduser+'/'+ (req.body.audio.name).replace(/_/g, '.');
-		var tmpaudio = akusfilepath+'/tmp/'+ req.body.audio.name;
-		cmd2='ffmpeg -i '+audiofilePath+ ' ' + tmpaudio;
-		cmd3='mv '+ tmpaudio + ' ' + validaudio;
-	    }
-	    
+	    var validaudio = akusfilepath + '/'+uploaduser+'/'+ (req.body.audio.name).replace(/_/g, '.');
+	    var tmpaudio = akusfilepath+'/tmp/'+ req.body.audio.name;
+	    cmd2='ffmpeg -i '+audiofilePath+ ' ' + tmpaudio;
+	    cmd3='mv '+ tmpaudio + ' ' + validaudio;
 	}
+	
+
 	else {
             cmd='ffmpeg -i '+filePath+' -c:v libvpx -c:a libvorbis -strict experimental '+outputfilePath; // >> /home/rkarhila/node_swedish/lets_encode.sh';
 
 	}
     }
-    //console.log('Encoding '+filePath+': '+cmd);
 
-    
+    // Create the directory for validator data:
+    if (uploadtask == "16" || uploadtask == 16) {
+
+	console.log("Creating directory uploads/validator_data/" + uploaduser);
+	try {
+	    fs.mkdirSync('uploads/validator_data/'+uploaduser);
+	    exec('chmod a+w uploads/validator_data/'+uploaduser, function(error, stdout, stderr) {
+		if (error)
+		    console.log(error);
+	    });
+	}
+	catch (err) {
+	    console.log("I guess the dir uploads/validator_data/"+uploaduser+ " already existed?");
+	}
+    }		
 
     exec(cmd, function(error, stdout, stderr) {
 

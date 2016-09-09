@@ -5,6 +5,10 @@ body {
   background: #fcff00 url("/svenska/images/yellow.png") repeat fixed 0% 0%;
 }
 
+video {
+background: #fcffff; 
+}
+
 input[type="button"] {
 	background: #FF5DB1;
 	background: -moz-linear-gradient(top,#FF5DB1 0%,#E94A86 100%);
@@ -39,6 +43,12 @@ a {
   color: #00B7FF;
 }
 
+#error {
+    background: #FF0000;
+    color:#fff;
+    font-size:22px;
+}
+
 #wrapper {
 	padding-left:512px;
 	padding-right:80px;
@@ -48,8 +58,16 @@ a {
 
 #resultwrapper {
     padding: 20px;
+    font: 16px "Lucida Grande", Helvetica, Arial, sans-serif;
+	
+}
+#resultwrapper td {
+    padding: 15px;
 }
 
+#resultwrapper h3 {
+    margin-top: 5em;
+}
 select{
     width: 250px;
     text-overflow: ellipsis;

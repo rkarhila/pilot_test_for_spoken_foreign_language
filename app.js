@@ -230,17 +230,10 @@ app.get('/logout', function(req, res, next) {
 app.get('/welcome', function(req, res, next) {
     User.find({}, function(err, user) {
 
-	console.log('Trying to get changelog');	
-	var changelog = JSON.parse(fs.readFileSync('./changelog.json', 'utf8'));
-	console.log('Got changelog');
-	
 	res.render('login', { title: 'Digitala @ Interspeech16',
 			      user: req.user ,
-			      changelog: changelog,
 			      ui_language: req.ui_language,
 			      base_url: req.base_url,
-			      error_message: req.flash('error'),
-			      success_message: req.flash('success'),
 			      all_users : user
 			    });
     });
@@ -263,16 +256,45 @@ app.use('/start', start_test);
 
 //console.log("If auth fails, redirect to "+base_url+"/welcome");
 
-app.post('/login',
-	 passport.authenticate('local',
-			       { failureRedirect: base_url+'/welcome',
-				 failureFlash: true }),
-	 function(req, res) {
-	     sess=req.session;
-	     sess.username=req.body.username.value;
-             res.redirect(base_url+'/');
-	 });
+app.post('/login', function(req,res,next) {
 
+    var username = req.body.username;
+
+    console.log(username)
+
+    if (typeof(username)=='undefined') {
+
+	    res.render('login', { title: 'Digitala @ Interspeech16',
+				  user: req.user ,
+				  base_url: req.base_url,
+				  error_message: 'Could not find results for code '+username,
+				});	
+
+    }
+
+    else {
+	fs.readdir( 'classification_data/results_charts/',  function (err, files){
+	    
+	    var re = new RegExp(username,"g");
+	    
+	    var resultchart = files.filter(function(item){
+		return re.test(item);
+	    }).length;
+	    
+	    if (resultchart > 0) {
+		res.redirect(base_url+'/u/'+username +'/results');
+	    }	  
+  
+	    else {
+		res.render('login', { title: 'Digitala @ Interspeech16',
+				  user: req.user ,
+				      base_url: req.base_url,
+				      error_message: 'Could not find results for code '+username,
+				    });
+	    }
+	});
+    }
+});
 /*
 app.use(function(req,res,next){
     console.log(req.user);

@@ -7,7 +7,11 @@ statsdir=classification_data/stats/$usercode
 pickle=classification_data/pickles/$usercode
 resultdir=classification_data/results/
 resultfiledir=classification_data/results_charts/
+
+phonesampleaudiodir=public/phone_samples/$usercode
+
 # Make a little recipe:
+
 
 
 date
@@ -29,6 +33,14 @@ echo python dnn_runner/extract_and_pickle_from_wavfiles.py --recipe $recipe --pi
 
 python dnn_runner/extract_and_pickle_from_wavfiles.py --recipe $recipe --pickle $pickle --stats $statsdir
 
+mkdir -p $phonesampleaudiodir
+
+for f in $statsdir/control-wav/*raw; do 
+    sox -t raw --encoding signed-integer -b 16 -r 16000 $f $phonesampleaudiodir/`basename $f .16k.16b.signed_integer.raw`.wav
+done &
+
+
+
 
 modeldir=`pwd`/dnn_runner/models/l3002_d0.6-2016-09-06 #l2501_d0.4-2016-08-23
 
@@ -47,8 +59,10 @@ python dnn_runner/classify.py $modelarch $modelparam $normfile $resultdir $pickl
 
 date
 
-guessfile=classification_data/results/$username.guess
-reffile=classification_data/results/$username.ref
 
 
-python dnn_runner/evaluate_results_and_write_html.py $guessfile $reffile $resultfiledir/$username
+source deactivate tensorflow3
+
+python dnn_runner/evaluate_results_and_write_html.py $usercode $resultfiledir/$usercode
+
+

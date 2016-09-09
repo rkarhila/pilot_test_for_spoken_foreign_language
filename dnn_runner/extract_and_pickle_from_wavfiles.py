@@ -1,0 +1,564 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+
+# This file is (was?) in /l/rkarhila/speecon_wsj_phoneme_dnn/data_preprocessing
+
+#
+#  1. Divide each speecon data files into single phoneme chunks
+#
+#  2. Run the chunks through feature extraction shell script
+#
+#  3. Store the features and their associated phoneme information in arrays
+#
+#  4. Pickle for future normalisation (with other corpora) 
+#
+
+
+debug=False#True
+
+import io
+import os
+import numpy as np
+import subprocess
+from subprocess import Popen, PIPE, STDOUT
+import re
+import math 
+import struct
+import time
+import pickle as cPickle
+import errno    
+import sys
+import struct
+from subprocess import call
+
+def help_and_exit():
+    print ("  usage:")
+    print ("       python extact_and_pickle.py --recipe=[RECIPEFILE]")
+    print ("  options: (At least recipe or audio+alignment required!)")
+    print ("       --recipe            [RECIPE FILENAME]")
+    print ("       --audio             [AUDIO FILENAME]")
+    print ("       --align             [ALIGNMENT FILENAME]")
+    print ("       --extractionscript  [EXTRACTION SCRIPT FILENAME]")
+    print ("       --pickle            [FILENAME FOR RESULTS]")
+    print ("       --statsdir          [DIRNAME FOR STATISTICS]")
+    print ("       --norm              [NORMALISATION FILE]")
+    print ("")
+    print ("  recipefile should consists of lines of \"audio=(audiofile) alignment=(alignmentfile)\"")
+    print ("")
+    print ("")
+
+    sys.exit(0)
+
+
+if len(sys.argv) < 2:
+    help_and_exit()
+
+
+
+
+def mkdir(path):
+    try:
+        os.makedirs(path)
+        
+    except OSError as exc:  # Python >2.5
+        if exc.errno == errno.EEXIST and os.path.isdir(path):
+            pass
+        else:
+            raise   
+
+
+
+
+# Defaults or sys argv:
+
+feature_extraction_script='./dnn_runner/extract_from_wav_file_with_start_end.sh'
+statistics_dir = None
+pickle_file='.'
+
+audiofile=None
+alignmentfile=None
+recipefile=None
+classesfile=None
+
+normalisationfile=None
+
+i=1
+while i < len(sys.argv)-1:
+    argname=sys.argv[i]
+    argval=sys.argv[i+1]
+
+    print ("args: %s == %s" % (argname, argval))
+
+    if argname == '--'+'audio':
+        audiofile = argval
+    elif argname == '--'+'align':
+        alignmentfile = argval
+    elif argname == '--'+'recipe':
+        recipefile = argval
+
+    elif argname == '--'+'extractionscript':
+        feature_extraction_script = argval
+    elif argname == '--'+'classes':
+        classesfile = argval
+    elif argname == '--'+'norm':
+        normalisationfile = argval
+
+    elif argname == '--'+'stats':
+        statistics_dir = argval
+    elif argname == '--'+'pickle':
+        picklefile = argval
+
+    i+=2
+
+if not (recipefile or (audiofile and alignmentfile)):
+    print ("")
+    print ("  You need to excplicitly define either (a) a recipe or (b) audio and alignment files!!")
+    print ("")
+    help_and_exit()
+
+if not (normalisationfile):
+    print ("")
+    print ("  You're not normalising, is that planned?")
+    print ("")
+
+if classesfile:
+    dummy = 1
+    print ("")
+    print ("  Loading classes from an external file has not been implemented yet!")
+    print ("")
+    help_and_exit()
+
+else:
+    classes = { "2:":0,
+                "9":1,
+                "A:":2,
+                "E":3,
+                "E:":4,
+                "I":5,
+                "N":6,
+                "O":7,
+                "U":8,
+                "Y":9,
+                "a":10,
+                "b":11,
+                "d":12,
+                "d`":13,
+                "e":14,
+                "e:":15,
+                "f":16,
+                "g":17,
+                "h":18,
+                "i:":19,
+                "j":20,
+                "k":21,
+                "l":22,
+                "l`":23,
+                "m":24,
+                "n":25,
+                "n`":26,
+                "o:":27,
+                "p":28,
+                "r":29,
+                "s":30,
+                "s'":31,
+                "s`":32,
+                "t":33,
+                "t`":34,
+                "u0":35,
+                "u:":36,
+                "v":37,
+                "x\"":38,
+                "y:":39,
+                "}:":40 }
+
+   
+
+    classnames = [ "2:", "9", "A:", "E", "E:", "I", "N", "O", "U", "Y", "a", "b", "d", "d`", "e", "e:", "f", "g", "h", "i:", "j", "k", "l", "l`", "m", "n", "n`", "o:", "p", "r", "s", "s'", "s`", "t", "t`", "u0", "u:", "v", "x\\", "y:", "}:"]
+
+
+
+#Legacy, get rid of this at some point:
+combinations=[]
+
+if not statistics_dir:
+    basename= re.sub('[^0-9a-zA-Z]+', '_',os.path.basename(recipefile))
+    ct=0
+    while os.path.exists('./stats-%s-%02i' % (basename, ct)):
+        ct+=1
+    statistics_dir='./stats-%s-%02i' % (basename, ct)
+    mkdir(statistics_dir)
+
+
+
+# Settings for feature extraction:
+
+datatypelength = 2 # 16 bits = 2 bytes, no?
+
+frame_length = 400
+frame_step = 128
+
+frame_leftovers = frame_length-frame_step
+
+feature_dimension=30
+max_num_frames=63
+
+fs=16000
+alignstep=10000000
+
+if classes:
+    max_num_classes = len(classes)
+else:
+    max_num_classes = 100
+
+classcounts=np.zeros(max_num_classes)
+
+assigned_num_samples=100
+file_batch_size=2000
+
+
+
+#Normalisation: Pretty important!
+norm_means=None
+norm_stds=None
+
+if normalisationfile:
+    norm=cPickle.load(open(normalisationfile,'r'))
+    norm_means=norm['mean']
+    norm_stds=norm['std']
+
+    #(grande_feature_array-means)/stds)
+
+    # If norm does not exist, it should be written to stats dir!
+    #cPickle.dump({'mean': means, 'std': stds}, normoutf, protocol=cPickle.HIGHEST_PROTOCOL)
+
+
+
+# tmp directory for feature extraction.
+# This should reside in memory (tempfs or whatever it's called, often under /dev/shm/)
+
+tmp_dir="/dev/shm/siak-feat-extract-python-"+str(time.time())
+mkdir(tmp_dir)
+
+
+
+
+
+
+
+print ("start!")
+
+triphonedata = {}
+
+
+if recipefile:
+    recipefilehandle = open( recipefile , 'r')    
+    recipe=[]
+    for l in recipefilehandle.readlines():
+        r = l.strip()
+        audiofile = re.sub('audio=', '',  re.findall('audio=[^ ]+', r)[0])        
+        alignmentfile = re.sub(r'alignment=', r'', re.findall('alignment=[^ ]+', r)[0])  
+        recipe.append({'audio': audiofile, 'alignment': alignmentfile})
+else:
+    recipe=[{'audio': audiofile, 'alignment': alignmentfile}]
+    
+
+numlines=len(recipe)
+
+recipefilecounter = 0    
+too_long_counter = 0
+all_trips_counter = 0
+
+tmpfilecounter = 0
+
+progress_interval = math.ceil(numlines/1000.0)
+
+statistics_file=statistics_dir+"/triphone-frame-counts"
+statistics_handle = open(statistics_file, 'w')
+
+phone_merge_file=statistics_dir+"/phone-merge"
+phone_merge_handle = open(phone_merge_file, 'w')
+
+quality_control_wavdir = statistics_dir+"/control-wav"
+
+mkdir(quality_control_wavdir)
+
+quality_control_audio_files = {}
+
+
+grande_features =  np.zeros([0, max_num_frames, feature_dimension], dtype='float')
+grande_classes = np.zeros([0, max_num_classes ], dtype='float')
+grande_metadata = []
+
+
+for r in recipe:
+
+    audiofile = r['audio']
+    labelfile = r['alignment']
+
+    if debug:
+        print ("Labelfile %i/%i: %s" % (recipefilecounter, numlines, labelfile))
+        print ("Audiofile %i/%i: %s" % (recipefilecounter, numlines, audiofile))
+
+    with io.open(labelfile ,'r',encoding='iso-8859-15') as f:
+
+        alignarray = []
+
+        current_start = 0
+        current_end = 0
+        current_model = False
+        current_premodel = False
+        current_postmodel = False
+
+        skip = False
+
+        phonect = 0
+        statect = 0
+
+        lcounter = 0
+
+        # For printing the phoneme sequences into a log:
+        labelstring=''
+        skipmark=False
+
+        startmark=-1
+        endmark = -1
+
+        phone={}
+
+
+        lines = f.readlines()
+        if len(lines)==0:
+            continue
+        lines.append(lines[-1])
+        for l in lines:
+
+            # If we have a short pause model:
+            #if '+' not in l:
+            #    no_skipping = True
+            #    skipmark = True
+
+            # We'll process the label line by line with a two-phone delay:
+
+            if ' ' in l:
+
+                [start, end, model] = re.split(r'[ ]', l.strip(), maxsplit=5 )[0:3]
+                if debug:
+                    print ([start, end, model])
+
+            else:
+                [start, end, model, state] = re.split(r'[ .+-]', l.encode('utf-8').strip() )
+
+
+                skipmark = True
+
+
+
+            if model in classes:
+
+                alignarray.append({'start':int(round(float(start)/alignstep*fs)), 
+                                   'end':int(round(float(end)/alignstep*fs)), 
+                                   'length' :  int(round(( float(end)-float(start) )/alignstep * fs)),
+                                 'class': classes[model], 
+                                 'modelname': str(model),  # Backwards compatibility...
+                                 'modelindex':  classes[model],
+                                 'filecode' : audiofile,
+                                 'phone': model })
+
+
+
+
+        phone_merge_handle.write("%s\t%s\n" % (labelfile, labelstring))
+
+        # OK, label file done.
+        # Now it's time to process the audio.
+        # We'll send to the feature extractor the bits of the file that 
+        # match the speech segments.
+
+        #preprocess data file (to 16kHz):
+        pre_input=os.path.join(tmp_dir,str(tmpfilecounter)+"_pre.wav")
+
+        process_progress = call(['sox', audiofile, '-r', '16000', '-c', '1', pre_input , 'norm', '-3' ])
+
+        data = np.fromfile( pre_input, 'int16', -1)
+
+        jitter_low=-20
+        jitter_high=20
+
+        zeros = np.where(np.abs(data) < jitter_high )[0] # Find zero-values
+        zeros = zeros[zeros>44] # Don't do anything to the header!
+
+        if debug:
+            print ("Nr of zeros in audio segment: %i" % zeros.size)
+            print (zeros)
+        
+        data[zeros] = np.random.randint(jitter_low,jitter_high, zeros.shape)
+        
+        if len(alignarray)<1:
+            continue
+
+        startmark = int(alignarray[0]['start'])
+        endmark= int(alignarray[-1]['end'])
+
+        if debug:
+            print ("start feature extraction at %s (%f s) and end at %s (%f s) ==> %i frames"  % (startmark, (float(startmark)/16000), endmark, (float(endmark)/16000), (endmark-startmark)/frame_step))
+
+
+        # Communication from: 
+        # http://stackoverflow.com/questions/163542/python-how-do-i-pass-a-string-into-subprocess-popen-using-the-stdin-argument
+
+        #inputdata=data[startmark*datatypelength : (endmark + frame_leftovers)*datatypelength]
+        #print inputdata
+
+        tmp_input=os.path.join(tmp_dir,str(tmpfilecounter)+"_in.wav")
+        tmp_output=os.path.join(tmp_dir,str(tmpfilecounter)+"_out")
+
+        data.tofile(tmp_input)
+
+
+
+
+
+        ##  You can use 'd' for double and < or > to force endinness
+        #bindata=struct.pack(myfmt,*inputdata)
+        if debug:
+            print ( "%s %s %s %s %s" % (feature_extraction_script, tmp_input, tmp_output, str(startmark) , str(endmark+frame_leftovers)))
+
+        process_progress = Popen([feature_extraction_script, tmp_input, tmp_output, str(startmark), str(endmark+frame_leftovers) ], stdout=PIPE, stdin=PIPE, stderr=STDOUT).communicate()
+
+        feature_list = np.fromfile(tmp_output, dtype='float32', count=-1)
+        feature_array = feature_list.reshape([-1,feature_dimension])
+
+        f_end =  (int(alignarray[-1]['end'])-startmark)/frame_step
+
+        if debug:
+            print ("Utterance data size: %i x %i" % (feature_array).shape)
+
+        if (feature_array.shape[0] < f_end):
+                print ("Not enough features for file %s: %i < %i" % (audiofile, feature_array.shape[0], f_end))
+                print ("panic save to /tmp/this_is_not_good")
+                np.savetxt('/tmp/this_is_not_good', feature_array, delimiter='\t')
+                sys.exit(0)
+
+        else:
+
+            for l in alignarray:                
+                mkey = l['modelname']
+                #tp = l['tripfhone']
+                modelindex=l['modelindex']
+                all_trips_counter += 1
+
+                
+
+                # For debugging, let's write this stuff to disk:
+                if mkey not in quality_control_audio_files.keys():
+                    qual_file = os.path.join(quality_control_wavdir,  mkey+".16k.16b.signed_integer.raw")
+                    quality_control_audio_files[mkey] = open( qual_file , 'wb')
+
+                for val in data[int(l['start']):int(l['end'])]:
+                    (quality_control_audio_files[mkey]).write(struct.pack( 'h', val ))
+                
+
+                #Calculate frame indices:
+
+                l_start = math.floor((int(l['start'])-startmark)/frame_step)
+                l_end =  math.ceil((int(l['end'])-startmark)/frame_step)
+                l_length = l_end - l_start
+
+
+                if (feature_array.shape[0] < l_end):
+                    print ("Not enough features: %i < %i" % (feature_array.shape[0], l_end))
+
+                statistics_handle.write("%i\t%s\n" % (l_length, mkey))
+
+                if debug:
+                    print ("---------------------------")
+                    print ("Array stats: start %i -> %i length ?? -> %f end %i -> %i"% (int(l['start'])-startmark, l_start, l_length, int(l['end'])-startmark, l_end ))
+                    print ("      phone data size: %i x %i" % (feature_array[l_start:l_end, :].shape[0],feature_array[l_start:l_end, :].shape[1] ))
+
+
+                # If phone is shorter than maximum length, we'll pad with zeros:
+                if (l_length < max_num_frames):
+                    if debug:
+                        print (str(max_num_frames) + " > " + str(l_length))
+                        print (" padding with "+ str(max_num_frames-l_length) +" zero vectors")
+                    l_array = np.pad(feature_array[l_start:l_end, :], 
+                                     ([0,max_num_frames-l_length],[0,0]),
+                                     mode='constant', constant_values=0)
+
+                # If it's not shorter:
+                else:
+                    # Perfect match with maximum length!!
+                    if (l_length == max_num_frames):
+                        l_array = feature_array[l_start:l_end, :]
+                    else:       
+                        # If we have a utterance start model, let's take the final bit from it:                            
+                        l_array = feature_array[l_end-max_num_frames:l_end, :]
+                        too_long_counter += 1                        
+                        sys.stderr.write("\r%0.2f%s What a trouble! Triphone %s is too long (%i frames)! %i too long things already, that's %0.2f %s of all!\n" % (100.0*recipefilecounter/numlines, "%",model, l_length, too_long_counter, 100.0*too_long_counter/all_trips_counter, "%"))
+
+
+
+                if debug:
+                    print ("Data size: %i x %i" % l_array.shape)
+
+                if (norm_means is not None) and (norm_stds is not None):
+                    l_array = (l_array-norm_means)/norm_stds
+
+                if np.isnan(np.sum(l_array)):
+                    print ("Feck it, there's nans around in file %s. Let's go to the next one!" % audiofile)
+                else:
+
+                    if debug:
+                        print ("Grande features shape:"+str(grande_features.shape))
+                        print ("l_array shape:"+str(l_array.shape))
+
+                    grande_features = np.append( grande_features, l_array[np.newaxis,:,:], 0)
+
+                    # Inefficient, I know!
+                    piccolo_classes =  np.zeros([ max_num_classes ], dtype='float')
+                    piccolo_classes[modelindex] = 1
+                    
+                    grande_classes = np.append(grande_classes,  piccolo_classes[np.newaxis,:],0)
+                
+                    classcounts[modelindex] += 1
+                    
+                    grande_metadata.append({
+                        'file': audiofile,
+                        'model': mkey,
+                    })
+                
+            os.remove(pre_input)
+            os.remove(tmp_input)
+            os.remove(tmp_output)
+
+
+    recipefilecounter += 1
+
+    if recipefilecounter % file_batch_size == 0:
+        # So much data we'll have to save to intermediate files:
+        dummy = 1
+
+
+    if not debug:
+        if (recipefilecounter % int(progress_interval)) == 0:
+            sys.stderr.write("\r%0.2f%s %s" % (100.0*recipefilecounter/numlines, "%", recipefile))
+            sys.stderr.flush()
+
+    if (recipefilecounter == numlines):
+        break
+
+
+
+print ("pickling %i items to %s" % ( grande_features.shape[0], picklefile))
+
+outf = open(picklefile, 'wb')
+
+# Pickle the list using the highest protocol available.
+cPickle.dump({'data': grande_features, 
+              'classes': grande_classes, 
+              'meta': grande_metadata,
+              'classcounts': classcounts,
+              'classnames' : classnames }, outf, protocol=cPickle.HIGHEST_PROTOCOL)
+
+

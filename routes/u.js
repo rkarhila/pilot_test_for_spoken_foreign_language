@@ -7,12 +7,12 @@ var fs = require('fs');
 
 router.get('/:username/test/:testtype', function(req, res, next) {
 
-
+    
     if (req.params.testtype == 'short' || 
 	req.params.testtype == 'assisted_short' ||
 	req.params.testtype == 'holding_your_hand_short'  )
     {
-
+	
 	if (req.user) {
 	    user = req.user;
 	}
@@ -22,28 +22,55 @@ router.get('/:username/test/:testtype', function(req, res, next) {
 	
 	var test_type = req.params.testtype;
 	
-	
-	
-	res.render('init_test',  { title: 'Testing!', 
-				   user: req.user,
-				   base_url: req.base_url,
-				   ui_language: req.ui_language,
-				   error_message: req.flash('error'), 
-				   success_message: req.flash('error'),
-				   noVideo: (process.env.NOVIDEO || 0),
-				   test_review : "0", //test_review,
-				   test_type: test_type
-				 });
-	
-	
+	fs.readdir( 'classification_data/results_charts/',  function (err, files){
+	    
+	    var re = new RegExp(req.user.username,"g");
+	    
+	    var resultchart = files.filter(function(item){
+		return re.test(item);
+	    }).length;
+	    
+	    if (resultchart > 0) {
+		res.redirect(base_url+'/u/'+req.user.username +'/results');
+	    }	    
+	    else {
+
+		fs.readdir(  'uploads/validator_data/'+req.user.username+'/',  function (err, files){
+		    
+		    if (typeof(files) != 'undefined') {
+			var files_uploaded = files.filter(function(item){
+			    return /16.[0-8].wav/.test(item);
+			}).length;	    
+			var start_trial = files_uploaded+1;
+		    }
+		    else {
+			var start_trial = -1;
+		    }
+			
+		    res.render('init_test',  { title: 'Testing!', 
+					       user: req.user,
+					       base_url: req.base_url,
+					       ui_language: req.ui_language,
+					       error_message: req.flash('error'), 
+					       success_message: req.flash('error'),
+					       noVideo: (process.env.NOVIDEO || 0),
+					       test_review : "0", //test_review,
+					       test_type: test_type,
+					       start_trial: start_trial
+
+					     });
+		});
+		
+	    }
+	});
     }
     else
     {
 	res.render('layout', { user: {username: "no worries"},
 			       error_message: 'Unknown test type'} );
+	
     }
-
-
+	   
 });
 
 var get_new_user = function() {
@@ -93,76 +120,105 @@ router.get('/:username/checkresults', function(req, res, next) {
 
     // Check files uploded:
     fs.readdir( 'uploads/validator_data/'+username+'/',  function (err, files){
-	//console.log(files);
-	var files_uploaded = files.filter(function(item){
-	    return /16.[0-8].wav/.test(item);
-	}).length;
-	//console.log("Uploaded files: " + files_uploaded);
-	message = "Uploaded files: " + files_uploaded;
-
-	fs.readdir( 'uploads/validator_data/'+username+'/',  function (err, files){
-
+	if (typeof(files) == 'undefined' ) {	    
+	    res.json(
+		{
+		    'code': '100', 
+		    'message': "Something has gone terribly wrong! Sorry about that. Try again with another device?"
+		});	    
+	}
+	else {
 	    //console.log(files);
-	    var files_aligned = files.filter(function(item){
-		return /16.[0-8].lab/.test(item);
+	    var files_uploaded = files.filter(function(item){
+		return /16.[0-8].wav/.test(item);
 	    }).length;
+	    //console.log("Uploaded files: " + files_uploaded);
+	    message = "Uploaded files: " + files_uploaded +"/9";
 
-	    //console.log("Aligned files: " + files_aligned);
-	    message += "<br>Verified and aligned files: " + files_aligned
+	    fs.readdir( 'uploads/validator_data/'+username+'/',  function (err, files){
 
-	    fs.readdir( 'classification_data/pickles/',  function (err, files){
-		
-		var re = new RegExp(username,"g");
-		var pickles = files.filter(function(item){
-		    return re.test(item);
+		//console.log(files);
+		var files_aligned = files.filter(function(item){
+		    return /16.[0-8].lab/.test(item);
 		}).length;
-		
-		if (pickles > 0)
-		    message += "<br>Feature pickles: Done";
-		else 
-		    message += "<br>Feature pickles: Not yet";
 
+		//console.log("Aligned files: " + files_aligned);
+		message += "<br>Verified and aligned files: " + files_aligned +"/9";
 
-		fs.readdir( 'classification_data/results/',  function (err, files){
-
+		fs.readdir( 'classification_data/pickles/',  function (err, files){
+		    
 		    var re = new RegExp(username,"g");
-
-		    var results = files.filter(function(item){
+		    var pickles = files.filter(function(item){
 			return re.test(item);
 		    }).length;
-
-		    if (results > 1)
-			message += "<br>Segment inspection: Done";
+		    
+		    if (pickles > 0)
+			message += "<br>Feature pickles: 1/1";
 		    else 
-			message += "<br>Segment inspection: Not yet";		    
+			message += "<br>Feature pickles: 0/1";
 
-		    fs.readdir( 'classification_data/results_charts/',  function (err, files){
 
-			var resultchart = files.filter(function(item){
-			    return /username/.test(item);
+		    fs.readdir( 'classification_data/results/',  function (err, files){
+
+			var re = new RegExp(username,"g");
+
+			var results = files.filter(function(item){
+			    return re.test(item);
 			}).length;
-						
-			if (resultchart > 0) {
-			    message += "<br>Results postprocessing: Done";			    
-			    res.json(
-				{
-				    'code': '101', 
-				    'message': message
-				});
-			}
-			else {
-			    message += "<br>Result postprocessing: Not yet";	
+
+			if (results > 0)
+			    message += "<br>Segment inspection: Done";
+			else 
+			    message += "<br>Segment inspection: Not yet";		    
+
+			fs.readdir( 'public/images/wavelets',  function (err, files){
 			    
-			    res.json(
-				{
-				    'code': '100', 
-				    'message': message
-				});
-			}
+			    //console.log('Wavelet dir contents:');
+			    //console.log(files);
+			    
+			    var re = new RegExp(username,"g");
+			    
+			    var wavelets = files.filter(function(item){
+				return re.test(item);
+			    });
+
+			    message += "<br>Wavelet graphs: "+ (wavelets.length) +"/9";
+			    
+			    
+			    fs.readdir( 'classification_data/results_charts/',  function (err, files){
+
+				//console.log('Classification results dir contents:');
+				//console.log(files);
+
+	    			var re = new RegExp(username,"g");
+
+				var resultchart = files.filter(function(item){
+				    return re.test(item);
+				}).length;
+				
+				if (resultchart > 0) {
+				    message += "<br>Results postprocessing: 1/1";			    
+				    res.json(
+					{
+					    'code': '101', 
+					    'message': message
+					});
+				}
+				else {
+				    message += "<br>Result postprocessing: 0/1";	
+				    
+				    res.json(
+					{
+					    'code': '100', 
+					    'message': message
+					});
+				}
+			    });
+			})
 		    })
-		})
+		});
 	    });
-	});
+	}
     });
 });
 
@@ -179,8 +235,11 @@ router.get('/:username/results', function(req, res, next) {
 	req.user = {username: req.params.username};
     }
 
+    var username = req.params.username;
+
+
     var timeInMs = Date.now();
-    var expiryTimeInMs = timeInMs + 68.4 * 60 * 60 * 1000;
+    var expiryTimeInMs = 1473854400000;
     var expiryDate = new Date(expiryTimeInMs).toISOString().
 	replace(/T/, ' ').      // replace T with a space
 	replace(/\..+/, '') + ' GMT+0'; 
@@ -188,9 +247,17 @@ router.get('/:username/results', function(req, res, next) {
     var expiryHours = Math.ceil((expiryTimeInMs - timeInMs) /( 60  * 60 * 1000));
     var expiryMinutes = Math.round( ((expiryTimeInMs - timeInMs) /(  60 * 1000)) % 60);
 
+    try {
+	var scorebuf = fs.readFileSync('classification_data/results_charts/'+username  , "utf8");
+    }
+    catch (e) {
+	var scorebuf = "Your score is not ready yet. Try refreshing after some time";
+    }
+
     results = { 'expiry_date' : expiryDate,
 		'expiry_hours' : expiryHours,
-		'expiry_minutes' : expiryMinutes
+		'expiry_minutes' : expiryMinutes,
+		'computational_score' : scorebuf
 	      };
 
 
