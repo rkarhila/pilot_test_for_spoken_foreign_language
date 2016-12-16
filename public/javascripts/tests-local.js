@@ -640,19 +640,19 @@ function startRecord() {
 		if (noVideo) {
 		    postFiles(audioDataURL);
 		}
-		else if (!isFirefox) {
-		    console.log("Getting data urls for video (not firefox)");
-                    recordVideo.getDataURL(function(videoDataURL) {
-			postFiles(audioDataURL, videoDataURL);
+		//else if (!isFirefox) {
+		//    console.log("Getting data urls for video (not firefox)");
+                //    recordVideo.getDataURL(function(videoDataURL) {
+		//	postFiles(audioDataURL, videoDataURL);
 			//UploadFile(cameraPreview.src, "foo");
 			//UploadFile(audioDataURL, "foo1");
 			//UploadFile(videoDataURL, "foo2");
 			
-		    });
-		} else {
+		//    });
+		//} else {
 		    postFiles(audioDataURL);
 		    //postFiles(recordRTC.getBlob());
-		}
+		//}
 
 		$('#stopRecording').attr("hidden", true);
 		$('#timer').attr("hidden", true);
@@ -706,18 +706,21 @@ function postFiles(audioDataURL, videoDataURL) {
 	};	
     }
     else {
-	files.audio = {
-            name: fileName + (isFirefox ? '.webm' : '.wav'),
-            type: isFirefox ? 'video/webm' : 'audio/wav',
+	//files.audio = {
+	files.video = {
+            //name: fileName + (isFirefox ? '.webm' : '.wav'),
+	    name: fileName + '.webm',
+            //type: isFirefox ? 'video/webm' : 'audio/wav',
+	    type: 'video/webm',
             contents: audioDataURL
 	};	
-	if (!isFirefox) {
-            files.video = {
-		name: fileName + '.webm',
-		type: 'video/webm',
-		contents: videoDataURL
-            };
-	}
+	//if (!isFirefox) {
+        //    files.video = {
+	//	name: fileName + '.webm',
+	//	type: 'video/webm',
+	//	contents: videoDataURL
+        //    };
+	//}
     }
 
     files.isFirefox = isFirefox;
