@@ -8,7 +8,7 @@ dnn_runner/models
 dnn_runner/already_deprecated
 dnn_runner/dnn_testing
 dnn_runner/recipes
-.*log
+*.log
 server_logs
 node_modules
 public/test_media
