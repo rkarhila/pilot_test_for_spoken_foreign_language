@@ -1,0 +1,55 @@
+#!/usr/bin/python
+
+import sys
+import numpy as np
+
+username=sys.argv[1]
+
+result_weights = np.array([0, 0, 0.0052, 0.7513, 0, 2.0709, 0, 1.2374, 0, 0, 0.0627, 0, 0, 0, 0, 0.3476, 0, 1.4573, 0, 0, 0, 9.4770, 0.6207, 0, 0, 0.3052, 0, 0, 0, 0, 0.7215, 0, 0, 0.4643, 0, 0, 0, 0, 0, 0, 0]);
+
+zmeanings= np.array(  -0.1000,   -0.1000,    0.0461,    0.1728,   -0.1000,    0.1484,   -0.1000,    0.4736,   -0.1000,   -0.1000,    0.5282,   -0.1000,    0.0315,   -0.1000,    0.0059,   -0.0955,   -0.1000,   -0.0719,   -0.1000,   -0.1000,    0.1716,    0.1239,    0.0560,   -0.1000,    0.1703,    0.2989,   -0.1000,   -0.1000,   -0.1000,    0.2643,    0.7558,   -0.1000,   -0.1000,    0.2546,   -0.1000,   -0.1000,   -0.1000,   -0.1000,   -0.1000,   -0.1000,   -0.1000 ]);
+
+
+
+ph_scores=np.zeros(zmeanings.shape)
+
+ph_counts=np.zeros(zmeanings.shape)
+
+if True:
+    classfile= 'classification_data/results/'+sp+'.ref'
+    guessfile= 'classification_data/results/'+sp+'.guess'
+
+    guess=np.loadtxt(guessfile)
+    ref=np.loadtxt(classfile)
+
+    bestguess=(np.argmax(guess,1))
+    
+    ineffective_temp_array = guess
+    
+    for n in range(0,len(bestguess)):
+        # print ("best guess for %i is %i" % ( n, bestguess[n])) 
+        ineffective_temp_array[n,bestguess[n]]=-1
+
+    secondbestguess=(np.argmax(ineffective_temp_array,1))
+    #print ("\n%s" % re.sub('.pickle.guess', '', os.path.basename(guessfile))),
+
+    for n in range(0,numclasses):
+        n_indexes=np.where(ref==n)[0]
+        samplecount=len( n_indexes)
+        if samplecount > 10:
+            ph_counts[n] = samplecount
+            #print ("class %i  samples %i" % (n,samplecount))
+            goodguesses = (np.where( bestguess [ n_indexes ] == n)[0])
+            almostasgoodguesses=(np.where( secondbestguess [ n_indexes ] == n)[0])
+            
+            #print ("======")
+            #print (">"+str(      (len( np.where( bestguess [ n_indexes ] == n)[0])) * 1.0 / samplecount)+"<")
+            #print ("<"+str(      (len( np.where( secondbestguess [ n_indexes ] == n)[0])) * 0.5 / samplecount+">")
+            ph_scores[n] = len( goodguesses) * 1.0 / samplecount \
+                               + len( almostasgoodguesses) * 0.5 / samplecount 
+        else:
+            ph_scores[n] = -0.1 #np.nan
+
+
+score= (ph_scores-zmeanings) * result_weights;
+print (score)

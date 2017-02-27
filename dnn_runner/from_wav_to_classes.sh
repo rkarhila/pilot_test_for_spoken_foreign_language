@@ -53,9 +53,10 @@ normfile=$modeldir/norm
 
 date
  
-source activate tensorflow3
+#source activate tensorflow3
 
-python dnn_runner/classify.py $modelarch $modelparam $normfile $resultdir $pickle 
+#python dnn_runner/classify.py $modelarch $modelparam $normfile $resultdir $pickle 
+python dnn_runner/classify_client.py $resultdir $pickle
 
 date
 

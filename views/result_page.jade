@@ -34,7 +34,7 @@ block content
         | the error bars encompass the complete variety of human evaluations for that particular speaker.
         | The human evaluation is based on a 10-step scale, where every step has been
         | described:
-        ul
+        uul
           li 1: Pronunciation causes major difficulties in understanding
           li 2: Pronunciation causes frequent difficulties in understanding
           li 3: Pronunciation sometimes causes difficulties in understanding
@@ -65,6 +65,24 @@ block content
       
 
       h3 3. Plotted fluency
+      p.
+        These wavelet pictures show the prosodic structure of your utterances with word boundaries, pauses and intonation. 
+        You can see the rhythm of the utterance as well as sentence stress and even word stress. 
+        The bigger the font in the text below, the more stressed (prominent) the word is. 
+        Red color shows energy (louder & higher voice) and blue color shows silence (pauses). 
+        Large and clear red/yellow ”arc” means a clear information structure (e.g. sentence), small red/yellow pilars reveal hesitations and machine-like production.
+
+      p.
+        Have a look at these annotated examples:
+
+      table
+        tr(valign="top")
+          td
+            a(href="#{base_url}/images/wavelets/example-nonnative.png")
+              img(src="#{base_url}/images/wavelets/example-nonnative.png", width='100%')
+          td
+            a(href="#{base_url}/images/wavelets/example-native.png")
+              img(src="#{base_url}/images/wavelets/example-native.png", width='100%')
 
       each utt in [ 0, 1, 2, 3, 4, 5, 6, 7, 8 ]
         h4 Utterance #{utt}

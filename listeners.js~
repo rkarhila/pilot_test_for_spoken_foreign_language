@@ -1,0 +1,8 @@
+
+var fs = require('fs');
+
+fs.watch('./classification_data/pickles/', {encoding: 'buffer'}, (eventType, filename) => {
+  if (filename)
+    console.log("New pickle written: " + filename);
+    // Prints: <Buffer ...>
+});
