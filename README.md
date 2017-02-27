@@ -16,20 +16,22 @@ Modifications for the demo:
 You'll need:
 
 1. Nodejs
-2. Mongodb
+2. ~~Mongodb~~ (No session management, no user registration, nothing complicated!)
 3. FFMPEG with libvorbis audio and vp8 video codecs ( https://trac.ffmpeg.org/wiki/CompilationGuide/Centos might be helpful if you're on Red Hat derivatives.)
+4. Kaldi and a bunch of Aku's scripts to do the validation bit
+5. Keras or your favourite DNN implementation to run a phoneme classification LSTM over audio segments 
 
 Pull the repo and install node supplementaries:
 
 ```
 git clone  https://github.com/rkarhila/pilot_test_for_spoken_foreign_language $fancydirname
 
+git checkout interspeech16
+
 cd $fancydirname
 
 npm install
 ```
-
-Throw in a user with a role: 'global-admin' and some test questions.
 
 
 ### Server setup (Mostly as a note to myself) ###
@@ -74,16 +76,17 @@ or better yet, make is a system service.
 ### Test excercises supported ###
 
 1. Microphone test
-2. Answering questions with possibility for re-recording (handy for asking names etc.)
-3. Producing speech from stimulus (text, image, video)
-4. Video "conversation" (ie. talking head or other bits of videos asking questions)
-5. Pair excercise, where the test takers form pairs or groups of three and discuss a theme
+2. Reading sentences from prompts (with or without sample reading)
+2. ~~~Answering questions with possibility for re-recording (handy for asking names etc.)~~~
+3. ~~~Proroducing speech from stimulus (text, image, video)~~~
+4. ~~~Video "conversation" (ie. talking head or other bits of videos asking questions)~~~
+5. ~~~Pair excercise, where the test takers form pairs or groups of three and discuss a theme~~~
 
 
 
 ### Sample excercise definitions ###
 
-TBA.
+...are in the public/javascript/shor_test.js
 
 
 ### I am forever indebted to ###
