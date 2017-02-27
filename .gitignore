@@ -2,5 +2,10 @@ uploads
 mongo_snapshots
 public/encoded_video
 public/phone_samples
+public/images
 classification_data
 dnn_runner/models
+dnn_runner/already_deprecated
+dnn_runner/dnn_testing
+.*log
+server_logs
