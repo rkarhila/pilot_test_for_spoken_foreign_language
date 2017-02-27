@@ -9,3 +9,4 @@ dnn_runner/already_deprecated
 dnn_runner/dnn_testing
 .*log
 server_logs
+node_modules
