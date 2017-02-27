@@ -1,0 +1,121 @@
+extends layout
+
+block content
+  #cover 
+
+  #instructions
+      p Tervetuloa kokeilemaan varhaista kehitysprototyyppiä 
+        | puhutun vieraan kielen koejärjestelmästä!
+      p Jokainen osio alkaa tällaisella infoikkunalla. Ensin voit 
+        | tarkastella edessäolevaa urakkaa.
+      a(href="#main", class="allClear") Tämä selvä!
+  #main 
+
+      //h1 Hejsan, pilot!
+      //p Ruotsin kielen ylioppilaskirjoitusten raakile. Tätä kypsytellään avullasi.
+
+      #swedometer
+          | Swed-o-meter 
+
+      // Wrapper
+      #testwrapper
+
+
+
+          // VIDEO AND CONTROLS
+          #userControls
+               p Käyttäjätunnus: #[=user.username]
+                 br
+                 a(href="logout") Kirjaudu ulos
+                 //br
+                 //| Tehtävä: #[span#taskCounter]
+               #recording(class="blink_me")
+               //video#uservideo(autoplay muted)
+               video#camera-preview(autoplay muted)
+               audio#recordedObject
+               canvas#analyser
+               //canvas#wavedisplay
+               #progress
+               form#upload(action="/upload" method="post" enctype="multipart/form-data")
+                   input#MAX_FILE_SIZE(type="hidden" name="MAX_FILE_SIZE" value="63856800")
+                   input#filename(type="hidden" name="filename" value="krozz-fi0")
+          // /VIDEO AND CONTROLS
+
+
+        
+          #testarea
+
+              #taskarea 
+                  p Koe koostuu seuraavista osioista:
+
+                  ol
+                    each val, index in test_review
+                        li 
+                          //Tehtävä #{val.task_id}:
+                          b #{val.description}: 
+                          br
+                          i #{val.num_trials} 
+                          if val.num_trials == 1
+                            i tehtävä,
+                          else
+                            i tehtävää,
+                          i vastausaika max. #{val.trial_lengths} / tehtävä.
+
+              #controlarea
+                   //input#listenButton(type="button" onClick='toggle_play();' oncanplay='canaudioplay=1' value="Kuuntele" name="listen" disabled)
+                   //input#record(type="button" onclick="overrideToggleRecording(this)" value="Aloita äänitys")
+                   //input#nextButton(type="button" onclick='nextTask()' value="Seuraava tehtävä" disabled)
+                   //input#start-recording(type="button"  value="Start")
+                   //input#stop-recording(type="button"  value="Stop")
+
+
+          // USER INFO
+          -if (debug)
+              #debug
+                  h2 Test Info (For debugging)
+                  p
+                      strong Task:
+                      |  <span id='testTask_id'></span>
+                      br
+                      strong Instructions:
+                      |  <span id='testInstructions'></span>
+                      br
+                      strong Stimulus layout:
+                      |  <span id='testStimulus_layout'></span>
+                      br
+                      strong Trial:
+                      |  <span id='testTrial_id'></span>
+                      br
+                      strong Stimulus:
+                      |  <span id='testStimulus'></span>
+                      br
+                      strong Response_time:
+                      |  <span id='testRespTime'></span>
+                      br
+                      strong Next:
+                      |  <span id='testNext'></span>
+                      br
+                      button#btnNext Next trial
+
+          // /USER INFO
+
+      //#backtosquareone
+          //a(href="logout") Kirjaudu ulos
+
+block scripts
+    -if (user.username)
+        script(type='text/javascript').
+            var username =!{JSON.stringify( user.username )};
+    -if (noVideo)
+        script(type='text/javascript').
+            var noVideo =!{JSON.stringify( noVideo )};
+    -else
+        script(type='text/javascript').
+            var noVideo = 0;
+    script(src='#{base_url}/javascripts/recorder.js')
+    script(src='#{base_url}/javascripts/uploadfile.js')
+    script(src='#{base_url}/javascripts/audio-analyser.js')
+    script(src='#{base_url}/javascripts/tests-local.js')
+    script(src='#{base_url}/javascripts/messages.js')
+    script(src="#{base_url}/javascripts/RecordRTC.js")
+    script(src='#{base_url}/javascripts/jquery.pietimer.modified.js')

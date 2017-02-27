@@ -1,6 +1,6 @@
 var express = require('express');
 var path = require('path');
-var favicon = require('serve-favicon');
+//var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
@@ -20,6 +20,8 @@ var users = require('./routes/users');
 var test = require('./routes/test');
 var tasks= require('./routes/tasks');
 
+var start_test = require('./routes/start');
+
 var uploads = require('./routes/uploads');
 //var signin = require('./routes/signin');
 var answers = require('./routes/answers');
@@ -31,7 +33,7 @@ var feedback = require('./routes/feedback');
 var passport = require('passport');
 var flash = require('connect-flash');
 
-
+var u = require('./routes/u');
 
 var base_url=(process.env.BASE_URL || '');
 
@@ -41,6 +43,7 @@ var base_url=(process.env.BASE_URL || '');
 //var funct = require('./functions.js'); //funct file contains our helper functions for our Passport and database work
 
 var session = require('express-session');
+
 var app = express();
 
 
@@ -58,39 +61,18 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 
 // Session control: User information in cookies etc?
-
+/*
 app.use(session({ secret: 'keyboard cat',
                   saveUninitialized: true,
                   resave: true,
-		  cookie: { maxAge: 3600000 }})); // Cookie lifetime: 1 hour
-
-var sess;
-
-
-
+		  //cookie: { maxAge: 3600000 }})); // Cookie lifetime: 1 hour
+		  cookie: { maxAge: 60000 }})); // Cookie lifetime: 1 minute
 
 app.use(cookieParser());
+*/
+
 app.use(express.static(path.join(__dirname, 'public')));
 
-
-/*
-// Session-persisted message middleware
-app.use(function(req, res, next){
-  var err = req.session.error,
-      msg = req.session.notice,
-      success = req.session.success;
-
-  delete req.session.error;
-  delete req.session.success;
-  delete req.session.notice;
-
-  if (err) res.locals.error = err;
-  if (msg) res.locals.notice = msg;
-  if (success) res.locals.success = success;
-
-  next();
-});
-*/
 
 
 /*
@@ -120,11 +102,6 @@ app.use(function(req,res,next){
 // Flash messages:
 app.use(flash());
 
-//  Flash messages:
-//app.use(function(req,res,next){
-//    req.flash= flash;
-//    next();
-//});
 
 
 
@@ -187,7 +164,7 @@ passport.deserializeUser(function(obj, done) {
 
 // Specify language of the UI:
 app.use(function(req,res,next){
-    req.ui_language= 'fi_fi';
+    req.ui_language= 'en_uk';
     next();
 });
 
@@ -248,37 +225,76 @@ app.get('/logout', function(req, res, next) {
 });
 */
 
-app.get('/login', function(req, res, next) {
+
+
+app.get('/welcome', function(req, res, next) {
     User.find({}, function(err, user) {
 
-	console.log('Trying to get changelog');	
-	var changelog = JSON.parse(fs.readFileSync('./changelog.json', 'utf8'));
-	console.log('Got changelog');
-	
-	res.render('login', { title: 'Express',
+	res.render('login', { title: 'Digitala @ Interspeech16',
 			      user: req.user ,
-			      changelog: changelog,
 			      ui_language: req.ui_language,
 			      base_url: req.base_url,
-			      error_message: req.flash('error'),
-			      success_message: req.flash('success'),
 			      all_users : user
 			    });
     });
 });
 
-console.log("If auth fails, redirect to "+base_url+"/login");
 
-app.post('/login',
-	 passport.authenticate('local',
-			       { failureRedirect: base_url+'/login',
-				 failureFlash: true }),
-	 function(req, res) {
-	     sess=req.session;
-	     sess.username=req.body.username.value;
-             res.redirect(base_url+'/');
-	 });
 
+app.use(session({ secret: 'keyboard cat',
+                  saveUninitialized: true,
+                  resave: true,
+		  //cookie: { maxAge: 3600000 }})); // Cookie lifetime: 1 hour
+		  cookie: { maxAge: 60000 }})); // Cookie lifetime: 1 minute
+
+app.use(cookieParser());
+
+app.use('/start', start_test);
+
+
+
+
+//console.log("If auth fails, redirect to "+base_url+"/welcome");
+
+app.post('/login', function(req,res,next) {
+
+    var username = req.body.username;
+
+    console.log(username)
+
+    if (typeof(username)=='undefined') {
+
+	    res.render('login', { title: 'Digitala @ Interspeech16',
+				  user: req.user ,
+				  base_url: req.base_url,
+				  error_message: 'Could not find results for code '+username,
+				});	
+
+    }
+
+    else {
+	fs.readdir( 'classification_data/results_charts/',  function (err, files){
+	    
+	    var re = new RegExp(username,"g");
+	    
+	    var resultchart = files.filter(function(item){
+		return re.test(item);
+	    }).length;
+	    
+	    if (resultchart > 0) {
+		res.redirect(base_url+'/u/'+username +'/results');
+	    }	  
+  
+	    else {
+		res.render('login', { title: 'Digitala @ Interspeech16',
+				  user: req.user ,
+				      base_url: req.base_url,
+				      error_message: 'Could not find results for code '+username,
+				    });
+	    }
+	});
+    }
+});
 /*
 app.use(function(req,res,next){
     console.log(req.user);
@@ -292,10 +308,13 @@ app.use(function(req,res,next){
 
 // Require authentication for the other urls:
 
+/*
 app.use(function(req,res,next){
     if(!req.isAuthenticated()) {
 	console.log('user not logged in');
-	res.redirect(base_url+'/login');
+	
+	res.redirect(base_url+'/welcome');
+
     }
     else {
 	console.log('user logged in', req.user.username);
@@ -307,23 +326,28 @@ app.use(function(req,res,next){
 	next();
     }
 });
+*/
 
 
+app.use('/test', test);
 
-app.use('/users', users);
+
 
 
 //app.use(ensureAuthenticated);
+/*
+app.use('/users', users);
 
-app.use('/test', test);
 app.use('/tasks', tasks);
 app.use('/sync', sync);
 app.use('/feedback', feedback);
-
+*/
 app.use('/upload', uploads);
-app.use('/answers', answers);
-app.use('/evaluate', evaluate);
+//app.use('/answers', answers);
+//app.use('/evaluate', evaluate);
 
+
+app.use('/u', u);
 app.use('/', routes);
 
 

@@ -7,17 +7,10 @@ router.get('/', function(req, res, next) {
 
     if (!req.user) {
 	
-	console.log('Trying to get changelog');
-
-	var changelog = JSON.parse(fs.readFileSync('./changelog.json', 'utf8'));
-	console.log('Got changelog');
 
 	res.render('login', { title: 'Express',
-			      changelog: changelog,
 			      base_url: req.base_url,
 			      ui_language: req.ui_language, 
-			      error_message: req.flash('error'), 
-			      success_message: req.flash('error'),
 			    });
     }
     else {
@@ -30,8 +23,6 @@ router.get('/', function(req, res, next) {
 				   base_url: req.base_url,
 				   user: req.user, 
 				   ui_language: req.ui_language,
-				   error_message: req.flash('error'), 
-				   success_message: req.flash('error') 
 				});	    
 	}
     }

@@ -1,0 +1,138 @@
+extends layout
+
+block content
+  #main 
+
+    #resultwrapper
+
+      table
+        tr
+          td 
+            a(href='#{base_url}')  Back to homepage
+          td 
+            a(href='http://blogs.helsinki.fi/digitala-projekti/about-digitala/')  Digitala <br>project
+          td 
+            a(href='http://spa.aalto.fi/en/research/research_groups/speech_recognition/')  Aalto University <br> Speech Recognition <br>Group
+          td 
+            a(href='http://www.helsinki.fi/speechsciences/introduction/index.htm')  Helsinki University <br>Speech Sciences
+          td 
+            a(href='http://www.helsinki.fi/teachereducation/')  Helsinki University<br> Teacher Education
+
+      h2 These are your results;
+
+      h4 If you don't like them, you should practice more. Or is it the noise? Find a more quiet space and try again!
+    
+      p Your user  code is <b>#[=user.username]</b>. 
+        | You can view your results until noon next Wednesday (#[=results.expiry_date])
+        |  with your code  ie. for #[=results.expiry_hours]
+        |  hours and  #[=results.expiry_minutes] minutes.
+
+      h3 1. Pronunciation clarity within the population of Finnish High School students
+
+      p The chart below shows a mapping from computational score to human evaluation. 
+        | Samples from the training data are shown. The blue dots show median evaluation, and 
+        | the error bars encompass the complete variety of human evaluations for that particular speaker.
+        | The human evaluation is based on a 10-step scale, where every step has been
+        | described:
+        uul
+          li 1: Pronunciation causes major difficulties in understanding
+          li 2: Pronunciation causes frequent difficulties in understanding
+          li 3: Pronunciation sometimes causes difficulties in understanding
+          li 4:  Pronunciation is understandable, although foreign accent is very apparent and pronunciation mistakes can cause understanding problems
+          li 5: Pronunciation is understandable, although foreign accent is very apparent and there are pronunciation mistakes
+          li 6: Pronunciation is clearly understandable, although foreign accent is apparent and there are infrequent pronunciation mistakes
+          li 7: Pronunciation is very understandable, although intonation and weighting are not according to target language
+          li 8: Pronunciation and intonation are clear and natural. 
+          li 9: Pronunciation and intonation are very clear and natural. 
+          li 10: Able to vary intonation and communicate the most subtlest of meanings via prosodic weighting
+
+        | As is apparent from the chart, the reviewers are using the scale in a varying manners.
+
+      
+
+      //center
+      //  img(src="#{base_url}/images/bird_phonetics_to_grade_new_model.svg")
+
+
+
+      p 
+        | !{results.computational_score}
+        //| That would predict a score between #[=results.approx_human_lower] 
+        //| and  #[=results.approx_human_upper] in the 10-step human evaluation.
+
+
+
+      
+
+      h3 3. Plotted fluency
+      p.
+        These wavelet pictures show the prosodic structure of your utterances with word boundaries, pauses and intonation. 
+        You can see the rhythm of the utterance as well as sentence stress and even word stress. 
+        The bigger the font in the text below, the more stressed (prominent) the word is. 
+        Red color shows energy (louder & higher voice) and blue color shows silence (pauses). 
+        Large and clear red/yellow ”arc” means a clear information structure (e.g. sentence), small red/yellow pilars reveal hesitations and machine-like production.
+
+      p.
+        Have a look at these annotated examples:
+
+      table
+        tr(valign="top")
+          td
+            a(href="#{base_url}/images/wavelets/example-nonnative.png")
+              img(src="#{base_url}/images/wavelets/example-nonnative.png", width='100%')
+          td
+            a(href="#{base_url}/images/wavelets/example-native.png")
+              img(src="#{base_url}/images/wavelets/example-native.png", width='100%')
+
+      each utt in [ 0, 1, 2, 3, 4, 5, 6, 7, 8 ]
+        h4 Utterance #{utt}
+        table
+          tr(valign="top")
+            td
+              p Your recording:
+              video(width='100%', src='#{base_url}/encoded_video/#{user.username}/#{user.username}_16_#{utt}.webm', controls, preload="auto")
+            td 
+              p Wavelet of your utterance (click to enlarge):
+                a(href='#{base_url}/images/wavelets/#{user.username}.16.#{utt}.svg')
+                  img(src='#{base_url}/images/wavelets/#{user.username}.16.#{utt}.svg', width='100%')
+            td 
+              p Wavelet of native utterance (click to enlarge):
+                a(href='#{base_url}/images/wavelets/stig.sentence-16.#{utt}.svg')
+                  img(src='#{base_url}/images/wavelets/stig.sentence-16.#{utt}.svg', width='100%')
+
+      h3 4. We made this!
+
+      ul
+          li Reima Karhila, pronunciation scoring, system integration
+          li Aku Rouhe, speech segment validation, wavelet integration
+          li Peter Smit, Swedish speech recognition
+          li André Mansikkaniemi, Swedish speech recognition adaptation
+          li Antti Suni, Wavelet analysis
+          li Heini Kallio & Erik Lindroos, data collection
+          li Stig-Arne Grönroos, model pronunciation
+          li Martti Vainio, Raili Hilden & Mikko Kurimo, project leaders
+
+
+block scripts
+    -if (user.username)
+        script(type='text/javascript').
+            var username =!{JSON.stringify( user.username )};
+    -if (noVideo)
+        script(type='text/javascript').
+            var noVideo =!{JSON.stringify( noVideo )};
+    -else
+        script(type='text/javascript').
+            var noVideo = 0;
+
+    -if (1 == 2)
+      script(src='#{base_url}/javascripts/short_test.js')
+
+      script(src='#{base_url}/javascripts/recorder.js')
+      script(src='#{base_url}/javascripts/uploadfile.js')
+      script(src='#{base_url}/javascripts/audio-analyser.js')
+      script(src='#{base_url}/javascripts/tests-local.js')
+      script(src='#{base_url}/javascripts/tests-control.js')
+      script(src='#{base_url}/javascripts/tests-video.js')
+      script(src='#{base_url}/javascripts/messages.js')
+      script(src="#{base_url}/javascripts/RecordRTC.js")
+      script(src='#{base_url}/javascripts/jquery.pietimer.modified.js')

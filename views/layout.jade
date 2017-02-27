@@ -4,15 +4,15 @@ html
     title= title
     <link rel="stylesheet" href="#{base_url}/stylesheets/style.css">
     //link(rel='stylesheet', href ='{base_url}/stylesheets/style.css')
+    <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
   body
-    block content
     -if(user && showuser)
         #user You are #{user}
     -if(error_message)
         div#error #{error_message}
     -if(success_message)
         div#success #{success_message}
-
+    block content
 
     script(src='#{base_url}/javascripts/jquery-2.1.4.min.js')
     script(type='text/javascript').

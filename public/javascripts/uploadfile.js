@@ -49,6 +49,7 @@ function UploadFile(file, filename, uploadurl) {
 		    if (xhr.status != 200) {
 			progress.className = "failure";
 			progress.innerHTML="Error! Server response: "+xhr.status;
+			alert('Something went wrong uploading your file to the server! It might not make sense to continue the test! (Error '+xhr.status +')');
 			err=1;
 		    }
 		    else {

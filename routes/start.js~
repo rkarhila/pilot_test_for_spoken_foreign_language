@@ -1,27 +1,114 @@
 var express = require('express');
 var router = express.Router();
+var exec = require('child_process').exec;
+
+var session = require('express-session');
+
+var base_url=(process.env.BASE_URL || '');
+var fs = require('fs');
 
 
+router.get('/full_test', function(req, res, next) {
+    render_test(req, res, next, "full");
+});
 
-router.get('/:user/:task/:trial', function(req, res, next) {
 
-    if (!req.user) {
-	req.user = {username: req.params.user};
+router.get('/short', function(req, res, next) {
+    render_test(req, res, next, "short");
+});
+
+router.get('/assisted_short', function(req, res, next) {
+    render_test(req, res, next, "assisted_short");
+});
+
+router.get('/holding_your_hand_short', function(req, res, next) {
+    render_test(req, res, next, "holding_your_hand_short");
+});
+
+var render_test = function(req, res, next, test_type) {
+    console.log('Starting test of type '+test_type);
+    
+    if (req.body.username) {
+	req.user = { 'username' : req.body.username}
     }
+    else {
+	if (req.user) {
+	    dummy = 1;
+	}
+	else {
+	    req.user = get_new_user();
+	}
+    }
+    
+    sess=req.session;
+    sess.username = req.user;
+  //req.body.username.value;
 
-    var test_review = {};
     
 
-    res.render('tests', { title: 'Testing!', 
-			  user: req.user , 
+    res.redirect(base_url+'/u/'+req.user.username +'/test/'+test_type);
+
+/*    res.render('init_test',  { title: 'Testing!', 
+			  user: req.user, 
 			  base_url: req.base_url,
 			  ui_language: req.ui_language,
 			  error_message: req.flash('error'), 
 			  success_message: req.flash('error'),
 			  noVideo: (process.env.NOVIDEO || 0),
-			  test_review : test_review
+			  test_review : "0", //test_review,
+			  test_type: test_type
 			});
-});
+*/
+}
+
+var get_new_user = function() {
+
+    var high=100;
+    var low=10;
+    var allowed_chars=[]
+
+    var vow= ['a','e','i','o','u','y'];
+    var con= ['b','c','d','f','g','h','k','m','n','p','r','s','t','v','z','x']; // Dropped out 'l'!
+
+    ran = 'aadap';
+
+    while (true) {
+	
+	try {
+	    fs.accessSync('uploads/raw_video/'+ran, fs.F_OK);
+	    // Do something
+	    var ran = '';
+	    
+	    if (Math.random() < 0.5) {
+		ran += vow[Math.floor(Math.random() * vow.length)];
+		ran += con[Math.floor(Math.random() * con.length)];
+		ran += vow[Math.floor(Math.random() * vow.length)];
+		ran += con[Math.floor(Math.random() * con.length)];
+		ran += vow[Math.floor(Math.random() * vow.length)];
+	    }
+	    else {
+		ran += con[Math.floor(Math.random() * con.length)];
+		ran += vow[Math.floor(Math.random() * vow.length)];
+		ran += con[Math.floor(Math.random() * con.length)];
+		ran += vow[Math.floor(Math.random() * vow.length)];
+		ran += con[Math.floor(Math.random() * con.length)];
+	    }	  
+	} catch (e) {
+	    break;
+	    // It isn't accessible
+	}
+    }
+
+    fs.mkdirSync('uploads/raw_video/'+ran);
+    fs.mkdirSync('uploads/encoded_video/'+ran);
+    fs.mkdirSync('uploads/validator_data/'+ran);
+     exec('chmod a+w uploads/validator_data/'+ran, function(error, stdout, stderr) {
+	 if (error)
+	     console.log(error);
+     });
+    return {'username' : ran };
+    
+}
 
 
 /* GET home page. */

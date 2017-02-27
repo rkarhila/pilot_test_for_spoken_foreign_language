@@ -134,7 +134,7 @@ router.post('/adduser/:userrole', function(req, res) {
 	
 
 	addable=req.body;
-
+	
 	addable.role=req.params.userrole;
 	
 	var collection = db.get('userlist');
@@ -143,14 +143,14 @@ router.post('/adduser/:userrole', function(req, res) {
 	    console.log('(new)username undefined')
 	    collection.find({ 'school' : req.body.school}, {fields : { username:1, _id: 0} },function(e,usernamelist){		    		    
 		// TODO: Error handling missing!
-
+		
 		var usernames = [];
 		if (!e) {
 		    usernamelist.forEach(function(item) {
 			usernames.push(item.username);
 		    });
 		}
-
+		
 		var addables=[];
 		var resp={};
 
@@ -177,22 +177,23 @@ router.post('/adduser/:userrole', function(req, res) {
 			    test = tests[num];
 			    ver = testversion+"-"+num;
 			}
+		    }
 		    else {
 			ver = testversion;
 			test = tests[0];
 		    }
-
+		    
 		    console.log("addable #"+y);
-
+		    
 		    do {
 			addable.username=(req.body.school).toLowerCase()+'_'+randomstring(3);
 		    } while ( typeof(usernames[addable.username]) !== 'undefined' );
-
+		    
 		    addable.password=randomstring(5);
-
-
+		    
+		    
 		    // Randomize the trials for this user (group):
-
+		    
 		    var usertasks = [];
 		    var usertrials = [];
 		    var evaluations = {};
@@ -298,8 +299,8 @@ router.post('/adduser/:userrole', function(req, res) {
 		    addables.push( JSON.parse(JSON.stringify(addable)));	
 		    
 		    resp[addlist[y]]=addable.username + '   ' +addable.password;
-		    
-		}
+			
+		    }
 		
 
 		collection.insert(addables, function(err, result){
@@ -310,7 +311,7 @@ router.post('/adduser/:userrole', function(req, res) {
 		
 		// Add the user to database;
 
-	    });
+		});
 	}
 	else {
 	    console.log('(new)username defined: '+ req.body.newusername)

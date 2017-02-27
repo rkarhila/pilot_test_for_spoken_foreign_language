@@ -1,70 +1,87 @@
 extends layout
 
 block content
-  h1 Tervetuloa kokeilemaan sähköistä puhekoetta på svenska!
+  h1 Welcome to the Digitala project's show & tell demonstration in Interspeech 16!
   // Ollaanpa sitä uteliaita. Koodin kommenteista voi löytyä kaikenlaista.
   // Esimerkiksi tervetuliaisviesti oli aiemmmin:
   // h1 Tervetuloa kokeilemaan puhutun ruotsin ylioppilaskokeen pilottia!
-  p Tunnukset sinulla pitäisi jo olla. Jos ei ole, niin taitaa jäädä kokeilu lyhyeksi.
-  p Ja jos käytössäsi ei ole verrattain uutta Chrome-selainta, tapahtuu kauheita! 
-      | #[a(href='https://www.google.com/chrome/') Selaimen voit ladata täältä.]
+  p The computing power of the server limits the number of simultaneous users. 
+    |  Please be patient and try again later if the system is too crowded now!
+  //p Ja jos käytössäsi ei ole verrattain uutta Chrome-selainta, tapahtuu kauheita! 
+  //    | #[a(href='https://www.google.com/chrome/') Selaimen voit ladata täältä.]
+  p The code is made for Google Chrome browser and due to lack of manpower has not 
+    | been tested on any other browser. But maybe you are lucky?
 
   // Wrapper
   #wrapper
-      #changeLog
-          -if (changelog)
-              each change in changelog
-                h4= change.date
-                p= change.msg.fi
-                -if (change.fixedlist.fi)
-                    ul
-                        each fixed in change.fixedlist.fi
-                            li= fixed
+
+  h2 Let's begin! Choose your poison:
+
+  #maingrid.masonry
+    //    #box.item
+    //      h3 #[a(href="https://asr.aalto.fi/is16/start/full_test") Full test] 
+    //      #desc Requires:
+    //      ul
+    //        li fluency in reading, listening and speaking Swedish, and
+    //        li a headset, if it its noisy
+    //
+    //      #desc <i>Sample task:</i>
+    //      #sample Read the following aloud:
+    //      p  <b>Sittplatserna kostar 420 kronor </b>
+    //      p #[a(href="https://asr.aalto.fi/is16/start/full_test") Begin full test]
+
+    #box.item
+      h3 #[a(href="https://asr.aalto.fi/is16/start/short") Short test] 
+      #desc Requires fluency in reading and speaking Swedish.
+
+      p <i>Sample task:</i>
+      #sample Read the following aloud:
+      p  <b>Sittplatserna kostar 420 kronor </b>
+      p #[a(href="https://asr.aalto.fi/is16/start/short") Begin short test] 
+
+    #box.item
+      h3 #[a(href="https://asr.aalto.fi/is16/start/assisted_short") Short test with a little help]
+      #desc Requires ability to read Swedish or learn it very fast.
+      
+      p Sample task:
+      #sample <i>Listen to the example reading and then read the following aloud:</i>
+      p  <b>Sittplatserna kostar 420 (fyrahundra tjugo) kronor </b>
+      p #[a(href="https://asr.aalto.fi/is16/start/assisted_short") Short test with a little help]
+
+    //#box.item
+    //  h3 #[a(href="https://asr.aalto.fi/is16/start/holding_your_hand_short") Short test with a lot of help] 
+    //  #desc Requires:
+    //  ul
+    //    li Some patience
+    //    li and if its noisy, a headset
+    //  #desc Sample task:
+    //  #sample <i>Read the following aloud in parts after voice prompts:</i>
+    //   p <b>Sittplatserna <br />
+    //    | kostar <br />
+    //    | fyrahundra <br />
+    //    | tjugo <br />
+    //    | kronor </b>
+    //  p #[a(href="https://asr.aalto.fi/is16/start/holding_your_hand_short") Begin short test with a lot of help] 
+
+  h2 View your results:
+
+  #desc If you did the test already and want to look at your results again, type yout code in the box below:
+      form#login(action="#{base_url}/login", method="post")
+        input#username(type="text", name="username", placeholder='Username')
+        input(type="submit", value="Continue or view results")
 
 
-      // USER LIST
-      -if (showlogin) 
-          h2 Login
-              form#login(action="#{base_url}/login", method="post")
-                  input#username(type="text", name="username", placeholder='Username')
-                  br
-                  input#password(type="password", name="password", placeholder='Password' value="codeme!" readonly)
-                  br
-                  input(type="submit", value="login")
 
-      form#login1(action="#{base_url}/login", method="post")
-          input#username(type="text", name="username", placeholder='Username')
-          br
-          input#password(type="password", name="password", placeholder='Password')
-          br
-          input(type="submit", value="Kirjaudu")
+  //#bottom We are #[a(href="https://blogs.helsinki.fi/digitala-projekti/about-digitala/") Digitala] and we come in peace.
+  p  
+    table
+        tr
+          td 
+            a(href='http://blogs.helsinki.fi/digitala-projekti/about-digitala/')  Digitala <br>project
+          td 
+            a(href='http://spa.aalto.fi/en/research/research_groups/speech_recognition/')  Aalto University <br> Speech Recognition <br>Group
+          td 
+            a(href='http://www.helsinki.fi/speechsciences/introduction/index.htm')  Helsinki University <br>Speech Sciences
+          td 
+            a(href='http://www.helsinki.fi/teachereducation/')  Helsinki University<br> Teacher Education
 
-
-      // ADD USER
-      -if (adding_user)
-          h2 Add User
-          #addUser
-              fieldset
-                  input#inputUserName(type='text', placeholder='Username')
-                  input#inputUserEmail(type='text', placeholder='Email')
-                  br
-                  input#inputUserFullname(type='text', placeholder='Full Name')
-                  input#inputUserAge(type='text', placeholder='Age')
-                  br
-                  input#inputUserLocation(type='text', placeholder='Location')
-                  input#inputUserGender(type='text', placeholder='gender')
-                  br
-                  button#btnAddUser Add User
-      // /ADD USER
-
-
-      // UPLOAD PHOTO
-      -if (uploading_photo)
-          #uploadPhoto
-              fieldset
-                  input#inputFileName(type='file', placeholder='Photo file name')
-                  br
-                  button#btnUploadFile Upload File
-  // /WRAPPER
-
-  #bottom Me olemme #[a(href="http://blogs.helsinki.fi/digitala-projekti/") Digitala]. Tulemme ystävinä.<br>Ensin korvaamme opettajat roboteilla. Sen jälkeen oppilaat. Lopuksi itsemme. Kortistossa nähdään!
