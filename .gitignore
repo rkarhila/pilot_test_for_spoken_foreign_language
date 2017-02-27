@@ -2,3 +2,5 @@ uploads
 mongo_snapshots
 public/encoded_video
 public/phone_samples
+classification_data
+dnn_runner/models
